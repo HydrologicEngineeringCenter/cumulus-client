@@ -1,6 +1,6 @@
 dependencies {
     implementation(project(":cumulus-model"))
-    implementation("mil.army.usace.hec:cwms-http-client:1.0.0-SNAPSHOT")
+    implementation("mil.army.usace.hec:cwms-http-client:1.0-SNAPSHOT")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
@@ -13,5 +13,14 @@ publishing {
             artifactId = "cumulus-client"
             from components.java
         }
+    }
+}
+
+repositories {
+
+    maven {
+        name = "hec"
+        url = 'https://www.hec.usace.army.mil/nexus/repository/maven-public'
+
     }
 }
