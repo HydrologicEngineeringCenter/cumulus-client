@@ -1,0 +1,18 @@
+[
+  {
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "datetime": "2022-03-18T20:41:27.831Z",
+    "file": "test1.file",
+    "create_date": "2022-03-18T20:41:28.831Z",
+    "process_date": "2022-03-18T20:41:29.831Z",
+    "acquirable_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  },
+  {
+    "id": "4fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "datetime": "2022-03-18T20:41:27.832Z",
+    "file": "test2.file",
+    "create_date": "2022-03-18T20:41:28.833Z",
+    "process_date": "2022-03-18T20:41:29.834Z",
+    "acquirable_id": "4fa85f64-5717-4562-b3fc-2c963f66afa6"
+  }
+]
