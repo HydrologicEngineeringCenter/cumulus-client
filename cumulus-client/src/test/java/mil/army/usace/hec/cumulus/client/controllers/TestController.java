@@ -53,12 +53,15 @@ abstract class TestController {
         return new ApiConnectionInfo(baseUrl);
     }
 
-    final String readJsonFile(String jsonPath) throws IOException {
-        URL resource = getClass().getClassLoader().getResource(jsonPath);
-        if (resource == null) {
-            throw new IOException("Resource not found: " + jsonPath);
+    protected void launchMockServerWithResource(String resource) throws IOException {
+        URL resourceUrl = getClass().getClassLoader().getResource(resource);
+        if (resourceUrl == null) {
+            throw new IOException("Failed to get resource: " + resource);
         }
-        Path path = new File(resource.getFile()).toPath();
-        return String.join("\n", Files.readAllLines(path));
+        Path path = new File(resourceUrl.getFile()).toPath();
+        String collect = String.join("\n", Files.readAllLines(path));
+        mockHttpServer.enqueue(collect);
+        mockHttpServer.start();
     }
+
 }
