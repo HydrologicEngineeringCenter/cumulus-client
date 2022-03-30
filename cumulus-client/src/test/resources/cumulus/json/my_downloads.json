@@ -1,0 +1,38 @@
+[
+  {
+    "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+    "sub": "753487e7-10bc-4e69-b3b2-4da33721ea3e",
+    "datetime_start": "2020-12-01T01:00:01Z",
+    "datetime_end": "2020-12-15T01:00:02Z",
+    "watershed_id": "94e7713a-ccd6-432d-b2f0-972422511171",
+    "product_id": [
+      "64756f41-75e2-40ce-b91a-fda5aeb441fc"
+    ],
+    "status_id": "4e949624-bc0f-439e-a9f2-25a23938812c",
+    "status": "SUCCESS",
+    "progress": 100,
+    "file": "https://cumulus-api.corps.cloud/path/to/file.dss",
+    "processing_start": "2022-03-01T14:15:22Z",
+    "processing_end": "2022-03-01T14:45:50Z",
+    "watershed_slug": "genesee-river",
+    "watershed_name": "Genesee River"
+  },
+  {
+    "id": "597f6eca-6276-4993-bfeb-53cbbbba6f08",
+    "sub": "853487e7-10bc-4e69-b3b2-4da33721ea3e",
+    "datetime_start": "2020-12-01T01:00:01Z",
+    "datetime_end": "2020-12-15T01:00:02Z",
+    "watershed_id": "95e7713a-ccd6-432d-b2f0-972422511171",
+    "product_id": [
+      "74756f41-75e2-40ce-b91a-fda5aeb441fc"
+    ],
+    "status_id": "5e949624-bc0f-439e-a9f2-25a23938812c",
+    "status": "SUCCESS",
+    "progress": 100,
+    "file": "https://cumulus-api.corps.cloud/path/to/file2.dss",
+    "processing_start": "2022-03-01T14:15:22Z",
+    "processing_end": "2022-03-01T14:45:50Z",
+    "watershed_slug": "fake-river",
+    "watershed_name": "Fake River"
+  }
+]
