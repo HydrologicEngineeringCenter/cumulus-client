@@ -1,0 +1,15 @@
+{
+  "id":"c785f4de-ab17-444b-b6e6-6f1ad16676e8",
+  "office_symbol":"LRN",
+  "slug":"cumberland-basin-river",
+  "name":"Cumberland Basin River",
+  "area_groups":[
+    "e3fd63a1-f19f-4bf3-b436-1c7086b7afe7"
+  ],
+  "bbox":[
+    662000,
+    1408000,
+    1172000,
+    1678000
+  ]
+}
