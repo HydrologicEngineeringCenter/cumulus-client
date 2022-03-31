@@ -117,17 +117,12 @@ public class Watershed {
             return false;
         }
         Watershed watershed = (Watershed) o;
-        return Objects.equals(getId(), watershed.getId()) && Objects.equals(getOfficeSymbol(), watershed.getOfficeSymbol()) &&
-            Objects.equals(getSlug(), watershed.getSlug()) && Objects.equals(getName(), watershed.getName()) &&
-            Arrays.equals(getAreaGroups(), watershed.getAreaGroups()) && Arrays.equals(getBbox(), watershed.getBbox());
+        return Objects.equals(getId(), watershed.getId());
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(getId(), getOfficeSymbol(), getSlug(), getName());
-        result = 31 * result + Arrays.hashCode(getAreaGroups());
-        result = 31 * result + Arrays.hashCode(getBbox());
-        return result;
+        return Objects.hash(getId());
     }
 
     @Override
