@@ -1,6 +1,11 @@
 package mil.army.usace.hec.cumulus.client.controllers;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.util.List;
 import mil.army.usace.hec.cumulus.client.model.CumulusObjectMapper;
 import mil.army.usace.hec.cumulus.client.model.Download;
@@ -14,7 +19,7 @@ public class DownloadsController {
     private static final String MY_DOWNLOADS_ENDPOINT = "my_downloads";
 
     /**
-     * Retrieve Download.
+     * Retrieve Download (primarily used for obtaining download status).
      *
      * @param apiConnectionInfo    - connection info
      * @param downloadsEndpointInput - download endpoint input containing download id
@@ -42,5 +47,21 @@ public class DownloadsController {
             new HttpRequestBuilderImpl(apiConnectionInfo, MY_DOWNLOADS_ENDPOINT)
                 .execute();
         return CumulusObjectMapper.mapJsonToListOfObjects(response.getBody(), Download.class);
+    }
+
+    /**
+     * Download DSS to specified file.
+     *
+     * @param download - Download object containing dss file
+     * @param fileName - name of file to download to
+     * @throws IOException - thrown if download failed
+     */
+    public void downloadDssFile(Download download, String fileName) throws IOException {
+        URL url = new URL(download.getFile());
+        try (ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
+                FileOutputStream fileOutputStream = new FileOutputStream(fileName)) {
+            FileChannel fileChannel = fileOutputStream.getChannel();
+            fileChannel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+        }
     }
 }

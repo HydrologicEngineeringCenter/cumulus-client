@@ -2,9 +2,18 @@ package mil.army.usace.hec.cumulus.client.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import mil.army.usace.hec.cumulus.client.model.Download;
 import org.junit.jupiter.api.Test;
 
@@ -74,10 +83,53 @@ class TestDownloadsController extends TestController{
         assertEquals("5e949624-bc0f-439e-a9f2-25a23938812c", download2.getStatusId());
         assertEquals("SUCCESS", download2.getStatus());
         assertEquals(100, download2.getProgress());
-        assertEquals("https://cumulus-api.corps.cloud/path/to/file2.dss", download2.getFile());
+        assertEquals("file:/J:/git/cumulus-client/cumulus-client/build/resources/test/cumulus/dss/input/forecast.dss", download2.getFile());
         assertEquals("2022-03-01T14:15:22Z", download2.getProcessingStart().toString());
         assertEquals("2022-03-01T14:45:50Z", download2.getProcessingEnd().toString());
         assertEquals("fake-river", download2.getWatershedSlug());
         assertEquals("Fake River", download2.getWatershedName());
     }
+
+    @Test
+    void testDownloadDss() throws IOException, URISyntaxException {
+        Path outputFilePath = null;
+        try {
+            String myDownloadsResource = "cumulus/json/my_downloads.json";
+            launchMockServerWithResource(myDownloadsResource);
+            outputFilePath = createOutputDssPath();
+            if(!Files.exists(outputFilePath)) {
+                Files.createDirectory(outputFilePath);
+            }
+            String outputFileName = outputFilePath + "/forecast.dss";
+            DownloadsController downloadsController = new DownloadsController();
+            List<Download> myDownloads = downloadsController.retrieveMyDownloads(buildConnectionInfo());
+            Download download = myDownloads.get(1);
+            downloadsController.downloadDssFile(download, outputFileName);
+            File outputDssFile = new File(outputFileName);
+            String outputContents = readFile(outputDssFile.getPath());
+            assertTrue(outputDssFile.exists());
+            assertEquals("This is a test file", outputContents);
+        } finally {
+           if(outputFilePath != null) {
+               Files.deleteIfExists(Paths.get(outputFilePath + "/forecast.dss"));
+               Files.deleteIfExists(outputFilePath);
+           }
+        }
+    }
+
+    private Path createOutputDssPath() throws URISyntaxException {
+        URI outputDssURI = Objects.requireNonNull(getClass().getClassLoader().getResource("cumulus/dss/output")).toURI();
+        String mainPath = Paths.get(outputDssURI).toString();
+        Path path = Paths.get(mainPath);
+        return Paths.get(path.toAbsolutePath().toString());
+    }
+
+    private String readFile(String path)
+        throws IOException
+    {
+        byte[] encoded = Files.readAllBytes(Paths.get(path));
+        return new String(encoded, StandardCharsets.UTF_8);
+    }
 }
+
+
