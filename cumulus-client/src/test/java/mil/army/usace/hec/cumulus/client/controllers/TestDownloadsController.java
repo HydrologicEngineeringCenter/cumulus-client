@@ -12,6 +12,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import mil.army.usace.hec.cumulus.client.model.Download;
@@ -115,6 +118,16 @@ class TestDownloadsController extends TestController{
                Files.deleteIfExists(outputFilePath);
            }
         }
+    }
+
+    @Test
+    void testSerialization() throws IOException {
+        ZonedDateTime start = ZonedDateTime.of(2022, 3, 24, 0,0,0,0, ZoneId.of("UTC"));
+        ZonedDateTime end = ZonedDateTime.of(2022, 3, 24, 1,0,0,0, ZoneId.of("UTC"));
+        List<String> productIds = new ArrayList<>();
+        productIds.add("fake_product");
+        productIds.add("fake_product2");
+        new DownloadsController().createDownloadRequest(start, end, "fake_watershed", productIds);
     }
 
     private Path createOutputDssPath() throws URISyntaxException {

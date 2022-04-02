@@ -6,9 +6,11 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
+import java.time.ZonedDateTime;
 import java.util.List;
 import mil.army.usace.hec.cumulus.client.model.CumulusObjectMapper;
 import mil.army.usace.hec.cumulus.client.model.Download;
+import mil.army.usace.hec.cumulus.client.model.DownloadRequest;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
 import mil.army.usace.hec.cwms.http.client.HttpRequestBuilderImpl;
 import mil.army.usace.hec.cwms.http.client.HttpRequestResponse;
@@ -63,5 +65,13 @@ public class DownloadsController {
             FileChannel fileChannel = fileOutputStream.getChannel();
             fileChannel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
         }
+    }
+
+    public void createDownloadRequest(ZonedDateTime start, ZonedDateTime end, String watershedId, List<String> productIds) throws IOException {
+        DownloadRequest downloadRequest = new DownloadRequest(start, end, watershedId, productIds.toArray(new String[]{}));
+        String json = CumulusObjectMapper.mapObjectToJson(downloadRequest);
+
+        //POST with this json string, which will return Download json, which then we map into Download object?
+        //THen pass that object into our download method to get Dss file ?
     }
 }
