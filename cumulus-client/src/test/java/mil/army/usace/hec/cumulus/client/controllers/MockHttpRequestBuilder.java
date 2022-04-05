@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import mil.army.usace.hec.cwms.http.client.EndpointInput;
 import mil.army.usace.hec.cwms.http.client.HttpRequestBuilder;
-import mil.army.usace.hec.cwms.http.client.HttpRequestResponse;
+import mil.army.usace.hec.cwms.http.client.request.HttpPostRequest;
+import mil.army.usace.hec.cwms.http.client.request.HttpRequestMediaType;
 
 public class MockHttpRequestBuilder implements HttpRequestBuilder {
 
@@ -29,7 +30,12 @@ public class MockHttpRequestBuilder implements HttpRequestBuilder {
     }
 
     @Override
-    public HttpRequestResponse execute() {
+    public HttpPostRequest post() {
+        return null;
+    }
+
+    @Override
+    public HttpRequestMediaType get() {
         return null;
     }
 

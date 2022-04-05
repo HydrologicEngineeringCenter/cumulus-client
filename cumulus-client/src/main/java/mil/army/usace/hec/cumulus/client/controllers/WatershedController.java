@@ -1,5 +1,7 @@
 package mil.army.usace.hec.cumulus.client.controllers;
 
+import static mil.army.usace.hec.cumulus.client.controllers.CumulusEndpointConstants.ACCEPT_HEADER_V1;
+
 import java.io.IOException;
 import java.util.List;
 import mil.army.usace.hec.cumulus.client.model.CumulusObjectMapper;
@@ -24,6 +26,8 @@ public class WatershedController {
         throws IOException {
         HttpRequestResponse response =
             new HttpRequestBuilderImpl(apiConnectionInfo, WATERSHEDS_ENDPOINT + "/" + watershedEndpointInput.getWatershedId())
+                .get()
+                .withMediaType(ACCEPT_HEADER_V1)
                 .execute();
         return CumulusObjectMapper.mapJsonToObject(response.getBody(), Watershed.class);
     }
@@ -39,6 +43,8 @@ public class WatershedController {
         throws IOException {
         HttpRequestResponse response =
             new HttpRequestBuilderImpl(apiConnectionInfo, WATERSHEDS_ENDPOINT)
+                .get()
+                .withMediaType(ACCEPT_HEADER_V1)
                 .execute();
         return CumulusObjectMapper.mapJsonToListOfObjects(response.getBody(), Watershed.class);
     }
