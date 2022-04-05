@@ -1,0 +1,32 @@
+[
+  {
+    "id":"c785f4de-ab17-444b-b6e6-6f1ad16676e8",
+    "office_symbol":"LRN",
+    "slug":"cumberland-basin-river",
+    "name":"Cumberland Basin River",
+    "area_groups":[
+      "e3fd63a1-f19f-4bf3-b436-1c7086b7afe7"
+    ],
+    "bbox":[
+      662000,
+      1408000,
+      1172000,
+      1678000
+    ]
+  },
+  {
+    "id":"feda585b-1ba0-4b19-92ed-7195154b8052",
+    "office_symbol":"LRN",
+    "slug":"tennessee-cumberland-river",
+    "name":"Tennessee \u0026 Cumberland River",
+    "area_groups":[
+
+    ],
+    "bbox":[
+      642000,
+      1258000,
+      1300000,
+      1682000
+    ]
+  }
+]
