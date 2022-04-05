@@ -1,12 +1,13 @@
 package mil.army.usace.hec.cumulus.client.controllers;
 
+import static mil.army.usace.hec.cumulus.client.controllers.CumulusEndpointConstants.ACCEPT_HEADER_V1;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
-import java.time.ZonedDateTime;
 import java.util.List;
 import mil.army.usace.hec.cumulus.client.model.CumulusObjectMapper;
 import mil.army.usace.hec.cumulus.client.model.Download;
@@ -32,6 +33,8 @@ public class DownloadsController {
         throws IOException {
         HttpRequestResponse response =
             new HttpRequestBuilderImpl(apiConnectionInfo, DOWNLOADS_ENDPOINT + "/" + downloadsEndpointInput.getDownloadId())
+                .get()
+                .withMediaType(ACCEPT_HEADER_V1)
                 .execute();
         return CumulusObjectMapper.mapJsonToObject(response.getBody(), Download.class);
     }
@@ -47,6 +50,8 @@ public class DownloadsController {
         throws IOException {
         HttpRequestResponse response =
             new HttpRequestBuilderImpl(apiConnectionInfo, MY_DOWNLOADS_ENDPOINT)
+                .get()
+                .withMediaType(ACCEPT_HEADER_V1)
                 .execute();
         return CumulusObjectMapper.mapJsonToListOfObjects(response.getBody(), Download.class);
     }
@@ -67,11 +72,22 @@ public class DownloadsController {
         }
     }
 
-    public void createDownloadRequest(ZonedDateTime start, ZonedDateTime end, String watershedId, List<String> productIds) throws IOException {
-        DownloadRequest downloadRequest = new DownloadRequest(start, end, watershedId, productIds.toArray(new String[]{}));
-        String json = CumulusObjectMapper.mapObjectToJson(downloadRequest);
-
-        //POST with this json string, which will return Download json, which then we map into Download object?
-        //THen pass that object into our download method to get Dss file ?
+    /**
+     * Create a Download request
+     * @param apiConnectionInfo - connection info
+     * @param downloadRequest - Download Request object containing start, end, watershed ID, and product IDs
+     * @return Download object containing URL to DSS File
+     * @throws IOException - thrown if POST request fails
+     */
+    public Download createDownload(ApiConnectionInfo apiConnectionInfo, DownloadRequest downloadRequest)
+        throws IOException {
+        String jsonBody = CumulusObjectMapper.mapObjectToJson(downloadRequest);
+        HttpRequestResponse response =
+            new HttpRequestBuilderImpl(apiConnectionInfo, MY_DOWNLOADS_ENDPOINT)
+                .post()
+                .withBody(jsonBody)
+                .withMediaType(ACCEPT_HEADER_V1)
+                .execute();
+        return CumulusObjectMapper.mapJsonToObject(response.getBody(), Download.class);
     }
 }
