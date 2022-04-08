@@ -5,10 +5,13 @@ import static mil.army.usace.hec.cumulus.client.controllers.CumulusEndpointConst
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import mil.army.usace.hec.cumulus.client.model.CumulusObjectMapper;
 import mil.army.usace.hec.cumulus.client.model.Download;
 import mil.army.usace.hec.cumulus.client.model.DownloadRequest;
@@ -56,24 +59,18 @@ public class DownloadsController {
         return CumulusObjectMapper.mapJsonToListOfObjects(response.getBody(), Download.class);
     }
 
-    /**
-     * Download DSS to specified file.
-     *
-     * @param download - Download object containing dss file
-     * @param fileName - name of file to download to
-     * @throws IOException - thrown if download failed
-     */
-    public void downloadDssFile(Download download, String fileName) throws IOException {
-        URL url = new URL(download.getFile());
-        try (ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream());
-                FileOutputStream fileOutputStream = new FileOutputStream(fileName)) {
+    @Deprecated
+    void downloadDssFile(Download download, String fileName) throws IOException {
+        URLConnection connection = new URL(download.getFile()).openConnection();
+        try (ReadableByteChannel readableByteChannel = Channels.newChannel(connection.getInputStream());
+             FileOutputStream fileOutputStream = new FileOutputStream(fileName)) {
             FileChannel fileChannel = fileOutputStream.getChannel();
             fileChannel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
         }
     }
 
     /**
-     * Create a Download request
+     * Create a Download request.
      * @param apiConnectionInfo - connection info
      * @param downloadRequest - Download Request object containing start, end, watershed ID, and product IDs
      * @return Download object containing URL to DSS File
@@ -89,5 +86,25 @@ public class DownloadsController {
                 .withMediaType(ACCEPT_HEADER_V1)
                 .execute();
         return CumulusObjectMapper.mapJsonToObject(response.getBody(), Download.class);
+    }
+
+
+    /**
+     * Download File to specified local file location.
+     *
+     * @param apiConnectionInfo - connection info
+     * @param downloadRequest - Download Request object containing start, end, watershed ID, and product IDs
+     * @param pathToDownloadTo - path in which file will be downloaded to
+     * @throws IOException - thrown if download failed
+     */
+    public CumulusFileDownloader download(ApiConnectionInfo apiConnectionInfo, DownloadRequest downloadRequest, Path pathToDownloadTo)
+        throws IOException {
+
+        Download initialDownloadStatus = createDownload(apiConnectionInfo, downloadRequest);
+        final CumulusFileDownloader cumulusFileDownloader = new CumulusFileDownloader(apiConnectionInfo, initialDownloadStatus, pathToDownloadTo);
+        CompletableFuture
+            .supplyAsync(cumulusFileDownloader::generateDownloadableFile)
+            .thenAccept(cumulusFileDownloader::downloadFileToLocal);
+        return cumulusFileDownloader;
     }
 }

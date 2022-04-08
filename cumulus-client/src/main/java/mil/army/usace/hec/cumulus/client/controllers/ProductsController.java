@@ -89,6 +89,7 @@ public class ProductsController {
                 .get()
                 .withMediaType(ACCEPT_HEADER_V1)
                 .execute();
+
         return CumulusObjectMapper.mapJsonToObject(response.getBody(), ProductAvailability.class);
     }
 

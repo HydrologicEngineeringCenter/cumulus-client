@@ -187,6 +187,7 @@ class TestDownloadsController extends TestController{
     private void downloadToFile(ApiConnectionInfo apiConnectionInfo, DownloadRequest downloadRequest, String fileName) throws IOException {
         DownloadsController downloadsController = new DownloadsController();
         Download download = downloadsController.createDownload(apiConnectionInfo, downloadRequest);
+
         downloadsController.downloadDssFile(download, fileName);
     }
 
