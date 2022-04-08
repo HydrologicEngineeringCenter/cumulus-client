@@ -13,4 +13,6 @@ public interface CumulusDownloadListener {
     void bytesReadChanged(int bytesRead);
 
     void errorOccurred(IOException e);
+
+    void statusCheckChanged(int check);
 }

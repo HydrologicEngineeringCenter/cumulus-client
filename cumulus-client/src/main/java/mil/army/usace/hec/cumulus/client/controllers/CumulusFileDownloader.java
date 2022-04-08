@@ -25,12 +25,24 @@ public final class CumulusFileDownloader {
     private final ApiConnectionInfo apiConnectionInfo;
     private final Path pathToLocalFile;
 
+    /**
+     * Cumulus File Downloader.
+     *
+     * @param apiConnectionInfo - connection info
+     * @param download - Initial Download object
+     * @param pathToDownloadTo - path of file to download to
+     */
     public CumulusFileDownloader(ApiConnectionInfo apiConnectionInfo, Download download, Path pathToDownloadTo) {
         this.apiConnectionInfo = apiConnectionInfo;
         this.downloadsEndpointInput = new DownloadsEndpointInput(download.getId());
         this.pathToLocalFile = Objects.requireNonNull(pathToDownloadTo, "Local file path is required for download");
     }
 
+    /**
+     * Add Listener to CumulusFileDownloader object.
+     *
+     * @param listener - listener being added to receive notifications of status updates
+     */
     public void addListener(CumulusDownloadListener listener) {
         listeners.add(listener);
     }
@@ -44,19 +56,19 @@ public final class CumulusFileDownloader {
             downloadStatus = null;
             try {
                 downloadStatus = new DownloadsController().retrieveDownload(apiConnectionInfo, downloadsEndpointInput);
+                int progress = downloadStatus.getProgress();
+                notifyStatusCheckChanged(counter);
+                notifyStatusChanged(downloadStatus.getStatus());
+                notifyProgressChanged(progress);
+                elapsedTime = (new Date()).getTime() - startTime;
+                if (progress == 100 || elapsedTime > maxTimeInMillis) {
+                    break;
+                }
             } catch (IOException e) {
                 notifyErrorOccurred(e);
-                break;
-            }
-            int progress = downloadStatus.getProgress();
-            notifyStatusChanged(downloadStatus.getStatus());
-            notifyProgressChanged(progress);
-            elapsedTime = (new Date()).getTime() - startTime;
-            if (progress == 100 || elapsedTime > maxTimeInMillis) {
-                break;
             }
         }
-        return downloadStatus;
+        return downloadStatus; //once completed we return download status object containing URL of file
     }
 
     void downloadFileToLocal(Download downloadContainingFile) {
@@ -75,6 +87,12 @@ public final class CumulusFileDownloader {
             new CumulusDownloadByteChannel(readableByteChannel, this::notifyBytesRead);
             FileChannel fileChannel = fileOutputStream.getChannel();
             fileChannel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+        }
+    }
+
+    private void notifyStatusCheckChanged(int check) {
+        for (CumulusDownloadListener listener : listeners) {
+            listener.statusCheckChanged(check);
         }
     }
 

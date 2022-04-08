@@ -2,13 +2,7 @@ package mil.army.usace.hec.cumulus.client.controllers;
 
 import static mil.army.usace.hec.cumulus.client.controllers.CumulusEndpointConstants.ACCEPT_HEADER_V1;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -59,16 +53,6 @@ public class DownloadsController {
         return CumulusObjectMapper.mapJsonToListOfObjects(response.getBody(), Download.class);
     }
 
-    @Deprecated
-    void downloadDssFile(Download download, String fileName) throws IOException {
-        URLConnection connection = new URL(download.getFile()).openConnection();
-        try (ReadableByteChannel readableByteChannel = Channels.newChannel(connection.getInputStream());
-             FileOutputStream fileOutputStream = new FileOutputStream(fileName)) {
-            FileChannel fileChannel = fileOutputStream.getChannel();
-            fileChannel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
-        }
-    }
-
     /**
      * Create a Download request.
      * @param apiConnectionInfo - connection info
@@ -95,16 +79,21 @@ public class DownloadsController {
      * @param apiConnectionInfo - connection info
      * @param downloadRequest - Download Request object containing start, end, watershed ID, and product IDs
      * @param pathToDownloadTo - path in which file will be downloaded to
+     * @return CumulusFileDownloader - downloader object that can be listened to for status updates
      * @throws IOException - thrown if download failed
      */
     public CumulusFileDownloader download(ApiConnectionInfo apiConnectionInfo, DownloadRequest downloadRequest, Path pathToDownloadTo)
         throws IOException {
 
         Download initialDownloadStatus = createDownload(apiConnectionInfo, downloadRequest);
-        final CumulusFileDownloader cumulusFileDownloader = new CumulusFileDownloader(apiConnectionInfo, initialDownloadStatus, pathToDownloadTo);
+        CumulusFileDownloader cumulusFileDownloader = new CumulusFileDownloader(apiConnectionInfo, initialDownloadStatus, pathToDownloadTo);
+        asyncDownload(cumulusFileDownloader);
+        return cumulusFileDownloader;
+    }
+
+    private void asyncDownload(CumulusFileDownloader cumulusFileDownloader) {
         CompletableFuture
             .supplyAsync(cumulusFileDownloader::generateDownloadableFile)
             .thenAccept(cumulusFileDownloader::downloadFileToLocal);
-        return cumulusFileDownloader;
     }
 }
