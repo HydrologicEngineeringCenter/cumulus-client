@@ -18,8 +18,7 @@ import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
 
 public final class CumulusFileDownloader {
 
-    private static final int MAX_TRIES = 30;
-    private static final int MAX_ALLOWED_TIME_IN_SECONDS = 300;
+    private static final int MAX_ALLOWED_TIME_IN_SECONDS = 300; //5 minutes
     private final List<CumulusDownloadListener> listeners = new ArrayList<>();
     private final DownloadsEndpointInput downloadsEndpointInput;
     private final ApiConnectionInfo apiConnectionInfo;
@@ -49,21 +48,20 @@ public final class CumulusFileDownloader {
 
     Download generateDownloadableFile() {
         long startTime = System.currentTimeMillis();
-        long elapsedTime;
+        long elapsedTime = 0L;
         long maxTimeInMillis = TimeUnit.SECONDS.toMillis(MAX_ALLOWED_TIME_IN_SECONDS);
         Download downloadStatus = null;
-        for (int counter = 1; counter < MAX_TRIES; counter++) {
-            downloadStatus = null;
+        int counter = 0;
+        int progress = 0;
+        while (progress < 100 && elapsedTime <= maxTimeInMillis) {
+            counter++;
             try {
                 downloadStatus = new DownloadsController().retrieveDownload(apiConnectionInfo, downloadsEndpointInput);
-                int progress = downloadStatus.getProgress();
+                progress = downloadStatus.getProgress();
                 notifyStatusCheckChanged(counter);
                 notifyStatusChanged(downloadStatus.getStatus());
                 notifyProgressChanged(progress);
                 elapsedTime = (new Date()).getTime() - startTime;
-                if (progress == 100 || elapsedTime > maxTimeInMillis) {
-                    break;
-                }
             } catch (IOException e) {
                 notifyErrorOccurred(e);
             }
