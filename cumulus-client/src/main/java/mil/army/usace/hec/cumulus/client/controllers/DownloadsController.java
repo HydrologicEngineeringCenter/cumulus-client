@@ -4,7 +4,6 @@ import static mil.army.usace.hec.cumulus.client.controllers.CumulusEndpointConst
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import mil.army.usace.hec.cumulus.client.model.CumulusObjectMapper;
 import mil.army.usace.hec.cumulus.client.model.Download;
@@ -16,7 +15,6 @@ import mil.army.usace.hec.cwms.http.client.HttpRequestResponse;
 public class DownloadsController {
 
     private static final String DOWNLOADS_ENDPOINT = "downloads";
-    private static final String MY_DOWNLOADS_ENDPOINT = "my_downloads";
 
     /**
      * Retrieve Download (primarily used for obtaining download status).
@@ -37,23 +35,6 @@ public class DownloadsController {
     }
 
     /**
-     * Retrieve Downloads associated with logged-in user's account.
-     *
-     * @param apiConnectionInfo    - connection info
-     * @return List of Downloads
-     * @throws IOException - thrown if retrieve failed
-     */
-    public List<Download> retrieveMyDownloads(ApiConnectionInfo apiConnectionInfo)
-        throws IOException {
-        HttpRequestResponse response =
-            new HttpRequestBuilderImpl(apiConnectionInfo, MY_DOWNLOADS_ENDPOINT)
-                .get()
-                .withMediaType(ACCEPT_HEADER_V1)
-                .execute();
-        return CumulusObjectMapper.mapJsonToListOfObjects(response.getBody(), Download.class);
-    }
-
-    /**
      * Create a Download request.
      * @param apiConnectionInfo - connection info
      * @param downloadRequest - Download Request object containing start, end, watershed ID, and product IDs
@@ -64,7 +45,7 @@ public class DownloadsController {
         throws IOException {
         String jsonBody = CumulusObjectMapper.mapObjectToJson(downloadRequest);
         HttpRequestResponse response =
-            new HttpRequestBuilderImpl(apiConnectionInfo, MY_DOWNLOADS_ENDPOINT)
+            new HttpRequestBuilderImpl(apiConnectionInfo, DOWNLOADS_ENDPOINT)
                 .post()
                 .withBody(jsonBody)
                 .withMediaType(ACCEPT_HEADER_V1)
