@@ -81,8 +81,8 @@ class TestDownloadsController extends TestController{
         ZonedDateTime start = ZonedDateTime.of(2022, 4, 1, 1, 1, 1, 1, ZoneId.of("UTC"));
         ZonedDateTime end = ZonedDateTime.of(2022, 4, 1, 1, 6, 1, 1, ZoneId.of("UTC"));
         DownloadRequest downloadRequest = new DownloadRequest(start, end, watershedId, productIds);
-
-        Download download = new DownloadsController().createDownload(buildConnectionInfo(), downloadRequest);
+        String token = "";
+        Download download = new DownloadsController().createDownload(buildConnectionInfo(), downloadRequest, token);
         assertNotNull(download);
         assertEquals("597f6eca-6276-4993-bfeb-53cbbbba6f08", download.getId());
         assertEquals("853487e7-10bc-4e69-b3b2-4da33721ea3e", download.getSub());
@@ -111,7 +111,8 @@ class TestDownloadsController extends TestController{
         ZonedDateTime start = ZonedDateTime.of(2022, 3, 1, 14, 15, 22, 0, ZoneId.of("UTC"));
         ZonedDateTime end = ZonedDateTime.of(2022, 4, 1, 14, 45, 50, 0, ZoneId.of("UTC"));
         DownloadRequest downloadRequest = new DownloadRequest(start, end, watershedId, productIds);
-        CumulusFileDownloader fileDownloader = new DownloadsController().download(buildConnectionInfo(), downloadRequest, outputFilePath);
+        String token = "";
+        CumulusFileDownloader fileDownloader = new DownloadsController().download(buildConnectionInfo(), downloadRequest, outputFilePath, token);
         assertNotNull(fileDownloader); // CumulusFileDownloader is tested in its own test class, just ensure returned object is not null
     }
 

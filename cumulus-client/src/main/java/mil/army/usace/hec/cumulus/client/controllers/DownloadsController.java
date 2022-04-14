@@ -41,11 +41,12 @@ public class DownloadsController {
      * @return Download object containing URL to DSS File
      * @throws IOException - thrown if POST request fails
      */
-    public Download createDownload(ApiConnectionInfo apiConnectionInfo, DownloadRequest downloadRequest)
+    public Download createDownload(ApiConnectionInfo apiConnectionInfo, DownloadRequest downloadRequest, String token)
         throws IOException {
         String jsonBody = CumulusObjectMapper.mapObjectToJson(downloadRequest);
         HttpRequestResponse response =
             new HttpRequestBuilderImpl(apiConnectionInfo, DOWNLOADS_ENDPOINT)
+                .addQueryHeader("Authorization", token)
                 .post()
                 .withBody(jsonBody)
                 .withMediaType(ACCEPT_HEADER_V1)
@@ -63,10 +64,10 @@ public class DownloadsController {
      * @return CumulusFileDownloader - downloader object that can be listened to for status updates
      * @throws IOException - thrown if download failed
      */
-    public CumulusFileDownloader download(ApiConnectionInfo apiConnectionInfo, DownloadRequest downloadRequest, Path pathToDownloadTo)
+    public CumulusFileDownloader download(ApiConnectionInfo apiConnectionInfo, DownloadRequest downloadRequest, Path pathToDownloadTo, String token)
         throws IOException {
 
-        Download initialDownloadStatus = createDownload(apiConnectionInfo, downloadRequest);
+        Download initialDownloadStatus = createDownload(apiConnectionInfo, downloadRequest, token);
         CumulusFileDownloader cumulusFileDownloader = new CumulusFileDownloader(apiConnectionInfo, initialDownloadStatus, pathToDownloadTo);
         asyncDownload(cumulusFileDownloader);
         return cumulusFileDownloader;

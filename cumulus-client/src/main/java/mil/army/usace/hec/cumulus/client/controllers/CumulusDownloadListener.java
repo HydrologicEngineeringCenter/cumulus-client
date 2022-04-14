@@ -6,7 +6,7 @@ public interface CumulusDownloadListener {
 
     void statusChanged(String status);
 
-    void progressChanged(Integer progress);
+    void progressChanged(int progress);
 
     void fileSizeSpecified(int fileSize);
 

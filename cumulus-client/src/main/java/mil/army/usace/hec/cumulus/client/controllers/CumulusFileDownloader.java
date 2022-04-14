@@ -112,7 +112,7 @@ public final class CumulusFileDownloader {
         }
     }
 
-    private void notifyProgressChanged(Integer progress) {
+    private void notifyProgressChanged(int progress) {
         for (CumulusDownloadListener listener : listeners) {
             listener.progressChanged(progress);
         }
