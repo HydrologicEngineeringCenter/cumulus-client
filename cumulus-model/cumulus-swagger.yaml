@@ -2,22 +2,17 @@ openapi: 3.0.2
 info:
   title: Cumulus REST API
   version: 1.0.0
-  description: |-
-    Realtime processing engine and REST API to support hydrologic modeling
-
-    # Authentication
-
-    <!-- ReDoc-Inject: <security-definitions> -->
+  description: Realtime processing engine and REST API to support hydrologic modeling
   contact:
     name: Cumulus API Support
-    url: https://github.com/USACE/cumulus/issues
+    url: 'https://github.com/USACE/cumulus/issues'
     email: support@example.com
 servers:
-  - url: https://cumulus-api.corps.cloud
+  - url: 'https://cumulus-api.corps.cloud'
     description: Stable API
-  - url: https://develop-cumulus-api.corps.cloud
+  - url: 'https://develop-cumulus-api.corps.cloud'
     description: Development API
-  - url: http://localhost
+  - url: 'http://localhost'
     description: Local Development API
 components:
   schemas:
@@ -75,7 +70,7 @@ components:
           status_id: 4e949624-bc0f-439e-a9f2-25a23938812c
           status: SUCCESS
           progress: 100
-          file: https://cumulus-api.corps.cloud/path/to/file.dss
+          file: 'https://cumulus-api.corps.cloud/path/to/file.dss'
           processing_start: '2022-03-01T14:15:22Z'
           processing_end: '2022-03-01T14:45:50Z'
           watershed_slug: genesee-river
@@ -315,7 +310,7 @@ paths:
         - Bearer: []
         - API-Key: []
       x-internal: true
-  /acquirables/{acquirable_id}/files:
+  '/acquirables/{acquirable_id}/files':
     get:
       tags:
         - Acquirables
@@ -357,31 +352,31 @@ paths:
                   example-1:
                     - id: 17fd4f85-01ea-4242-85b6-19d7220bac73
                       datetime: '2022-03-01T12:30:00Z'
-                      file: https://api.rsgis.dev/cumulus/acquirables/prism-ppt-early/PRISM_ppt_early_4kmD2_20220301_bil.zip
+                      file: 'https://api.rsgis.dev/cumulus/acquirables/prism-ppt-early/PRISM_ppt_early_4kmD2_20220301_bil.zip'
                       create_date: '2022-03-02T12:30:04.215549Z'
                       process_date: null
                       acquirable_id: 099916d1-83af-48ed-85d7-6688ae96023d
                     - id: d72dbabf-9ab5-4c4b-8dff-fac8d05c6ebe
                       datetime: '2022-02-28T12:30:00Z'
-                      file: https://api.rsgis.dev/cumulus/acquirables/prism-ppt-early/PRISM_ppt_early_4kmD2_20220228_bil.zip
+                      file: 'https://api.rsgis.dev/cumulus/acquirables/prism-ppt-early/PRISM_ppt_early_4kmD2_20220228_bil.zip'
                       create_date: '2022-03-01T12:30:05.59972Z'
                       process_date: null
                       acquirable_id: 099916d1-83af-48ed-85d7-6688ae96023d
                     - id: e276881d-989b-4ff4-8f0c-c8f16460f8bb
                       datetime: '2022-03-02T12:30:00Z'
-                      file: https://api.rsgis.dev/cumulus/acquirables/prism-ppt-early/PRISM_ppt_early_4kmD2_20220302_bil.zip
+                      file: 'https://api.rsgis.dev/cumulus/acquirables/prism-ppt-early/PRISM_ppt_early_4kmD2_20220302_bil.zip'
                       create_date: '2022-03-03T12:30:05.578263Z'
                       process_date: null
                       acquirable_id: 099916d1-83af-48ed-85d7-6688ae96023d
                     - id: 8c6a5416-4f29-41de-9470-441b66ba9830
                       datetime: '2022-03-03T12:30:00Z'
-                      file: https://api.rsgis.dev/cumulus/acquirables/prism-ppt-early/PRISM_ppt_early_4kmD2_20220303_bil.zip
+                      file: 'https://api.rsgis.dev/cumulus/acquirables/prism-ppt-early/PRISM_ppt_early_4kmD2_20220303_bil.zip'
                       create_date: '2022-03-04T12:30:05.353424Z'
                       process_date: null
                       acquirable_id: 099916d1-83af-48ed-85d7-6688ae96023d
                     - id: e1ae26db-d04a-4121-8783-8ad1eac4a63b
                       datetime: '2022-03-04T12:30:00Z'
-                      file: https://api.rsgis.dev/cumulus/acquirables/prism-ppt-early/PRISM_ppt_early_4kmD2_20220304_bil.zip
+                      file: 'https://api.rsgis.dev/cumulus/acquirables/prism-ppt-early/PRISM_ppt_early_4kmD2_20220304_bil.zip'
                       create_date: '2022-03-05T12:30:05.297617Z'
                       process_date: null
                       acquirable_id: 099916d1-83af-48ed-85d7-6688ae96023d
@@ -503,7 +498,7 @@ paths:
       security:
         - Bearer: []
       summary: Create New Product
-  /products/{product_id}:
+  '/products/{product_id}':
     parameters:
       - name: product_id
         in: path
@@ -524,20 +519,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/product'
               example:
-                value:
-                  id: 757c809c-dda0-412b-9831-cb9bd0f62d1d
-                  slug: nohrsc-snodas-swe
-                  tags:
-                    - 57bda84f-ecec-4cd7-b3b1-c0c36f838a05
-                  name: NOHRSC Snodas SWE
-                  temporal_resolution: 86400
-                  temporal_duration: 0
-                  dss_fpart: SNODAS
-                  parameter_id: 683a55b9-4a94-46b5-9f47-26e66f3037a8
-                  parameter: SWE
-                  unit_id: e245d39f-3209-4e58-bfb7-4eae94b3f8dd
-                  unit: MM
-                  description: Snow Water Equivalent dataset produced by NOHRSC
+                $ref: '#/components/examples/productExample'
       operationId: get-product
       summary: Get Single Product
     put:
@@ -558,20 +540,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/product'
               example:
-                value:
-                  id: 757c809c-dda0-412b-9831-cb9bd0f62d1d
-                  slug: nohrsc-snodas-swe
-                  tags:
-                    - 57bda84f-ecec-4cd7-b3b1-c0c36f838a05
-                  name: NOHRSC Snodas SWE
-                  temporal_resolution: 86400
-                  temporal_duration: 0
-                  dss_fpart: SNODAS
-                  parameter_id: 683a55b9-4a94-46b5-9f47-26e66f3037a8
-                  parameter: SWE
-                  unit_id: e245d39f-3209-4e58-bfb7-4eae94b3f8dd
-                  unit: MM
-                  description: Snow Water Equivalent dataset produced by NOHRSC
+                $ref: '#/components/examples/productExample'
       operationId: update-product
       security:
         - Bearer: []
@@ -591,7 +560,7 @@ paths:
       security:
         - Bearer: []
       summary: Delete Product
-  /products/{product_id}/undelete:
+  '/products/{product_id}/undelete':
     parameters:
       - name: product_id
         in: path
@@ -612,24 +581,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/product'
               example:
-                value:
-                  id: 757c809c-dda0-412b-9831-cb9bd0f62d1d
-                  slug: nohrsc-snodas-swe
-                  tags:
-                    - 57bda84f-ecec-4cd7-b3b1-c0c36f838a05
-                  name: NOHRSC Snodas SWE
-                  temporal_resolution: 86400
-                  temporal_duration: 0
-                  dss_fpart: SNODAS
-                  parameter_id: 683a55b9-4a94-46b5-9f47-26e66f3037a8
-                  parameter: SWE
-                  unit_id: e245d39f-3209-4e58-bfb7-4eae94b3f8dd
-                  unit: MM
-                  description: Snow Water Equivalent dataset produced by NOHRSC
+                $ref: '#/components/examples/productExample'
       operationId: undo-delete-product
       security:
         - Bearer: []
-  /products/{product_id}/files:
+  '/products/{product_id}/files':
     get:
       tags:
         - Products
@@ -663,7 +619,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/productfiles'
       operationId: list-product-files
-  /products/{product_id}/availability:
+  '/products/{product_id}/availability':
     get:
       tags:
         - Products
@@ -736,7 +692,7 @@ paths:
       security:
         - Bearer: []
       operationId: create-tag
-  /tags/{tag_id}:
+  '/tags/{tag_id}':
     parameters:
       - name: tag_id
         in: path
@@ -773,7 +729,7 @@ paths:
       operationId: delete-tag
       security:
         - Bearer: []
-  /products/{product_id}/tags/{tag_id}:
+  '/products/{product_id}/tags/{tag_id}':
     post:
       tags:
         - Tags
@@ -802,20 +758,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/product'
               example:
-                value:
-                  id: 757c809c-dda0-412b-9831-cb9bd0f62d1d
-                  slug: nohrsc-snodas-swe
-                  tags:
-                    - 57bda84f-ecec-4cd7-b3b1-c0c36f838a05
-                  name: NOHRSC Snodas SWE
-                  temporal_resolution: 86400
-                  temporal_duration: 0
-                  dss_fpart: SNODAS
-                  parameter_id: 683a55b9-4a94-46b5-9f47-26e66f3037a8
-                  parameter: SWE
-                  unit_id: e245d39f-3209-4e58-bfb7-4eae94b3f8dd
-                  unit: MM
-                  description: Snow Water Equivalent dataset produced by NOHRSC
+                $ref: '#/components/examples/productExample'
       operationId: add-tag-to-product
       security:
         - Bearer: []
@@ -847,20 +790,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/product'
               example:
-                value:
-                  id: 757c809c-dda0-412b-9831-cb9bd0f62d1d
-                  slug: nohrsc-snodas-swe
-                  tags:
-                    - 57bda84f-ecec-4cd7-b3b1-c0c36f838a05
-                  name: NOHRSC Snodas SWE
-                  temporal_resolution: 86400
-                  temporal_duration: 0
-                  dss_fpart: SNODAS
-                  parameter_id: 683a55b9-4a94-46b5-9f47-26e66f3037a8
-                  parameter: SWE
-                  unit_id: e245d39f-3209-4e58-bfb7-4eae94b3f8dd
-                  unit: MM
-                  description: Snow Water Equivalent dataset produced by NOHRSC
+                $ref: '#/components/examples/productExample'
       operationId: remove-tag-from-product
       security:
         - Bearer: []
@@ -918,7 +848,7 @@ paths:
       security:
         - Bearer: []
       operationId: create-download
-  /downloads/{download_id}:
+  '/downloads/{download_id}':
     parameters:
       - name: download_id
         in: path
@@ -951,7 +881,7 @@ paths:
                     status_id: 4e949624-bc0f-439e-a9f2-25a23938812c
                     status: SUCCESS
                     progress: 100
-                    file: https://cumulus-api.corps.cloud/path/to/file.dss
+                    file: 'https://cumulus-api.corps.cloud/path/to/file.dss'
                     processing_start: '2022-03-01T14:15:22Z'
                     processing_end: '2022-03-01T14:45:50Z'
                     watershed_slug: genesee-river
@@ -975,7 +905,7 @@ paths:
       security:
         - API-Key: []
       summary: Update Download Status
-  /downloads/{download_id}/packager_request:
+  '/downloads/{download_id}/packager_request':
     parameters:
       - name: download_id
         in: path
@@ -1027,7 +957,7 @@ paths:
       description: List downloads associated with logged-in user's account
       responses:
         '200':
-          description: List of Downloads, All Belong to Logged-In User
+          description: 'List of Downloads, All Belong to Logged-In User'
           content:
             application/json:
               schema:
@@ -1064,7 +994,7 @@ paths:
       security:
         - Bearer: []
       description: Create New Watershed
-  /watersheds/{watershed_id}:
+  '/watersheds/{watershed_id}':
     parameters:
       - name: watershed_id
         in: path
@@ -1112,7 +1042,7 @@ paths:
                 type: object
       operationId: delete-watershed
       description: Delete Watershed
-  /watersheds/{watershed_id}/undelete:
+  '/watersheds/{watershed_id}/undelete':
     parameters:
       - name: watershed_id
         in: path
@@ -1153,7 +1083,7 @@ paths:
                   type: object
       operationId: list-my-watersheds
       deprecated: true
-  /my_watersheds/{watershed_id}:
+  '/my_watersheds/{watershed_id}':
     parameters:
       - name: watershed_id
         in: path
