@@ -81,7 +81,7 @@ class TestDownloadsController extends TestController{
         ZonedDateTime start = ZonedDateTime.of(2022, 4, 1, 1, 1, 1, 1, ZoneId.of("UTC"));
         ZonedDateTime end = ZonedDateTime.of(2022, 4, 1, 1, 6, 1, 1, ZoneId.of("UTC"));
         DownloadRequest downloadRequest = new DownloadRequest(start, end, watershedId, productIds);
-        String token = "";
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiVXNlciIsImlzcyI6IlNpbXBsZSBTb2x1dGlvbiIsInVzZXJuYW1lIjoiVGVzdFVzZXIifQ.jQUKIOxN0KGbIGJx8SU3WfSVPNASOnRtt3DcoMVBeThcWGzEBAnwlHHYRvbzuas-sOeWSvOwrnsvpQ5tywAfWA";
         Download download = new DownloadsController().createDownload(buildConnectionInfo(), downloadRequest, token);
         assertNotNull(download);
         assertEquals("597f6eca-6276-4993-bfeb-53cbbbba6f08", download.getId());
@@ -111,18 +111,16 @@ class TestDownloadsController extends TestController{
         ZonedDateTime start = ZonedDateTime.of(2022, 3, 1, 14, 15, 22, 0, ZoneId.of("UTC"));
         ZonedDateTime end = ZonedDateTime.of(2022, 4, 1, 14, 45, 50, 0, ZoneId.of("UTC"));
         DownloadRequest downloadRequest = new DownloadRequest(start, end, watershedId, productIds);
-        String token = "";
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiVXNlciIsImlzcyI6IlNpbXBsZSBTb2x1dGlvbiIsInVzZXJuYW1lIjoiVGVzdFVzZXIifQ.jQUKIOxN0KGbIGJx8SU3WfSVPNASOnRtt3DcoMVBeThcWGzEBAnwlHHYRvbzuas-sOeWSvOwrnsvpQ5tywAfWA";
         CumulusFileDownloader fileDownloader = new DownloadsController().download(buildConnectionInfo(), downloadRequest, outputFilePath, token);
         assertNotNull(fileDownloader); // CumulusFileDownloader is tested in its own test class, just ensure returned object is not null
     }
 
     @Test
     void testMockAsyncDownload() throws IOException, ExecutionException, InterruptedException {
-        String outputContents = readFile(outputFilePath);
         CompletableFuture<Void> future = mockDownload(buildConnectionInfo(), outputFilePath);
-        assertEquals("", outputContents); //because of async process, nothing has been downloaded yet
         future.get(); //once async download process finishes, we should have downloaded file
-        outputContents = readFile(outputFilePath);
+        String outputContents = readFile(outputFilePath);
         assertEquals("This is a test file", outputContents);
     }
 

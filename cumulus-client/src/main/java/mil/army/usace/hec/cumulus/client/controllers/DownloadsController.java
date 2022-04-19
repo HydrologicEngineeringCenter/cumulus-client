@@ -2,6 +2,7 @@ package mil.army.usace.hec.cumulus.client.controllers;
 
 import static mil.army.usace.hec.cumulus.client.controllers.CumulusEndpointConstants.ACCEPT_HEADER_V1;
 
+import hec.army.usace.hec.cumulus.http.client.AuthenticatedHttpRequestBuilderImpl;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
@@ -45,8 +46,7 @@ public class DownloadsController {
         throws IOException {
         String jsonBody = CumulusObjectMapper.mapObjectToJson(downloadRequest);
         HttpRequestResponse response =
-            new HttpRequestBuilderImpl(apiConnectionInfo, DOWNLOADS_ENDPOINT)
-                .addQueryHeader("Authorization", token)
+            new AuthenticatedHttpRequestBuilderImpl(apiConnectionInfo, DOWNLOADS_ENDPOINT, token)
                 .post()
                 .withBody(jsonBody)
                 .withMediaType(ACCEPT_HEADER_V1)
