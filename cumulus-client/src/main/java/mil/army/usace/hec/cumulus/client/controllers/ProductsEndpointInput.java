@@ -19,7 +19,7 @@ public class ProductsEndpointInput extends EndpointInput {
      */
 
     public ProductsEndpointInput(String productId) {
-        this.productId = Objects.requireNonNull(productId, "Cannot access acquirable file without acquirable id");
+        this.productId = Objects.requireNonNull(productId, "Cannot access product end-point without product ID");
     }
 
     String getProductId() {
