@@ -1,0 +1,23 @@
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "slug": "testSlug",
+  "name": "product1",
+  "tags": [
+    "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  ],
+  "temporal_resolution": 1,
+  "temporal_duration": 2,
+  "dss_fpart": "MBRFC-FORECAST",
+  "parameter_id": "3fa85f64-5717-4562-b3fc-2c963f66afa7",
+  "parameter": "PARAM",
+  "unit_id": "3fa85f64-5717-4562-b3fc-2c963f66afa8",
+  "unit": "ft",
+  "description": "for testing purposes",
+  "suite_id":"91d87306-8eed-45ac-a41e-16d9429ca14c",
+  "suite":"Lower Mississippi River Forecast Center 06 hour QPF",
+  "label":"QPF",
+  "after":"2021-08-23T06:01:01Z",
+  "before":"2022-04-24T12:01:01Z",
+  "productfile_count":8500,
+  "last_forecast_version": "null"
+}
