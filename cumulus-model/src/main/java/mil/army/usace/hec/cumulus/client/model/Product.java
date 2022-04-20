@@ -337,6 +337,10 @@ public class Product {
 
     @Override
     public String toString() {
+        return getName();
+    }
+
+    public String toExtendedString() {
         StringBuilder sb = new StringBuilder();
         sb.append("class Product {\n");
 
