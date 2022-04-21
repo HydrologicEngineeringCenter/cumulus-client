@@ -28,7 +28,7 @@ public class AuthenticatedHttpRequestBuilderImpl extends HttpRequestBuilderImpl 
     //package scoped for testing
     void addTokenIfValid(String token) throws IOException {
         try {
-            JWT.decode(token); // needs more verification here
+            JWT.decode(token); // needs more verification here?
             addQueryHeader(AUTHORIZATION_HEADER, token);
         } catch (JWTDecodeException ex) {
             throw new IOException("Invalid JSON Web Token");

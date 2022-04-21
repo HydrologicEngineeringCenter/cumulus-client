@@ -19,7 +19,7 @@ publishing {
 }
 
 swaggerSources {
-    cwmsRadar {
+    cumulus {
         inputFile = file("cumulus-swagger.yaml")
         code {
             language = 'spring'
