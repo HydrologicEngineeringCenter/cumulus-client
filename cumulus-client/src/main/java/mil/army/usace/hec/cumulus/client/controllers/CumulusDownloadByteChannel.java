@@ -5,13 +5,13 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.util.function.IntConsumer;
 
-class CumulusDownloadByteChannel implements ReadableByteChannel {
+final class CumulusDownloadByteChannel implements ReadableByteChannel {
 
     private final ReadableByteChannel readableByteChannel;
     private final IntConsumer bytesReadConsumer;
     private int bytesReadSoFar;
 
-    public CumulusDownloadByteChannel(ReadableByteChannel readableByteChannel, IntConsumer bytesReadConsumer) {
+    CumulusDownloadByteChannel(ReadableByteChannel readableByteChannel, IntConsumer bytesReadConsumer) {
         this.readableByteChannel = readableByteChannel;
         this.bytesReadConsumer = bytesReadConsumer;
     }
@@ -23,7 +23,7 @@ class CumulusDownloadByteChannel implements ReadableByteChannel {
         return newBytesRead;
     }
 
-    protected void notifyBytesRead(int bytesRead) {
+    private void notifyBytesRead(int bytesRead) {
         if (bytesRead <= 0) {
             return;
         }

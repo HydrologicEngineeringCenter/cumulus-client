@@ -6,16 +6,31 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 /**
- * Download Request
+ * Download Request.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DownloadRequest {
 
-    public DownloadRequest(ZonedDateTime start, ZonedDateTime end, String watershedId, List<String> productIds) {
+    /**
+     * Download Request defining start/end times, watershed, and products for download.
+     * @param start - start of time window
+     * @param end - end of time window
+     * @param watershed - watershed
+     * @param products - list of products
+     */
+    public DownloadRequest(ZonedDateTime start, ZonedDateTime end, Watershed watershed, List<Product> products) {
         this.dateTimeStart = start;
         this.dateTimeEnd = end;
-        this.watershedId = watershedId;
-        this.productIds = productIds.toArray(new String[]{});
+        this.watershedId = watershed.getId();
+        this.productIds = buildProductIdList(products);
+    }
+
+    private String[] buildProductIdList(List<Product> products) {
+        String[] retVal = new String[products.size()];
+        for (int i = 0; i < products.size(); i++) {
+            retVal[i] = products.get(i).getId();
+        }
+        return retVal;
     }
 
     @JsonProperty("datetime_start")

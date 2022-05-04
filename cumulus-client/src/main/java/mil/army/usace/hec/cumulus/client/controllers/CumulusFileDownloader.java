@@ -63,19 +63,24 @@ public final class CumulusFileDownloader {
                 notifyProgressChanged(progress);
                 elapsedTime = (new Date()).getTime() - startTime;
             } catch (IOException e) {
-                notifyErrorOccurred(e);
+                notifyErrorOccurred(new IOException(e.getLocalizedMessage()));
             }
+        }
+        if (downloadStatus != null && downloadStatus.getProgress() < 100) {
+            notifyErrorOccurred(new IOException("Download timed out"));
         }
         return downloadStatus; //once completed we return download status object containing URL of file
     }
 
     void downloadFileToLocal(Download downloadContainingFile) {
-        try {
-            URLConnection connection = new URL(downloadContainingFile.getFile()).openConnection();
-            notifyFileSizeSpecified(connection.getContentLength());
-            readFileFromUrlToLocal(connection);
-        } catch (IOException e) {
-            notifyErrorOccurred(e);
+        if (downloadContainingFile.getProgress() == 100) {
+            try {
+                URLConnection connection = new URL(downloadContainingFile.getFile()).openConnection();
+                notifyFileSizeSpecified(connection.getContentLength());
+                readFileFromUrlToLocal(connection);
+            } catch (IOException e) {
+                notifyErrorOccurred(e);
+            }
         }
     }
 

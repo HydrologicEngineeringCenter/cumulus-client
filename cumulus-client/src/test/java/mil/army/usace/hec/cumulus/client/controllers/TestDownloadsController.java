@@ -22,6 +22,8 @@ import java.util.concurrent.ExecutionException;
 import mil.army.usace.hec.cumulus.client.model.CumulusObjectMapper;
 import mil.army.usace.hec.cumulus.client.model.Download;
 import mil.army.usace.hec.cumulus.client.model.DownloadRequest;
+import mil.army.usace.hec.cumulus.client.model.Product;
+import mil.army.usace.hec.cumulus.client.model.Watershed;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -75,12 +77,15 @@ class TestDownloadsController extends TestController{
     void testCreateDownload() throws IOException {
         String resource = "cumulus/json/created_download.json";
         launchMockServerWithResource(resource);
-        String watershedId = "95e7713a-ccd6-432d-b2f0-972422511171";
-        List<String> productIds = new ArrayList<>();
-        productIds.add("74756f41-75e2-40ce-b91a-fda5aeb441fc");
+        Watershed watershed = new Watershed();
+        watershed.setId("95e7713a-ccd6-432d-b2f0-972422511171");
+        List<Product> products = new ArrayList<>();
+        Product product = new Product();
+        product.setId("74756f41-75e2-40ce-b91a-fda5aeb441fc");
+        products.add(product);
         ZonedDateTime start = ZonedDateTime.of(2022, 4, 1, 1, 1, 1, 1, ZoneId.of("UTC"));
         ZonedDateTime end = ZonedDateTime.of(2022, 4, 1, 1, 6, 1, 1, ZoneId.of("UTC"));
-        DownloadRequest downloadRequest = new DownloadRequest(start, end, watershedId, productIds);
+        DownloadRequest downloadRequest = new DownloadRequest(start, end, watershed, products);
         String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiVXNlciIsImlzcyI6IlNpbXBsZSBTb2x1dGlvbiIsInVzZXJuYW1lIjoiVGVzdFVzZXIifQ.jQUKIOxN0KGbIGJx8SU3WfSVPNASOnRtt3DcoMVBeThcWGzEBAnwlHHYRvbzuas-sOeWSvOwrnsvpQ5tywAfWA";
         Download download = new DownloadsController().createDownload(buildConnectionInfo(), downloadRequest, token);
         assertNotNull(download);
@@ -105,12 +110,15 @@ class TestDownloadsController extends TestController{
     void testDownload() throws IOException {
         String resource = "cumulus/json/created_download.json";
         launchMockServerWithResource(resource);
-        String watershedId = "95e7713a-ccd6-432d-b2f0-972422511171";
-        List<String> productIds = new ArrayList<>();
-        productIds.add("74756f41-75e2-40ce-b91a-fda5aeb441fc");
+        Watershed watershed = new Watershed();
+        watershed.setId("95e7713a-ccd6-432d-b2f0-972422511171");
+        List<Product> products = new ArrayList<>();
+        Product product = new Product();
+        product.setId("74756f41-75e2-40ce-b91a-fda5aeb441fc");
+        products.add(product);
         ZonedDateTime start = ZonedDateTime.of(2022, 3, 1, 14, 15, 22, 0, ZoneId.of("UTC"));
         ZonedDateTime end = ZonedDateTime.of(2022, 4, 1, 14, 45, 50, 0, ZoneId.of("UTC"));
-        DownloadRequest downloadRequest = new DownloadRequest(start, end, watershedId, productIds);
+        DownloadRequest downloadRequest = new DownloadRequest(start, end, watershed, products);
         String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiVXNlciIsImlzcyI6IlNpbXBsZSBTb2x1dGlvbiIsInVzZXJuYW1lIjoiVGVzdFVzZXIifQ.jQUKIOxN0KGbIGJx8SU3WfSVPNASOnRtt3DcoMVBeThcWGzEBAnwlHHYRvbzuas-sOeWSvOwrnsvpQ5tywAfWA";
         CumulusFileDownloader fileDownloader = new DownloadsController().download(buildConnectionInfo(), downloadRequest, outputFilePath, token);
         assertNotNull(fileDownloader); // CumulusFileDownloader is tested in its own test class, just ensure returned object is not null

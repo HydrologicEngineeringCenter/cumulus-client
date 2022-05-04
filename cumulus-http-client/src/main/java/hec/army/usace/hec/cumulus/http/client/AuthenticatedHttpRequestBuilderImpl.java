@@ -2,7 +2,9 @@ package hec.army.usace.hec.cumulus.http.client;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import java.io.IOException;
+import java.util.Date;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
 import mil.army.usace.hec.cwms.http.client.HttpRequestBuilderImpl;
 
@@ -28,7 +30,11 @@ public class AuthenticatedHttpRequestBuilderImpl extends HttpRequestBuilderImpl 
     //package scoped for testing
     void addTokenIfValid(String token) throws IOException {
         try {
-            JWT.decode(token); // needs more verification here?
+            DecodedJWT decodedToken = JWT.decode(token);
+            Date expiration = decodedToken.getExpiresAt();
+            if (expiration != null && expiration.before(Date.from(java.time.ZonedDateTime.now().toInstant()))) {
+                throw new IOException("Token is expired");
+            }
             addQueryHeader(AUTHORIZATION_HEADER, token);
         } catch (JWTDecodeException ex) {
             throw new IOException("Invalid JSON Web Token");
