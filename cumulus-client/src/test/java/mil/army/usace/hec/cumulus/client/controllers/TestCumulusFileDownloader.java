@@ -4,15 +4,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.io.InputStream;
 import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import mil.army.usace.hec.cumulus.client.model.CumulusObjectMapper;
 import mil.army.usace.hec.cumulus.client.model.Download;
 import org.junit.jupiter.api.AfterEach;
@@ -24,15 +28,20 @@ class TestCumulusFileDownloader extends TestController{
     private static Path outputFilePath;
 
     @BeforeEach
-    void buildFilePath() throws IOException, URISyntaxException {
-        outputFilePath = createOutputDssPath();
+    void buildFilePath() throws IOException {
+        outputFilePath = createOutputFilePath();
     }
 
     @AfterEach
     void clearFilePath() throws IOException {
         if(outputFilePath != null) {
-            Files.deleteIfExists(Paths.get(outputFilePath + "/forecast.dss"));
             Files.deleteIfExists(outputFilePath);
+            Path cumulusDir = Paths.get(System.getProperty("user.dir"), "cumulus");
+            Path dssDir = Paths.get(System.getProperty("user.dir"), "cumulus/dss");
+            Path outputDir = Paths.get(System.getProperty("user.dir"), "cumulus/dss/output");
+            Files.deleteIfExists(outputDir);
+            Files.deleteIfExists(dssDir);
+            Files.deleteIfExists(cumulusDir);
         }
     }
 
@@ -49,23 +58,46 @@ class TestCumulusFileDownloader extends TestController{
         assertEquals(createdDownload.getId(), downloadStatus.getId());
         assertEquals(100, downloadStatus.getProgress());
         assertEquals("SUCCESS", downloadStatus.getStatus());
-        assertEquals("file:/J:/git/cumulus-client/cumulus-client/build/resources/test/cumulus/dss/input/forecast.dss", downloadStatus.getFile());
+        assertEquals("cumulus/dss/input/forecast.dss", downloadStatus.getFile());
     }
 
     @Test
     void testDownloadToLocalFile() throws IOException {
-        String initialCreatedDownload = "cumulus/json/created_download.json";
         String completedDownloadResource = "cumulus/json/completed_download.json";
-
-        Download createdDownload = getDownloadFromResource(initialCreatedDownload);
         Download completedDownload = getDownloadFromResource(completedDownloadResource);
-        CumulusFileDownloader fileDownloader = new CumulusFileDownloader(
-            buildConnectionInfo(), createdDownload, outputFilePath);
 
-        fileDownloader.downloadFileToLocal(completedDownload);
+        mockDownloadFileToLocal(completedDownload);
         String outputContents = readFile(outputFilePath);
 
         assertEquals("This is a test file", outputContents);
+    }
+
+    private void mockDownloadFileToLocal(Download downloadContainingFile) throws IOException {
+        String file = getMockedGeneratedFile(downloadContainingFile.getFile());
+        try {
+            URL url = new File(file).toURI().toURL();
+            InputStream inputStream = url.openStream();
+            mockReadFileFromUrlToLocal(inputStream);
+        } catch (IOException e) {
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Error downloading file to output file location", e);
+        }
+    }
+
+    private void mockReadFileFromUrlToLocal(InputStream inputStream) throws IOException {
+        try (ReadableByteChannel readableByteChannel = Channels.newChannel(inputStream);
+             FileOutputStream fileOutputStream = new FileOutputStream(outputFilePath.toString())) {
+
+            FileChannel fileChannel = fileOutputStream.getChannel();
+            fileChannel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+        }
+    }
+
+    private String getMockedGeneratedFile(String resource) throws IOException {
+        URL resourceUrl = getClass().getClassLoader().getResource(resource);
+        if (resourceUrl == null) {
+            throw new IOException("Failed to get resource: " + resource);
+        }
+        return new File(resourceUrl.getFile()).toString();
     }
 
     private Download getDownloadFromResource(String resource) throws IOException {
@@ -78,12 +110,14 @@ class TestCumulusFileDownloader extends TestController{
         return CumulusObjectMapper.mapJsonToObject(createdDownloadJson, Download.class);
     }
 
-    private Path createOutputDssPath() throws URISyntaxException, IOException {
-        URI outputDssURI = Objects.requireNonNull(getClass().getClassLoader().getResource("cumulus/dss/output")).toURI();
-        String mainPath = Paths.get(outputDssURI).toString();
+    private Path createOutputFilePath() throws IOException {
+        String mainPath = Paths.get(System.getProperty("user.dir"), "cumulus/dss/output").toString();
         Path path = Paths.get(mainPath);
         if (!Files.exists(path)) {
-            Files.createDirectory(path);
+            boolean success = path.toFile().mkdirs();
+            if(!success) {
+                throw new IOException("Failed to create output file path");
+            }
         }
         path = Paths.get(path + "/downloaded_forecast.dss");
         return Paths.get(path.toAbsolutePath().toString());
@@ -95,4 +129,5 @@ class TestCumulusFileDownloader extends TestController{
         byte[] encoded = Files.readAllBytes(path);
         return new String(encoded, StandardCharsets.UTF_8);
     }
+
 }

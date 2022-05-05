@@ -1,9 +1,10 @@
 package mil.army.usace.hec.cumulus.client.controllers;
 
+import hec.army.usace.hec.cumulus.http.client.CumulusFileDownloadUtil;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
@@ -13,16 +14,21 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import mil.army.usace.hec.cumulus.client.model.Download;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
 
 public final class CumulusFileDownloader {
 
-    private static final int MAX_ALLOWED_TIME_IN_SECONDS = 300; //5 minutes
+    private static final Logger LOGGER = Logger.getLogger(CumulusFileDownloader.class.getName());
+    private static final int MAX_ALLOWED_TIME_SECONDS = 300;
+    private static final String PROGRESS_INTERVAL_PROPERTY_KEY = "cumulus.progress.interval.millis";
     private final List<CumulusDownloadListener> listeners = new ArrayList<>();
     private final DownloadsEndpointInput downloadsEndpointInput;
     private final ApiConnectionInfo apiConnectionInfo;
     private final Path pathToLocalFile;
+    private final int progressInterval;
 
     /**
      * Cumulus File Downloader.
@@ -31,10 +37,20 @@ public final class CumulusFileDownloader {
      * @param download - Initial Download object
      * @param pathToDownloadTo - path of file to download to
      */
-    public CumulusFileDownloader(ApiConnectionInfo apiConnectionInfo, Download download, Path pathToDownloadTo) {
+    public CumulusFileDownloader(ApiConnectionInfo apiConnectionInfo, Download download, Path pathToDownloadTo) throws IOException {
         this.apiConnectionInfo = apiConnectionInfo;
         this.downloadsEndpointInput = new DownloadsEndpointInput(download.getId());
-        this.pathToLocalFile = Objects.requireNonNull(pathToDownloadTo, "Local file path is required for download");
+        try {
+            this.pathToLocalFile = Objects.requireNonNull(pathToDownloadTo, "Local file path is required for download");
+        } catch (NullPointerException ex) {
+            throw new IOException(ex.getMessage());
+        }
+        String progressIntervalVal = System.getProperty(PROGRESS_INTERVAL_PROPERTY_KEY);
+        if (progressIntervalVal == null) {
+            progressIntervalVal = "500";
+            System.setProperty(PROGRESS_INTERVAL_PROPERTY_KEY, progressIntervalVal);
+        }
+        this.progressInterval = Integer.parseInt(progressIntervalVal);
     }
 
     /**
@@ -48,22 +64,33 @@ public final class CumulusFileDownloader {
 
     Download generateDownloadableFile() {
         long startTime = System.currentTimeMillis();
-        long elapsedTime = 0L;
-        long maxTimeInMillis = TimeUnit.SECONDS.toMillis(MAX_ALLOWED_TIME_IN_SECONDS);
+        long elapsedTimeSinceProgressChanged = 0L;
+        long maxStallTimeInMillis = TimeUnit.SECONDS.toMillis(MAX_ALLOWED_TIME_SECONDS);
         Download downloadStatus = null;
         int counter = 0;
+        String file = null;
         int progress = 0;
-        while (progress < 100 && elapsedTime <= maxTimeInMillis) {
+        while (file == null && elapsedTimeSinceProgressChanged <= maxStallTimeInMillis) {
             counter++;
             try {
                 downloadStatus = new DownloadsController().retrieveDownload(apiConnectionInfo, downloadsEndpointInput);
-                progress = downloadStatus.getProgress();
+                file = downloadStatus.getFile();
                 notifyStatusCheckChanged(counter);
                 notifyStatusChanged(downloadStatus.getStatus());
-                notifyProgressChanged(progress);
-                elapsedTime = (new Date()).getTime() - startTime;
+                int newProgress = downloadStatus.getProgress();
+                if (newProgress > progress) { // if progress increased, set new timer to check for progress stall
+                    startTime = System.currentTimeMillis();
+                    progress = newProgress;
+                    notifyProgressChanged(newProgress);
+                }
+                elapsedTimeSinceProgressChanged = (new Date()).getTime() - startTime; //elapsed time since progress last changed
+                Thread.sleep(progressInterval);
             } catch (IOException e) {
                 notifyErrorOccurred(new IOException(e.getLocalizedMessage()));
+                LOGGER.log(Level.SEVERE, "Error Generating Download", e);
+            } catch (InterruptedException e) {
+                LOGGER.log(Level.FINE, "Interrupted wait between progress checks", e);
+                Thread.currentThread().interrupt();
             }
         }
         if (downloadStatus != null && downloadStatus.getProgress() < 100) {
@@ -73,19 +100,21 @@ public final class CumulusFileDownloader {
     }
 
     void downloadFileToLocal(Download downloadContainingFile) {
-        if (downloadContainingFile.getProgress() == 100) {
+        String file = downloadContainingFile.getFile();
+        if (file != null) {
             try {
-                URLConnection connection = new URL(downloadContainingFile.getFile()).openConnection();
-                notifyFileSizeSpecified(connection.getContentLength());
-                readFileFromUrlToLocal(connection);
+                URL url = new URL(file);
+                InputStream inputStream = CumulusFileDownloadUtil.getInputStream(url);
+                readFileFromUrlToLocal(inputStream);
             } catch (IOException e) {
                 notifyErrorOccurred(e);
+                LOGGER.log(Level.SEVERE, "Error downloading file to output file location", e);
             }
         }
     }
 
-    private void readFileFromUrlToLocal(URLConnection connection) throws IOException {
-        try (ReadableByteChannel readableByteChannel = Channels.newChannel(connection.getInputStream());
+    private void readFileFromUrlToLocal(InputStream inputStream) throws IOException {
+        try (ReadableByteChannel readableByteChannel = Channels.newChannel(inputStream);
              FileOutputStream fileOutputStream = new FileOutputStream(pathToLocalFile.toString())) {
             new CumulusDownloadByteChannel(readableByteChannel, this::notifyBytesRead);
             FileChannel fileChannel = fileOutputStream.getChannel();
@@ -96,12 +125,6 @@ public final class CumulusFileDownloader {
     private void notifyStatusCheckChanged(int check) {
         for (CumulusDownloadListener listener : listeners) {
             listener.statusCheckChanged(check);
-        }
-    }
-
-    private void notifyFileSizeSpecified(int fileSize) {
-        for (CumulusDownloadListener listener : listeners) {
-            listener.fileSizeSpecified(fileSize);
         }
     }
 

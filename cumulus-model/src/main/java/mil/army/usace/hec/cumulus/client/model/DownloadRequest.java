@@ -34,15 +34,15 @@ public class DownloadRequest {
     }
 
     @JsonProperty("datetime_start")
-    private ZonedDateTime dateTimeStart;
+    private final ZonedDateTime dateTimeStart;
 
     @JsonProperty("datetime_end")
-    private ZonedDateTime dateTimeEnd;
+    private final ZonedDateTime dateTimeEnd;
 
     @JsonProperty("watershed_id")
-    private String watershedId;
+    private final String watershedId;
 
     @JsonProperty("product_id")
-    private String[] productIds;
+    private final String[] productIds;
 
 }

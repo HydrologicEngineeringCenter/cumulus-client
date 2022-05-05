@@ -3,7 +3,6 @@ package mil.army.usace.hec.cumulus.client.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -246,26 +245,12 @@ public class Download {
             return false;
         }
         Download download = (Download) o;
-        return Objects.equals(getId(), download.getId()) && Objects.equals(getSub(), download.getSub()) &&
-            Objects.equals(getDateTimeStart(), download.getDateTimeStart()) &&
-            Objects.equals(getDateTimeEnd(), download.getDateTimeEnd()) &&
-            Objects.equals(getWatershedId(), download.getWatershedId()) && Arrays.equals(getProductId(), download.getProductId()) &&
-            Objects.equals(getStatusId(), download.getStatusId()) && Objects.equals(getStatus(), download.getStatus()) &&
-            Objects.equals(getProgress(), download.getProgress()) && Objects.equals(getFile(), download.getFile()) &&
-            Objects.equals(getProcessingStart(), download.getProcessingStart()) &&
-            Objects.equals(getProcessingEnd(), download.getProcessingEnd()) &&
-            Objects.equals(getWatershedSlug(), download.getWatershedSlug()) &&
-            Objects.equals(getWatershedName(), download.getWatershedName());
+        return Objects.equals(getId(), download.getId());
     }
 
     @Override
     public int hashCode() {
-        int result =
-            Objects.hash(getId(), getSub(), getDateTimeStart(), getDateTimeEnd(), getWatershedId(), getStatusId(), getStatus(), getProgress(),
-                getFile(),
-                getProcessingStart(), getProcessingEnd(), getWatershedSlug(), getWatershedName());
-        result = 31 * result + Arrays.hashCode(getProductId());
-        return result;
+        return Objects.hash(getId());
     }
 
     @Override

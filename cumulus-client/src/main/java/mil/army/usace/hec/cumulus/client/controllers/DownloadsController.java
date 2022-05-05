@@ -5,7 +5,6 @@ import static mil.army.usace.hec.cumulus.client.controllers.CumulusEndpointConst
 import hec.army.usace.hec.cumulus.http.client.AuthenticatedHttpRequestBuilderImpl;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.concurrent.CompletableFuture;
 import mil.army.usace.hec.cumulus.client.model.CumulusObjectMapper;
 import mil.army.usace.hec.cumulus.client.model.Download;
 import mil.army.usace.hec.cumulus.client.model.DownloadRequest;
@@ -18,7 +17,7 @@ public class DownloadsController {
     private static final String DOWNLOADS_ENDPOINT = "downloads";
 
     /**
-     * Retrieve Download (primarily used for obtaining download status).
+     * Retrieve Download (Used for obtaining download status).
      *
      * @param apiConnectionInfo    - connection info
      * @param downloadsEndpointInput - download endpoint input containing download id
@@ -69,13 +68,12 @@ public class DownloadsController {
 
         Download initialDownloadStatus = createDownload(apiConnectionInfo, downloadRequest, token);
         CumulusFileDownloader cumulusFileDownloader = new CumulusFileDownloader(apiConnectionInfo, initialDownloadStatus, pathToDownloadTo);
-        asyncDownload(cumulusFileDownloader);
+        performDownload(cumulusFileDownloader);
         return cumulusFileDownloader;
     }
 
-    private void asyncDownload(CumulusFileDownloader cumulusFileDownloader) {
-        CompletableFuture
-            .supplyAsync(cumulusFileDownloader::generateDownloadableFile)
-            .thenAccept(cumulusFileDownloader::downloadFileToLocal);
+    private void performDownload(CumulusFileDownloader cumulusFileDownloader) {
+        Download download = cumulusFileDownloader.generateDownloadableFile();
+        cumulusFileDownloader.downloadFileToLocal(download);
     }
 }

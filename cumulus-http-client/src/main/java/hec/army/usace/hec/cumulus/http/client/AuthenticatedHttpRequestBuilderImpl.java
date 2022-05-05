@@ -35,7 +35,7 @@ public class AuthenticatedHttpRequestBuilderImpl extends HttpRequestBuilderImpl 
             if (expiration != null && expiration.before(Date.from(java.time.ZonedDateTime.now().toInstant()))) {
                 throw new IOException("Token is expired");
             }
-            addQueryHeader(AUTHORIZATION_HEADER, token);
+            addQueryHeader(AUTHORIZATION_HEADER, "Bearer " + token);
         } catch (JWTDecodeException ex) {
             throw new IOException("Invalid JSON Web Token");
         }

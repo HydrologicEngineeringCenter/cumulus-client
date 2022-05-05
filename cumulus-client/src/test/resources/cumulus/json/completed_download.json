@@ -10,7 +10,7 @@
   "status_id": "5e949624-bc0f-439e-a9f2-25a23938812c",
   "status": "SUCCESS",
   "progress": 100,
-  "file": "file:/J:/git/cumulus-client/cumulus-client/build/resources/test/cumulus/dss/input/forecast.dss",
+  "file": "cumulus/dss/input/forecast.dss",
   "processing_start": "2022-03-01T14:15:22Z",
   "processing_end": "2022-03-01T14:45:50Z",
   "watershed_slug": "fake-river",

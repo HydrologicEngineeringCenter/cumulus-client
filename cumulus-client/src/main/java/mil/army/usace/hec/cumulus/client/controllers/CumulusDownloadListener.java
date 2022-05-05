@@ -8,8 +8,6 @@ public interface CumulusDownloadListener {
 
     void progressChanged(int progress);
 
-    void fileSizeSpecified(int fileSize);
-
     void bytesReadChanged(int bytesRead);
 
     void errorOccurred(IOException e);
