@@ -119,6 +119,7 @@ public final class CumulusFileDownloader {
             new CumulusDownloadByteChannel(readableByteChannel, this::notifyBytesRead);
             FileChannel fileChannel = fileOutputStream.getChannel();
             fileChannel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+            notifyStatusChanged("COMPLETE");
         }
     }
 
