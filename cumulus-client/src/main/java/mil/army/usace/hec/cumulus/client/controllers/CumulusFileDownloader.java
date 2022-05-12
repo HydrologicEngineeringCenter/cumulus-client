@@ -1,10 +1,8 @@
 package mil.army.usace.hec.cumulus.client.controllers;
 
-import hec.army.usace.hec.cumulus.http.client.CumulusFileDownloadUtil;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
@@ -18,6 +16,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import mil.army.usace.hec.cumulus.client.model.Download;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
+import mil.army.usace.hec.cwms.http.client.HttpRequestBuilderImpl;
+import mil.army.usace.hec.cwms.http.client.HttpRequestResponse;
+import mil.army.usace.hec.cwms.http.client.request.HttpRequestExecutor;
 
 public final class CumulusFileDownloader {
 
@@ -103,13 +104,22 @@ public final class CumulusFileDownloader {
         String file = downloadContainingFile.getFile();
         if (file != null) {
             try {
-                URL url = new URL(file);
-                InputStream inputStream = CumulusFileDownloadUtil.getInputStream(url);
-                readFileFromUrlToLocal(inputStream);
+                ApiConnectionInfo connectionInfo = new ApiConnectionInfo(file);
+                HttpRequestExecutor httpRequestExecutor = new HttpRequestBuilderImpl(connectionInfo, "")
+                    .get()
+                    .withMediaType("text/plain");
+                executeDownload(httpRequestExecutor);
             } catch (IOException e) {
                 notifyErrorOccurred(e);
                 LOGGER.log(Level.SEVERE, "Error downloading file to output file location", e);
             }
+        }
+    }
+
+    private void executeDownload(HttpRequestExecutor httpRequestExecutor) throws IOException {
+        try (HttpRequestResponse response = httpRequestExecutor.execute()) {
+            InputStream inputStream = response.getStream();
+            readFileFromUrlToLocal(inputStream);
         }
     }
 

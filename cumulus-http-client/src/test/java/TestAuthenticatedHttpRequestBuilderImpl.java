@@ -46,7 +46,7 @@ class TestAuthenticatedHttpRequestBuilderImpl {
     }
 
     @Test
-    void testContstructor() throws IOException {
+    void testConstructor() throws IOException {
         String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTA5ODg1NTksImV4cCI6MTY3MzUyMTg5NTksImF1ZCI6Ind3dy5leGFtcGxlLmNvbSIsInN1YiI6Impyb2NrZXRAZXhhbXBsZS5jb20iLCJHaXZlbk5hbWUiOiJKb2hubnkiLCJTdXJuYW1lIjoiUm9ja2V0IiwiRW1haWwiOiJqcm9ja2V0QGV4YW1wbGUuY29tIiwiUm9sZSI6WyJNYW5hZ2VyIiwiUHJvamVjdCBBZG1pbmlzdHJhdG9yIl19.PpctY-j5nshQWCRqPhP5OAq4wtdBs0OFBcgeNx16E_g";
         AuthenticatedHttpRequestBuilderImpl requestBuilder = new AuthenticatedHttpRequestBuilderImpl(buildConnectionInfo(), "endpoint", token);
         assertNotNull(requestBuilder);
