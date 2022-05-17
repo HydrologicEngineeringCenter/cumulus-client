@@ -52,7 +52,6 @@ public class AuthenticatedHttpRequestBuilderImpl extends HttpRequestBuilderImpl 
         String bufferMillisStr = System.getProperty(EXIPIRATION_BUFFER_KEY);
         if (bufferMillisStr == null) {
             bufferMillisStr = Integer.toString(DEFAULT_EXPIRATION_BUFFER_MILLIS);
-            System.setProperty(EXIPIRATION_BUFFER_KEY, bufferMillisStr);
         }
         return Integer.parseInt(bufferMillisStr);
     }

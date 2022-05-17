@@ -1,7 +1,6 @@
 package mil.army.usace.hec.cumulus.client.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -15,15 +14,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import mil.army.usace.hec.cumulus.client.model.CumulusObjectMapper;
 import mil.army.usace.hec.cumulus.client.model.Download;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class TestCumulusFileDownloader extends TestController{
+class TestCumulusFileDownloaderUtil extends TestController{
 
     private static Path outputFilePath;
 
@@ -46,50 +43,39 @@ class TestCumulusFileDownloader extends TestController{
     }
 
     @Test
-    void testGenerateDownloadableFile() throws IOException {
-        String initialCreatedDownload = "cumulus/json/created_download.json";
-        String completedDownloadResource = "cumulus/json/completed_download.json";
-        launchMockServerWithResource(completedDownloadResource);
-        Download createdDownload = getDownloadFromResource(initialCreatedDownload);
-        CumulusFileDownloader fileDownloader = new CumulusFileDownloader(
-            buildConnectionInfo(), createdDownload, outputFilePath);
-        Download downloadStatus = fileDownloader.generateDownloadableFile();
-        assertNotNull(downloadStatus);
-        assertEquals(createdDownload.getId(), downloadStatus.getId());
-        assertEquals(100, downloadStatus.getProgress());
-        assertEquals("SUCCESS", downloadStatus.getStatus());
-        assertEquals("cumulus/dss/input/forecast.dss", downloadStatus.getFile());
-    }
-
-    @Test
     void testDownloadToLocalFile() throws IOException {
         String completedDownloadResource = "cumulus/json/completed_download.json";
         Download completedDownload = getDownloadFromResource(completedDownloadResource);
 
-        mockDownloadFileToLocal(completedDownload);
+        mockDownloadFileToLocal(completedDownload, outputFilePath, buildDownloadListener());
         String outputContents = readFile(outputFilePath);
 
         assertEquals("This is a test file", outputContents);
     }
 
-    private void mockDownloadFileToLocal(Download downloadContainingFile) throws IOException {
+    private void mockDownloadFileToLocal(Download downloadContainingFile, Path pathToLocalFile, CumulusDssFileDownloadListener listener) throws IOException {
         String file = getMockedGeneratedFile(downloadContainingFile.getFile());
-        try {
-            URL url = new File(file).toURI().toURL();
-            InputStream inputStream = url.openStream();
-            mockReadFileFromUrlToLocal(inputStream);
-        } catch (IOException e) {
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Error downloading file to output file location", e);
+        if (pathToLocalFile == null) {
+            throw new IOException("Local file path is required for download");
         }
+        URL url = new File(file).toURI().toURL();
+        InputStream inputStream = url.openStream();
+        mockExecuteDownload(inputStream, downloadContainingFile, listener);
     }
 
-    private void mockReadFileFromUrlToLocal(InputStream inputStream) throws IOException {
+    private static void mockExecuteDownload(InputStream inputStream, Download downloadContainingFile, CumulusDssFileDownloadListener listener)
+        throws IOException {
+            mockReadFileFromUrlToLocal(inputStream, downloadContainingFile, listener);
+    }
+
+    private static void mockReadFileFromUrlToLocal(InputStream inputStream, Download downloadContainingFile, CumulusDssFileDownloadListener listener) throws IOException {
         try (ReadableByteChannel readableByteChannel = Channels.newChannel(inputStream);
              FileOutputStream fileOutputStream = new FileOutputStream(outputFilePath.toString())) {
-
+            CumulusDownloadByteChannel byteChannel = new CumulusDownloadByteChannel(readableByteChannel, downloadContainingFile, listener);
             FileChannel fileChannel = fileOutputStream.getChannel();
-            fileChannel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+            fileChannel.transferFrom(byteChannel, 0, Long.MAX_VALUE);
         }
+        listener.downloadComplete();
     }
 
     private String getMockedGeneratedFile(String resource) throws IOException {
@@ -100,8 +86,8 @@ class TestCumulusFileDownloader extends TestController{
         return new File(resourceUrl.getFile()).toString();
     }
 
-    private Download getDownloadFromResource(String resource) throws IOException {
-        URL resourceUrl = getClass().getClassLoader().getResource(resource);
+    static Download getDownloadFromResource(String resource) throws IOException {
+        URL resourceUrl = TestCumulusFileDownloaderUtil.class.getClassLoader().getResource(resource);
         if (resourceUrl == null) {
             throw new IOException("Failed to get resource: " + resource);
         }
@@ -130,4 +116,17 @@ class TestCumulusFileDownloader extends TestController{
         return new String(encoded, StandardCharsets.UTF_8);
     }
 
+    private CumulusDssFileDownloadListener buildDownloadListener() {
+        return new CumulusDssFileDownloadListener() {
+            @Override
+            public void bytesRead(Download downloadData, int currentBytesRead, int totalBytesRead) {
+                //noop
+            }
+
+            @Override
+            public void downloadComplete() {
+                //noop
+            }
+        };
+    }
 }

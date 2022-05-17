@@ -8,7 +8,7 @@ import java.util.List;
 import mil.army.usace.hec.cumulus.client.model.Watershed;
 import org.junit.jupiter.api.Test;
 
-class TestWatershedController extends TestController {
+class TestCumulusWatershedController extends TestController {
 
     @Test
     void testRetrieveWatershed() throws IOException {
@@ -17,7 +17,7 @@ class TestWatershedController extends TestController {
 
         String watershedId = "c785f4de-ab17-444b-b6e6-6f1ad16676e8";
         WatershedEndpointInput input = new WatershedEndpointInput(watershedId);
-        Watershed watershed = new WatershedController().retrieveWatershed(buildConnectionInfo(), input);
+        Watershed watershed = new CumulusWatershedController().retrieveWatershed(buildConnectionInfo(), input).join();
 
         assertNotNull(watershed);
         assertEquals("c785f4de-ab17-444b-b6e6-6f1ad16676e8", watershed.getId());
@@ -38,7 +38,7 @@ class TestWatershedController extends TestController {
         String resource = "cumulus/json/watersheds.json";
         launchMockServerWithResource(resource);
 
-        List<Watershed> watersheds = new WatershedController().retrieveAllWatersheds(buildConnectionInfo());
+        List<Watershed> watersheds = new CumulusWatershedController().retrieveAllWatersheds(buildConnectionInfo()).join();
 
         assertNotNull(watersheds);
         assertEquals(2, watersheds.size());

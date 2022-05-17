@@ -3,6 +3,7 @@ package mil.army.usace.hec.cumulus.client.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -31,6 +32,16 @@ public class DownloadRequest {
             retVal[i] = products.get(i).getId();
         }
         return retVal;
+    }
+
+    @Override
+    public String toString() {
+        return "DownloadRequest{"
+            + "dateTimeStart=" + dateTimeStart
+            + ", dateTimeEnd=" + dateTimeEnd
+            + ", watershedId='" + watershedId + '\''
+            + ", productIds=" + Arrays.toString(productIds)
+            + '}';
     }
 
     @JsonProperty("datetime_start")

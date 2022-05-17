@@ -3,17 +3,19 @@ package mil.army.usace.hec.cumulus.client.controllers;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
-import java.util.function.IntConsumer;
+import mil.army.usace.hec.cumulus.client.model.Download;
 
 final class CumulusDownloadByteChannel implements ReadableByteChannel {
 
     private final ReadableByteChannel readableByteChannel;
-    private final IntConsumer bytesReadConsumer;
+    private final CumulusDssFileDownloadListener listener;
+    private final Download downloadData;
     private int bytesReadSoFar;
 
-    CumulusDownloadByteChannel(ReadableByteChannel readableByteChannel, IntConsumer bytesReadConsumer) {
+    CumulusDownloadByteChannel(ReadableByteChannel readableByteChannel, Download downloadData, CumulusDssFileDownloadListener listener) {
         this.readableByteChannel = readableByteChannel;
-        this.bytesReadConsumer = bytesReadConsumer;
+        this.downloadData = downloadData;
+        this.listener = listener;
     }
 
     @Override
@@ -23,12 +25,12 @@ final class CumulusDownloadByteChannel implements ReadableByteChannel {
         return newBytesRead;
     }
 
-    private void notifyBytesRead(int bytesRead) {
-        if (bytesRead <= 0) {
+    private void notifyBytesRead(int newBytesRead) {
+        if (newBytesRead <= 0) {
             return;
         }
-        bytesReadSoFar += bytesRead;
-        bytesReadConsumer.accept(bytesReadSoFar);
+        bytesReadSoFar += newBytesRead;
+        listener.bytesRead(downloadData, newBytesRead, bytesReadSoFar);
     }
 
     @Override

@@ -1,0 +1,125 @@
+package mil.army.usace.hec.cumulus.client.controllers;
+
+import static mil.army.usace.hec.cumulus.client.controllers.CumulusEndpointConstants.ACCEPT_HEADER_V1;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import mil.army.usace.hec.cumulus.client.model.CumulusObjectMapper;
+import mil.army.usace.hec.cumulus.client.model.Product;
+import mil.army.usace.hec.cumulus.client.model.ProductAvailability;
+import mil.army.usace.hec.cumulus.client.model.ProductFile;
+import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
+import mil.army.usace.hec.cwms.http.client.HttpRequestBuilderImpl;
+import mil.army.usace.hec.cwms.http.client.HttpRequestResponse;
+import mil.army.usace.hec.cwms.http.client.request.HttpRequestExecutor;
+
+public class CumulusProductsController {
+
+    private static final String PRODUCTS_ENDPOINT = "products";
+    private static final String FILES_ENDPOINT = "files";
+    private static final String AVAILABILITY_ENDPOINT = "availability";
+
+    /**
+     * Retrieve All Products.
+     *
+     * @param apiConnectionInfo    - connection info
+     * @return List of Products
+     * @throws CompletionException - IOException wrapper thrown if retrieve failed
+     */
+    public CompletableFuture<List<Product>> retrieveAllProducts(ApiConnectionInfo apiConnectionInfo)
+        throws CompletionException {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                HttpRequestExecutor executor = new HttpRequestBuilderImpl(apiConnectionInfo, PRODUCTS_ENDPOINT)
+                    .get()
+                    .withMediaType(ACCEPT_HEADER_V1);
+                try (HttpRequestResponse response = executor.execute()) {
+                    return CumulusObjectMapper.mapJsonToListOfObjects(response.getBody(), Product.class);
+                }
+            } catch (IOException ex) {
+                throw new CompletionException(ex);
+            }
+        });
+    }
+
+    /**
+     * Retrieve Product.
+     *
+     * @param apiConnectionInfo    - connection info
+     * @param productsEndpointInput - product endpoint input containing product id
+     * @return Product
+     * @throws CompletionException - IOException wrapper thrown if retrieve failed
+     */
+    public CompletableFuture<Product> retrieveProduct(ApiConnectionInfo apiConnectionInfo, ProductsEndpointInput productsEndpointInput)
+        throws CompletionException {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                HttpRequestExecutor executor =
+                    new HttpRequestBuilderImpl(apiConnectionInfo, PRODUCTS_ENDPOINT + "/" + productsEndpointInput.getProductId())
+                        .get()
+                        .withMediaType(ACCEPT_HEADER_V1);
+                try (HttpRequestResponse response = executor.execute()) {
+                    return CumulusObjectMapper.mapJsonToObject(response.getBody(), Product.class);
+                }
+            } catch (IOException ex) {
+                throw new CompletionException(ex);
+            }
+        });
+    }
+
+    /**
+     * Retrieve Product Files.
+     *
+     * @param apiConnectionInfo    - connection info
+     * @param productsFileEndpointInput - product files endpoint input containing product id and date range
+     * @return List of ProductFiles
+     * @throws CompletionException - IOException wrapper thrown if retrieve failed
+     */
+    public CompletableFuture<List<ProductFile>> retrieveProductFiles(ApiConnectionInfo apiConnectionInfo, ProductsFileEndpointInput productsFileEndpointInput)
+        throws CompletionException {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                HttpRequestExecutor executor = new HttpRequestBuilderImpl(apiConnectionInfo, PRODUCTS_ENDPOINT + "/"
+                    + productsFileEndpointInput.getFileId() + "/" + FILES_ENDPOINT)
+                    .get()
+                    .withMediaType(ACCEPT_HEADER_V1);
+                try (HttpRequestResponse response = executor.execute()) {
+                    return CumulusObjectMapper.mapJsonToListOfObjects(response.getBody(), ProductFile.class);
+                }
+            } catch (IOException ex) {
+                throw new CompletionException(ex);
+            }
+        });
+    }
+
+    /**
+     * Retrieve Product Availability.
+     *
+     * @param apiConnectionInfo    - connection info
+     * @param productsEndpointInput - product endpoint input containing product id
+     * @return ProductAvailability
+     * @throws CompletionException - IOException wrapper thrown if retrieve failed
+     */
+    public CompletableFuture<ProductAvailability> retrieveProductAvailability(ApiConnectionInfo apiConnectionInfo, ProductsEndpointInput productsEndpointInput)
+        throws CompletionException {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                HttpRequestExecutor executor = new HttpRequestBuilderImpl(apiConnectionInfo, PRODUCTS_ENDPOINT + "/"
+                    + productsEndpointInput.getProductId() + "/"
+                    + AVAILABILITY_ENDPOINT)
+                    .get()
+                    .withMediaType(ACCEPT_HEADER_V1);
+                try (HttpRequestResponse response = executor.execute()) {
+                    return CumulusObjectMapper.mapJsonToObject(response.getBody(), ProductAvailability.class);
+                }
+            } catch (IOException ex) {
+                throw new CompletionException(ex);
+            }
+        });
+    }
+
+
+
+}
