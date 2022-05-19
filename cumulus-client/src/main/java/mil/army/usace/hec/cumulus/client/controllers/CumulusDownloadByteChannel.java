@@ -11,6 +11,7 @@ final class CumulusDownloadByteChannel implements ReadableByteChannel {
     private final CumulusDssFileDownloadListener listener;
     private final Download downloadData;
     private int bytesReadSoFar;
+    private long startTime = 0L;
 
     CumulusDownloadByteChannel(ReadableByteChannel readableByteChannel, Download downloadData, CumulusDssFileDownloadListener listener) {
         this.readableByteChannel = readableByteChannel;
@@ -20,7 +21,11 @@ final class CumulusDownloadByteChannel implements ReadableByteChannel {
 
     @Override
     public int read(ByteBuffer byteBuffer) throws IOException {
+        if (startTime == 0) {
+            startTime = System.currentTimeMillis();
+        }
         int newBytesRead = readableByteChannel.read(byteBuffer);
+        listener.elapsedDownloadTimeUpdated(System.currentTimeMillis() - startTime);
         notifyBytesRead(newBytesRead);
         return newBytesRead;
     }

@@ -148,7 +148,7 @@ public class CumulusDssFileController {
                     listener.downloadStatusUpdated(downloadStatus);
                     listener.downloadStatusUpdated(downloadStatus);
                     listener.downloadStatusQueryCountUpdated(counter);
-                    listener.elapsedTimeUpdated(totalElapsedTime);
+                    listener.elapsedGenerationTimeUpdated(totalElapsedTime);
                 }
                 int newProgress = downloadStatus.getProgress();
                 if (newProgress > progress) { // if progress increased, set new timer to check for progress stall

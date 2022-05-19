@@ -8,5 +8,5 @@ public interface CumulusDssFileGenerationListener {
 
     void downloadStatusQueryCountUpdated(int queryCount);
 
-    void elapsedTimeUpdated(long timeMillis);
+    void elapsedGenerationTimeUpdated(long timeMillis);
 }

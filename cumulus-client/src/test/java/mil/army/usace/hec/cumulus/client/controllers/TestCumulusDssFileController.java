@@ -133,6 +133,11 @@ class TestCumulusDssFileController extends TestController{
             public void downloadComplete() {
                 //noop
             }
+
+            @Override
+            public void elapsedDownloadTimeUpdated(long elapsedTime) {
+
+            }
         };
     }
 
@@ -150,7 +155,7 @@ class TestCumulusDssFileController extends TestController{
             }
 
             @Override
-            public void elapsedTimeUpdated(long timeMillis) {
+            public void elapsedGenerationTimeUpdated(long timeMillis) {
                 //noop
             }
         };

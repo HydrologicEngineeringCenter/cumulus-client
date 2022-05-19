@@ -7,4 +7,6 @@ public interface CumulusDssFileDownloadListener {
     void bytesRead(Download downloadData, int currentBytesRead, int totalBytesRead);
 
     void downloadComplete();
+
+    void elapsedDownloadTimeUpdated(long elapsedTime);
 }

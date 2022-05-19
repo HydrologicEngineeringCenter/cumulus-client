@@ -127,6 +127,11 @@ class TestCumulusFileDownloaderUtil extends TestController{
             public void downloadComplete() {
                 //noop
             }
+
+            @Override
+            public void elapsedDownloadTimeUpdated(long elapsedTime) {
+
+            }
         };
     }
 }
