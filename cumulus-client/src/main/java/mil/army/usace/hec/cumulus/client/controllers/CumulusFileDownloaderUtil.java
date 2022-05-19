@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
-import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
 import mil.army.usace.hec.cumulus.client.model.Download;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
@@ -46,9 +45,9 @@ public final class CumulusFileDownloaderUtil {
     private static void readFileFromUrlToLocal(InputStream inputStream, Path pathToLocalFile,
                                                Download downloadContainingFile, CumulusDssFileDownloadListener listener)
         throws IOException {
-        try (ReadableByteChannel readableByteChannel = Channels.newChannel(inputStream);
-             FileOutputStream fileOutputStream = new FileOutputStream(pathToLocalFile.toString())) {
-            CumulusDownloadByteChannel byteChannel = new CumulusDownloadByteChannel(readableByteChannel, downloadContainingFile, listener);
+        try (FileOutputStream fileOutputStream = new FileOutputStream(pathToLocalFile.toString());
+             CumulusDownloadByteChannel byteChannel =
+                 new CumulusDownloadByteChannel(Channels.newChannel(inputStream), downloadContainingFile, listener)) {
             FileChannel fileChannel = fileOutputStream.getChannel();
             fileChannel.transferFrom(byteChannel, 0, Long.MAX_VALUE);
             if (listener != null) {
