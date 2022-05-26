@@ -3,6 +3,7 @@ package mil.army.usace.hec.cumulus.client.model;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -12,7 +13,9 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class CumulusObjectMapper {
 
@@ -37,6 +40,11 @@ public final class CumulusObjectMapper {
 
     public static String mapObjectToJson(Object object) throws IOException {
         return OBJECT_MAPPER.writeValueAsString(object);
+    }
+
+    public static Map<String, String> mapJsonStringToMap(String json) throws IOException {
+        TypeReference<HashMap<String,String>> typeRef = new TypeReference<HashMap<String,String>>() {};
+        return OBJECT_MAPPER.readValue(json, typeRef);
     }
 
     private static class CumulusDateTimeDeSerializer extends JsonDeserializer<ZonedDateTime> {
