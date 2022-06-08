@@ -1,9 +1,9 @@
 package mil.army.usace.hec.cumulus.client.controllers;
 
 
-import hec.army.usace.hec.cumulus.http.client.ssl.CumulusCacTrustManager;
-import hec.army.usace.hec.cumulus.http.client.ssl.CumulusSslSocketFactoryBuilder;
 import java.io.IOException;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.X509TrustManager;
 import mil.army.usace.hec.cumulus.client.model.CumulusObjectMapper;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
 import mil.army.usace.hec.cwms.http.client.HttpRequestBuilderImpl;
@@ -22,13 +22,19 @@ public class CumulusTokenController {
      * @return OAuth2Token object containing access token string, token type, and expiration
      * @throws IOException - thrown if token retrieval failed
      */
-    public OAuth2Token retrieveToken() throws IOException {
+    public OAuth2Token retrieveToken(SSLSocketFactory sslSocketFactory, X509TrustManager trustManager) throws IOException {
+        if (sslSocketFactory == null) {
+            throw new IOException("Missing required SSLSocketFactory");
+        }
+        if (trustManager == null) {
+            throw new IOException("Missing required X509TrustManager");
+        }
         OAuth2Token retVal = null;
         HttpRequestExecutor executor =
             new HttpRequestBuilderImpl(new ApiConnectionInfo(TOKEN_URL), TOKEN_ENDPOINT)
                 .addQueryHeader("Content-Type", "application/x-www-form-urlencoded")
                 .enableHttp2()
-                .withSslSocketFactory(CumulusSslSocketFactoryBuilder.buildSslSocketFactory(), CumulusCacTrustManager.getTrustManager())
+                .withSslSocketFactory(sslSocketFactory, trustManager)
                 .post()
                 .withBody("password=&grant_type=password&scope=openid%20profile&client_id=cumulus&username=")
                 .withMediaType("application/x-www-form-urlencoded");
