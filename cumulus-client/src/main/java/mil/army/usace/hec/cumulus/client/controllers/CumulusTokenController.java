@@ -2,6 +2,8 @@ package mil.army.usace.hec.cumulus.client.controllers;
 
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
 import mil.army.usace.hec.cumulus.client.model.CumulusObjectMapper;
@@ -22,7 +24,17 @@ public class CumulusTokenController {
      * @return OAuth2Token object containing access token string, token type, and expiration
      * @throws IOException - thrown if token retrieval failed
      */
-    public OAuth2Token retrieveToken(SSLSocketFactory sslSocketFactory, X509TrustManager trustManager) throws IOException {
+    public CompletableFuture<OAuth2Token> retrieveToken(SSLSocketFactory sslSocketFactory, X509TrustManager trustManager) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return retrieveOAuth2Token(sslSocketFactory, trustManager);
+            } catch (IOException e) {
+                throw new CompletionException(e.getCause());
+            }
+        });
+    }
+
+    private OAuth2Token retrieveOAuth2Token(SSLSocketFactory sslSocketFactory, X509TrustManager trustManager) throws IOException {
         if (sslSocketFactory == null) {
             throw new IOException("Missing required SSLSocketFactory");
         }

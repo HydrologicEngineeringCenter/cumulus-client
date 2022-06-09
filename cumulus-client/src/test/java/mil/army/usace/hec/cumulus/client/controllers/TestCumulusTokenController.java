@@ -4,9 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.concurrent.CompletionException;
 import javax.net.ssl.SSLSocketFactory;
 import mil.army.usace.hec.cwms.http.client.model.OAuth2Token;
 import org.junit.jupiter.api.Test;
@@ -15,14 +15,14 @@ class TestCumulusTokenController {
 
     @Test
     void testRetrieveTokenMissingParams() {
-        IOException ex = assertThrows(IOException.class, () -> new CumulusTokenController().retrieveToken(null, null));
-        assertEquals("Missing required SSLSocketFactory", ex.getMessage());
+        CompletionException ex = assertThrows(CompletionException.class, () -> new CumulusTokenController().retrieveToken(null, null).join());
+        assertEquals("Missing required SSLSocketFactory", ex.getCause().getMessage());
 
-        IOException ex2 = assertThrows(IOException.class, () -> {
-            OAuth2Token token = new CumulusTokenController().retrieveToken(getTestSSLSocketFactory(), null);
+        CompletionException ex2 = assertThrows(CompletionException.class, () -> {
+            OAuth2Token token = new CumulusTokenController().retrieveToken(getTestSSLSocketFactory(), null).join();
             assertNull(token);
         });
-        assertEquals("Missing required X509TrustManager", ex2.getMessage());
+        assertEquals("Missing required X509TrustManager", ex2.getCause().getMessage());
     }
 
     private SSLSocketFactory getTestSSLSocketFactory() {
