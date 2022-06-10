@@ -1,7 +1,7 @@
 dependencies {
     implementation("mil.army.usace.hec:cwms-http-client:2.0.0")
-    implementation("com.auth0:java-jwt:3.19.1")
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
     testImplementation('mil.army.usace.hec:cwms-http-client:1.1.0:test-fixtures@jar')
@@ -14,7 +14,7 @@ dependencies {
 publishing {
     publications {
         maven(MavenPublication) {
-            artifactId = "cumulus-http-client"
+            artifactId = "cwbi-auth-http-client"
             from components.java
         }
     }

@@ -15,14 +15,12 @@ class TestCumulusTokenController {
 
     @Test
     void testRetrieveTokenMissingParams() {
-        CompletionException ex = assertThrows(CompletionException.class, () -> new CumulusTokenController().retrieveToken(null, null).join());
-        assertEquals("Missing required SSLSocketFactory", ex.getCause().getMessage());
-
-        CompletionException ex2 = assertThrows(CompletionException.class, () -> {
-            OAuth2Token token = new CumulusTokenController().retrieveToken(getTestSSLSocketFactory(), null).join();
+        CompletionException ex = assertThrows(CompletionException.class, () -> {
+            OAuth2Token token = new CumulusTokenController().retrieveToken(null).join();
             assertNull(token);
         });
-        assertEquals("Missing required X509TrustManager", ex2.getCause().getMessage());
+        assertEquals("Missing required SSLSocketFactory", ex.getCause().getMessage());
+
     }
 
     private SSLSocketFactory getTestSSLSocketFactory() {
