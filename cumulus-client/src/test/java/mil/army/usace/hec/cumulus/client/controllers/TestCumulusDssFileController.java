@@ -14,7 +14,7 @@ import mil.army.usace.hec.cumulus.client.model.Download;
 import mil.army.usace.hec.cumulus.client.model.DownloadRequest;
 import mil.army.usace.hec.cumulus.client.model.Product;
 import mil.army.usace.hec.cumulus.client.model.Watershed;
-import mil.army.usace.hec.cwms.http.client.model.OAuth2Token;
+import mil.army.usace.hec.cwms.http.client.auth.OAuth2Token;
 import org.junit.jupiter.api.Test;
 
 class TestCumulusDssFileController extends TestController{

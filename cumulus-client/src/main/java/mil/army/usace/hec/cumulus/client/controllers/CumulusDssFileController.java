@@ -2,7 +2,7 @@ package mil.army.usace.hec.cumulus.client.controllers;
 
 import static mil.army.usace.hec.cumulus.client.controllers.CumulusEndpointConstants.ACCEPT_HEADER_V1;
 
-import hec.army.usace.hec.cumulus.http.client.AuthenticatedHttpRequestBuilderImpl;
+import hec.army.usace.hec.cumulus.http.client.CumulusHttpRequestBuilderImpl;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
@@ -14,7 +14,7 @@ import mil.army.usace.hec.cumulus.client.model.DownloadRequest;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
 import mil.army.usace.hec.cwms.http.client.HttpRequestBuilderImpl;
 import mil.army.usace.hec.cwms.http.client.HttpRequestResponse;
-import mil.army.usace.hec.cwms.http.client.model.OAuth2Token;
+import mil.army.usace.hec.cwms.http.client.auth.OAuth2Token;
 import mil.army.usace.hec.cwms.http.client.request.HttpRequestExecutor;
 
 public class CumulusDssFileController {
@@ -89,7 +89,7 @@ public class CumulusDssFileController {
     Download executeInitialDownloadRequest(ApiConnectionInfo apiConnectionInfo, DownloadRequest downloadRequest, OAuth2Token token) throws IOException {
         String jsonBody = CumulusObjectMapper.mapObjectToJson(downloadRequest);
         HttpRequestExecutor executor =
-            new AuthenticatedHttpRequestBuilderImpl(apiConnectionInfo, DOWNLOADS_ENDPOINT, token)
+            new CumulusHttpRequestBuilderImpl(apiConnectionInfo, DOWNLOADS_ENDPOINT, token)
                 .enableHttp2()
                 .post()
                 .withBody(jsonBody)

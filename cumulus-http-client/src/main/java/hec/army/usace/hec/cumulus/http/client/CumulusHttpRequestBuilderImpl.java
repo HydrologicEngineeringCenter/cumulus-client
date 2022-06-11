@@ -8,9 +8,9 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
 import mil.army.usace.hec.cwms.http.client.HttpRequestBuilderImpl;
-import mil.army.usace.hec.cwms.http.client.model.OAuth2Token;
+import mil.army.usace.hec.cwms.http.client.auth.OAuth2Token;
 
-public class AuthenticatedHttpRequestBuilderImpl extends HttpRequestBuilderImpl {
+public class CumulusHttpRequestBuilderImpl extends HttpRequestBuilderImpl {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String EXIPIRATION_BUFFER_KEY = "cumulus.http.client.token.expiration.buffer.millis";
@@ -24,7 +24,7 @@ public class AuthenticatedHttpRequestBuilderImpl extends HttpRequestBuilderImpl 
      * @param token             - JWT token
      * @throws IOException      - thrown if request failed
      */
-    public AuthenticatedHttpRequestBuilderImpl(ApiConnectionInfo apiConnectionInfo, String endpoint, OAuth2Token token)
+    public CumulusHttpRequestBuilderImpl(ApiConnectionInfo apiConnectionInfo, String endpoint, OAuth2Token token)
         throws IOException {
 
         super(apiConnectionInfo, endpoint);

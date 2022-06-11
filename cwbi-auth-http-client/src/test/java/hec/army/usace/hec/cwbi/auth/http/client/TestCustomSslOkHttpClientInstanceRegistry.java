@@ -1,29 +1,29 @@
-package mil.army.usace.hec.cumulus.client.controllers;
+package hec.army.usace.hec.cwbi.auth.http.client;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import hec.army.usace.hec.cwbi.auth.http.client.trustmanagers.CwbiAuthTrustManager;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.concurrent.CompletionException;
 import javax.net.ssl.SSLSocketFactory;
-import mil.army.usace.hec.cwms.http.client.model.OAuth2Token;
+import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.Test;
 
-class TestCumulusTokenController {
+class TestCustomSslOkHttpClientInstanceRegistry {
 
     @Test
-    void testRetrieveTokenMissingParams() {
-        CompletionException ex = assertThrows(CompletionException.class, () -> {
-            OAuth2Token token = new CumulusTokenController().retrieveTokenWithDirectGrantX509(null).join();
-            assertNull(token);
-        });
-        assertEquals("Missing required SSLSocketFactory", ex.getCause().getMessage());
+    void testSingleInstanceOkHttpClient() {
+        SSLSocketFactory testSslSocketFactory = getTestSslSocketFactory();
+        OkHttpClient okHttpClient = CustomSslOkHttpClientInstanceRegistry.getRegistry()
+            .getOkHttpClientInstance(new SslSocketData(testSslSocketFactory, CwbiAuthTrustManager.getTrustManager()));
 
+        OkHttpClient okHttpClient2 = CustomSslOkHttpClientInstanceRegistry.getRegistry()
+            .getOkHttpClientInstance(new SslSocketData(testSslSocketFactory, CwbiAuthTrustManager.getTrustManager()));
+
+        assertEquals(okHttpClient, okHttpClient2);
     }
 
-    private SSLSocketFactory getTestSSLSocketFactory() {
+    SSLSocketFactory getTestSslSocketFactory() {
         return new SSLSocketFactory() {
             @Override
             public String[] getDefaultCipherSuites() {

@@ -10,6 +10,8 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
@@ -18,7 +20,10 @@ import javax.security.auth.x500.X500Principal;
 
 public final class CwbiAuthTrustManager implements X509TrustManager {
 
+    private static final Logger LOGGER = Logger.getLogger(CwbiAuthTrustManager.class.getName());
     private final TrustManagerFactory trustManagerFactory;
+
+    private static final X509TrustManager INSTANCE = buildTrustManager();
 
     private CwbiAuthTrustManager(TrustManagerFactory trustManagerFactory) {
         this.trustManagerFactory = trustManagerFactory;
@@ -29,7 +34,8 @@ public final class CwbiAuthTrustManager implements X509TrustManager {
      *
      * @return Instance of X509TrustManager
      */
-    public static X509TrustManager getTrustManager() throws IOException {
+    private static X509TrustManager buildTrustManager() {
+        X509TrustManager retVal = null;
         try (InputStream trustedCertificateAsInputStream = CwbiAuthTrustManager.class.getResourceAsStream("cumulusServer.pem")) {
             KeyStore ts = KeyStore.getInstance("JKS");
             ts.load(null, null);
@@ -37,10 +43,16 @@ public final class CwbiAuthTrustManager implements X509TrustManager {
             ts.setCertificateEntry("cwbi-auth-server-root-certificate", trustedCertificate);
             TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("PKIX");
             trustManagerFactory.init(ts);
-            return new CwbiAuthTrustManager(trustManagerFactory);
-        } catch (CertificateException | NoSuchAlgorithmException | KeyStoreException e) {
-            throw new IOException(e);
+            retVal =  new CwbiAuthTrustManager(trustManagerFactory);
+        } catch (CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException e) {
+            String errorMsg = "Error retrieving X509TrustManager: " + e.getMessage();
+            LOGGER.log(Level.SEVERE, errorMsg, e);
         }
+        return retVal;
+    }
+
+    public static X509TrustManager getTrustManager() {
+        return INSTANCE;
     }
 
     @Override

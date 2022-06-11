@@ -2,8 +2,6 @@ package mil.army.usace.hec.cumulus.client.controllers;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.X509TrustManager;
 import mil.army.usace.hec.cwms.http.client.EndpointInput;
 import mil.army.usace.hec.cwms.http.client.HttpRequestBuilder;
 import mil.army.usace.hec.cwms.http.client.request.HttpPostRequest;
@@ -33,11 +31,6 @@ public class MockHttpRequestBuilder implements HttpRequestBuilder {
 
     @Override
     public HttpRequestBuilder enableHttp2() {
-        return null;
-    }
-
-    @Override
-    public HttpRequestBuilder withSslSocketFactory(SSLSocketFactory sslSocketFactory, X509TrustManager x509TrustManager) {
         return null;
     }
 
