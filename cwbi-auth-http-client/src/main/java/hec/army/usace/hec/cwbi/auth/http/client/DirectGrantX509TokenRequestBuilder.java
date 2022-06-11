@@ -40,7 +40,13 @@ public final class DirectGrantX509TokenRequestBuilder implements DirectGrantX509
                     .addQueryHeader("Content-Type", MEDIA_TYPE)
                     .enableHttp2()
                     .post()
-                    .withBody("password=&grant_type=password&scope=openid%20profile&client_id=" + getClientId() + "&username=")
+                    .withBody(new UrlEncodedFormData()
+                        .addPassword("")
+                        .addGrantType("password")
+                        .addScopes("openid", "profile")
+                        .addClientId(CUMULUS_CLIENT_ID)
+                        .addUsername("")
+                        .buildEncodedString())
                     .withMediaType(MEDIA_TYPE);
             try (HttpRequestResponse response = executor.execute()) {
                 String body = response.getBody();
