@@ -9,6 +9,7 @@ import mil.army.usace.hec.cwms.http.client.auth.OAuth2Token;
 
 abstract class TokenRequestBuilder implements TokenRequestFluentBuilder {
 
+    static final String CUMULUS_CLIENT_ID = "cumulus";
     static final String MEDIA_TYPE = "application/x-www-form-urlencoded";
     private String url;
     private String clientId;

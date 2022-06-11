@@ -34,7 +34,11 @@ public final class RefreshTokenRequestBuilder implements RefreshTokenRequestFlue
                     .addQueryHeader("Content-Type", MEDIA_TYPE)
                     .enableHttp2()
                     .post()
-                    .withBody("refresh_token=" + refreshToken + "&grant_type=refresh_token&client_id=" + getClientId())
+                    .withBody(new UrlEncodedFormData()
+                        .addRefreshToken(refreshToken)
+                        .addGrantType("refresh_token")
+                        .addClientId(CUMULUS_CLIENT_ID)
+                        .buildEncodedString())
                     .withMediaType(MEDIA_TYPE);
             try (HttpRequestResponse response = executor.execute()) {
                 String body = response.getBody();
