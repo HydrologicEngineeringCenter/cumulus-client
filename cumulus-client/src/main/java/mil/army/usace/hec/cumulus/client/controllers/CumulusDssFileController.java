@@ -149,7 +149,6 @@ public class CumulusDssFileController {
                 long totalElapsedTime = System.currentTimeMillis() - startTime;
                 if (listener != null) {
                     listener.downloadStatusUpdated(downloadStatus);
-                    listener.downloadStatusUpdated(downloadStatus);
                     listener.downloadStatusQueryCountUpdated(counter);
                     listener.elapsedGenerationTimeUpdated(totalElapsedTime);
                 }
