@@ -44,7 +44,7 @@ public final class DirectGrantX509TokenRequestBuilder implements DirectGrantX509
                         .addPassword("")
                         .addGrantType("password")
                         .addScopes("openid", "profile")
-                        .addClientId(CUMULUS_CLIENT_ID)
+                        .addClientId(getClientId())
                         .addUsername("")
                         .buildEncodedString())
                     .withMediaType(MEDIA_TYPE);

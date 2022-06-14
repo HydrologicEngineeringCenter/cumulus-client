@@ -37,7 +37,7 @@ public final class RefreshTokenRequestBuilder implements RefreshTokenRequestFlue
                     .withBody(new UrlEncodedFormData()
                         .addRefreshToken(refreshToken)
                         .addGrantType("refresh_token")
-                        .addClientId(CUMULUS_CLIENT_ID)
+                        .addClientId(getClientId())
                         .buildEncodedString())
                     .withMediaType(MEDIA_TYPE);
             try (HttpRequestResponse response = executor.execute()) {

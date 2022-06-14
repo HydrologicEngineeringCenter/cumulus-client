@@ -31,7 +31,7 @@ final class CustomSslOkHttpClientInstanceRegistry {
     }
 
     /**
-     * Get shared instance of OkHttpClient, or create new instance if doesn't exist.
+     * Get shared instance of OkHttpClient, or create new instance if doesn't exist for a given SSLSocketFactory.
      * This Registry ensures only one OkHttpClient instance exists for a given SSLSocketFactory
      * @param sslSocketData - data object containing SSLSocketFactory and X509TrustManager
      * @return OkHttpClient instance
