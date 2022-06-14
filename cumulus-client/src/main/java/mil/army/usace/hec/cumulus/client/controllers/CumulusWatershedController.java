@@ -31,6 +31,7 @@ public class CumulusWatershedController {
             try {
                 HttpRequestExecutor executor =
                     new HttpRequestBuilderImpl(apiConnectionInfo, WATERSHEDS_ENDPOINT + "/" + watershedEndpointInput.getWatershedId())
+                        .enableHttp2()
                         .get()
                         .withMediaType(ACCEPT_HEADER_V1);
                 try (HttpRequestResponse response = executor.execute()) {
@@ -54,6 +55,7 @@ public class CumulusWatershedController {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 HttpRequestExecutor executor = new HttpRequestBuilderImpl(apiConnectionInfo, WATERSHEDS_ENDPOINT)
+                    .enableHttp2()
                     .get()
                     .withMediaType(ACCEPT_HEADER_V1);
                 try (HttpRequestResponse response = executor.execute()) {

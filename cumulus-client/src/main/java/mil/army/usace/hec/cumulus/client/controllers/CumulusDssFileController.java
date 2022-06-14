@@ -2,7 +2,7 @@ package mil.army.usace.hec.cumulus.client.controllers;
 
 import static mil.army.usace.hec.cumulus.client.controllers.CumulusEndpointConstants.ACCEPT_HEADER_V1;
 
-import hec.army.usace.hec.cumulus.http.client.AuthenticatedHttpRequestBuilderImpl;
+import hec.army.usace.hec.cumulus.http.client.CumulusHttpRequestBuilderImpl;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
@@ -14,6 +14,7 @@ import mil.army.usace.hec.cumulus.client.model.DownloadRequest;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
 import mil.army.usace.hec.cwms.http.client.HttpRequestBuilderImpl;
 import mil.army.usace.hec.cwms.http.client.HttpRequestResponse;
+import mil.army.usace.hec.cwms.http.client.auth.OAuth2Token;
 import mil.army.usace.hec.cwms.http.client.request.HttpRequestExecutor;
 
 public class CumulusDssFileController {
@@ -33,6 +34,7 @@ public class CumulusDssFileController {
     Download queryDownloadStatus(ApiConnectionInfo apiConnectionInfo, DownloadsEndpointInput downloadsEndpointInput) throws IOException {
         HttpRequestExecutor executor =
             new HttpRequestBuilderImpl(apiConnectionInfo, DOWNLOADS_ENDPOINT + "/" + downloadsEndpointInput.getDownloadId())
+                .enableHttp2()
                 .get()
                 .withMediaType(ACCEPT_HEADER_V1);
         try (HttpRequestResponse response = executor.execute()) {
@@ -67,7 +69,7 @@ public class CumulusDssFileController {
      * @return Download         - object that can be queried for status updates
      */
     public CompletableFuture<Download> generateDssFile(ApiConnectionInfo apiConnectionInfo, DownloadRequest downloadRequest,
-                                                       String token, CumulusDssFileGenerationListener listener) throws CompletionException {
+                                                       OAuth2Token token, CumulusDssFileGenerationListener listener) throws CompletionException {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 if (downloadRequest == null) {
@@ -84,10 +86,11 @@ public class CumulusDssFileController {
         });
     }
 
-    Download executeInitialDownloadRequest(ApiConnectionInfo apiConnectionInfo, DownloadRequest downloadRequest, String token) throws IOException {
+    Download executeInitialDownloadRequest(ApiConnectionInfo apiConnectionInfo, DownloadRequest downloadRequest, OAuth2Token token) throws IOException {
         String jsonBody = CumulusObjectMapper.mapObjectToJson(downloadRequest);
         HttpRequestExecutor executor =
-            new AuthenticatedHttpRequestBuilderImpl(apiConnectionInfo, DOWNLOADS_ENDPOINT, token)
+            new CumulusHttpRequestBuilderImpl(apiConnectionInfo, DOWNLOADS_ENDPOINT, token)
+                .enableHttp2()
                 .post()
                 .withBody(jsonBody)
                 .withMediaType(ACCEPT_HEADER_V1);

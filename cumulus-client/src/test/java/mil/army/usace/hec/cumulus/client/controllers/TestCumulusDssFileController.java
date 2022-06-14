@@ -14,6 +14,7 @@ import mil.army.usace.hec.cumulus.client.model.Download;
 import mil.army.usace.hec.cumulus.client.model.DownloadRequest;
 import mil.army.usace.hec.cumulus.client.model.Product;
 import mil.army.usace.hec.cumulus.client.model.Watershed;
+import mil.army.usace.hec.cwms.http.client.auth.OAuth2Token;
 import org.junit.jupiter.api.Test;
 
 class TestCumulusDssFileController extends TestController{
@@ -75,7 +76,9 @@ class TestCumulusDssFileController extends TestController{
         DownloadRequest downloadRequest = new DownloadRequest(start, end, watershed, products);
         String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiVXNlciIsImlzcyI6IlNpbXBsZSBTb2x1dGlvbiIsInVzZXJuYW1lIjoiVGVzdFVzZXIifQ.jQUKIOxN0KGbIGJx8SU3WfSVPNASOnRtt3DcoMVBeThcWGzEBAnwlHHYRvbzuas-sOeWSvOwrnsvpQ5tywAfWA";
         CumulusDssFileController controller = new CumulusDssFileController();
-        Download download = controller.generateDssFile(buildConnectionInfo(), downloadRequest, token, buildGenerationListener()).join();
+        OAuth2Token oAuth2Token = new OAuth2Token();
+        oAuth2Token.setAccessToken(token);
+        Download download = controller.generateDssFile(buildConnectionInfo(), downloadRequest, oAuth2Token, buildGenerationListener()).join();
         assertNotNull(download);
         assertEquals("597f6eca-6276-4993-bfeb-53cbbbba6f08", download.getId());
         assertEquals("853487e7-10bc-4e69-b3b2-4da33721ea3e", download.getSub());
@@ -93,7 +96,7 @@ class TestCumulusDssFileController extends TestController{
         assertEquals("fake-river", download.getWatershedSlug());
         assertEquals("Fake River", download.getWatershedName());
         AtomicReference<Throwable> exception = new AtomicReference<>();
-        controller.generateDssFile(buildConnectionInfo(), null, token, buildGenerationListener())
+        controller.generateDssFile(buildConnectionInfo(), null, oAuth2Token, buildGenerationListener())
             .exceptionally(ex -> {
                 if (ex != null) {
                     exception.set(ex.getCause());

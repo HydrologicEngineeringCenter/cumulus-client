@@ -27,6 +27,7 @@ public final class CumulusFileDownloaderUtil {
         if (url != null) {
             ApiConnectionInfo connectionInfo = new ApiConnectionInfo(url);
             HttpRequestExecutor httpRequestExecutor = new HttpRequestBuilderImpl(connectionInfo, "")
+                .enableHttp2()
                 .get()
                 .withMediaType("text/plain");
             executeDownload(httpRequestExecutor, pathToLocalFile, downloadContainingFile, listener);

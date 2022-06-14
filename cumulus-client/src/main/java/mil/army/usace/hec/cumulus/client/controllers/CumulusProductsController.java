@@ -33,6 +33,7 @@ public class CumulusProductsController {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 HttpRequestExecutor executor = new HttpRequestBuilderImpl(apiConnectionInfo, PRODUCTS_ENDPOINT)
+                    .enableHttp2()
                     .get()
                     .withMediaType(ACCEPT_HEADER_V1);
                 try (HttpRequestResponse response = executor.execute()) {
@@ -58,6 +59,7 @@ public class CumulusProductsController {
             try {
                 HttpRequestExecutor executor =
                     new HttpRequestBuilderImpl(apiConnectionInfo, PRODUCTS_ENDPOINT + "/" + productsEndpointInput.getProductId())
+                        .enableHttp2()
                         .get()
                         .withMediaType(ACCEPT_HEADER_V1);
                 try (HttpRequestResponse response = executor.execute()) {
@@ -83,6 +85,7 @@ public class CumulusProductsController {
             try {
                 HttpRequestExecutor executor = new HttpRequestBuilderImpl(apiConnectionInfo, PRODUCTS_ENDPOINT + "/"
                     + productsFileEndpointInput.getFileId() + "/" + FILES_ENDPOINT)
+                    .enableHttp2()
                     .get()
                     .withMediaType(ACCEPT_HEADER_V1);
                 try (HttpRequestResponse response = executor.execute()) {
@@ -109,6 +112,7 @@ public class CumulusProductsController {
                 HttpRequestExecutor executor = new HttpRequestBuilderImpl(apiConnectionInfo, PRODUCTS_ENDPOINT + "/"
                     + productsEndpointInput.getProductId() + "/"
                     + AVAILABILITY_ENDPOINT)
+                    .enableHttp2()
                     .get()
                     .withMediaType(ACCEPT_HEADER_V1);
                 try (HttpRequestResponse response = executor.execute()) {
