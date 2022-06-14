@@ -1,6 +1,6 @@
 dependencies {
     implementation(project(":cwbi-auth-http-client"))
-    implementation("mil.army.usace.hec:cwms-http-client:2.0.0")
+    implementation("mil.army.usace.hec:cwms-http-client:2.2.0")
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")

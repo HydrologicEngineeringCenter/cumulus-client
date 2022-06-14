@@ -2,7 +2,7 @@ dependencies {
     implementation(project(":cumulus-model"))
     implementation(project(":cumulus-http-client"))
     implementation(project(":cwbi-auth-http-client"))
-    implementation("mil.army.usace.hec:cwms-http-client:2.0.0")
+    implementation("mil.army.usace.hec:cwms-http-client:2.2.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testImplementation('mil.army.usace.hec:cwms-http-client:1.1.0:test-fixtures@jar')
     implementation 'mil.army.usace.hec:hec-monolith:2.0.2'

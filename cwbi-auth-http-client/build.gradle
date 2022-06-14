@@ -1,5 +1,5 @@
 dependencies {
-    implementation("mil.army.usace.hec:cwms-http-client:2.0.0")
+    implementation("mil.army.usace.hec:cwms-http-client:2.2.0")
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.13.0")
     implementation("com.auth0:java-jwt:3.19.1")
