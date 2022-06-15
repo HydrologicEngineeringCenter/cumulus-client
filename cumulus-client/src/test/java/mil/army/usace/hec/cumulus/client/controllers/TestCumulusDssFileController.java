@@ -9,7 +9,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 import mil.army.usace.hec.cumulus.client.model.Download;
 import mil.army.usace.hec.cumulus.client.model.DownloadRequest;
@@ -26,7 +25,7 @@ class TestCumulusDssFileController extends TestController{
 
         String downloadId = "497f6eca-6276-4993-bfeb-53cbbbba6f08";
         DownloadsEndpointInput input = new DownloadsEndpointInput(downloadId);
-        Download download = new CumulusDssFileController(Executors.newFixedThreadPool(10)).queryDownloadStatus(buildConnectionInfo(), input);
+        Download download = new CumulusDssFileController(executorService).queryDownloadStatus(buildConnectionInfo(), input);
 
         assertNotNull(download);
         assertEquals("497f6eca-6276-4993-bfeb-53cbbbba6f08", download.getId());
@@ -51,7 +50,7 @@ class TestCumulusDssFileController extends TestController{
         String initialCreatedDownload = "cumulus/json/created_download.json";
         String completedDownloadResource = "cumulus/json/completed_download.json";
         launchMockServerWithResource(completedDownloadResource);
-        CumulusDssFileController controller = new CumulusDssFileController(Executors.newFixedThreadPool(10));
+        CumulusDssFileController controller = new CumulusDssFileController(executorService);
         Download createdDownload = getDownloadFromResource(initialCreatedDownload);
         Download downloadStatus = controller.monitorDssFileGeneration(buildConnectionInfo(), createdDownload, buildGenerationListener()).join();
         assertNotNull(downloadStatus);
@@ -74,7 +73,7 @@ class TestCumulusDssFileController extends TestController{
         ZonedDateTime start = ZonedDateTime.of(2022, 4, 1, 1, 1, 1, 1, ZoneId.of("UTC"));
         ZonedDateTime end = ZonedDateTime.of(2022, 4, 1, 1, 6, 1, 1, ZoneId.of("UTC"));
         DownloadRequest downloadRequest = new DownloadRequest(start, end, watershed, products);
-        CumulusDssFileController controller = new CumulusDssFileController(Executors.newFixedThreadPool(10));
+        CumulusDssFileController controller = new CumulusDssFileController(executorService);
         Download download = controller.generateDssFile(buildConnectionInfoWithToken(), downloadRequest, buildGenerationListener()).join();
         assertNotNull(download);
         assertEquals("597f6eca-6276-4993-bfeb-53cbbbba6f08", download.getId());
@@ -107,7 +106,7 @@ class TestCumulusDssFileController extends TestController{
     @Test
     void testDownloadToLocalFileNullFilePath() throws IOException {
         String resource = "cumulus/json/completed_download.json";
-        CumulusDssFileController controller = new CumulusDssFileController(Executors.newFixedThreadPool(10));
+        CumulusDssFileController controller = new CumulusDssFileController(executorService);
         Download completedDownloadData = getDownloadFromResource(resource);
         assertNotNull(completedDownloadData);
         AtomicReference<Throwable> exception = new AtomicReference<>();
@@ -121,16 +120,8 @@ class TestCumulusDssFileController extends TestController{
     }
 
     private CumulusDssFileDownloadListener buildDownloadListener() {
-        return new CumulusDssFileDownloadListener() {
-            @Override
-            public void bytesRead(Download downloadData, int currentBytesRead, int totalBytesRead, long elapsedTime) {
-                //noop
-            }
-
-            @Override
-            public void downloadComplete() {
-                //noop
-            }
+        return (downloadData, currentBytesRead, totalBytesRead, elapsedTime) -> {
+            //noop
         };
     }
 

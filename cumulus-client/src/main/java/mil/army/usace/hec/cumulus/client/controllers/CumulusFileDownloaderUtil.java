@@ -51,9 +51,6 @@ final class CumulusFileDownloaderUtil {
                  new CumulusDownloadByteChannel(Channels.newChannel(inputStream), downloadContainingFile, listener)) {
             FileChannel fileChannel = fileOutputStream.getChannel();
             fileChannel.transferFrom(byteChannel, 0, Long.MAX_VALUE);
-            if (listener != null) {
-                listener.downloadComplete();
-            }
         }
     }
 
