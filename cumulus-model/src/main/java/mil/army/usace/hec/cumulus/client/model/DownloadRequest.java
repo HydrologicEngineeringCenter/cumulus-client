@@ -12,6 +12,18 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DownloadRequest {
 
+    @JsonProperty("datetime_start")
+    private final ZonedDateTime dateTimeStart;
+
+    @JsonProperty("datetime_end")
+    private final ZonedDateTime dateTimeEnd;
+
+    @JsonProperty("watershed_id")
+    private final String watershedId;
+
+    @JsonProperty("product_id")
+    private final String[] productIds;
+
     /**
      * Download Request defining start/end times, watershed, and products for download.
      * @param start - start of time window
@@ -43,17 +55,4 @@ public class DownloadRequest {
             + ", productIds=" + Arrays.toString(productIds)
             + '}';
     }
-
-    @JsonProperty("datetime_start")
-    private final ZonedDateTime dateTimeStart;
-
-    @JsonProperty("datetime_end")
-    private final ZonedDateTime dateTimeEnd;
-
-    @JsonProperty("watershed_id")
-    private final String watershedId;
-
-    @JsonProperty("product_id")
-    private final String[] productIds;
-
 }

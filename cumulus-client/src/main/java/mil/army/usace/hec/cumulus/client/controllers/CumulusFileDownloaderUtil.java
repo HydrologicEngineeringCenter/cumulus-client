@@ -12,7 +12,7 @@ import mil.army.usace.hec.cwms.http.client.HttpRequestBuilderImpl;
 import mil.army.usace.hec.cwms.http.client.HttpRequestResponse;
 import mil.army.usace.hec.cwms.http.client.request.HttpRequestExecutor;
 
-public final class CumulusFileDownloaderUtil {
+final class CumulusFileDownloaderUtil {
 
     private CumulusFileDownloaderUtil() {
         throw new AssertionError("Utility Class");

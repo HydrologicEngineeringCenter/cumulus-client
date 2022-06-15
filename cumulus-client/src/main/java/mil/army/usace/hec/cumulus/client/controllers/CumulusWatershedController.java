@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutorService;
 import mil.army.usace.hec.cumulus.client.model.CumulusObjectMapper;
 import mil.army.usace.hec.cumulus.client.model.Watershed;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
@@ -13,9 +14,14 @@ import mil.army.usace.hec.cwms.http.client.HttpRequestBuilderImpl;
 import mil.army.usace.hec.cwms.http.client.HttpRequestResponse;
 import mil.army.usace.hec.cwms.http.client.request.HttpRequestExecutor;
 
-public class CumulusWatershedController {
+public final class CumulusWatershedController {
 
     private static final String WATERSHEDS_ENDPOINT = "watersheds";
+    private final ExecutorService executorService;
+
+    public CumulusWatershedController(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
 
     /**
      * Retrieve Watershed.
@@ -23,10 +29,8 @@ public class CumulusWatershedController {
      * @param apiConnectionInfo    - connection info
      * @param watershedEndpointInput - watershed endpoint input containing watershed id
      * @return Watershed
-     * @throws CompletionException - IOException wrapper thrown if retrieve failed
      */
-    public CompletableFuture<Watershed> retrieveWatershed(ApiConnectionInfo apiConnectionInfo, WatershedEndpointInput watershedEndpointInput)
-        throws CompletionException {
+    public CompletableFuture<Watershed> retrieveWatershed(ApiConnectionInfo apiConnectionInfo, WatershedEndpointInput watershedEndpointInput) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 HttpRequestExecutor executor =
@@ -40,7 +44,7 @@ public class CumulusWatershedController {
             } catch (IOException ex) {
                 throw new CompletionException(ex);
             }
-        });
+        }, executorService);
     }
 
     /**
@@ -50,8 +54,7 @@ public class CumulusWatershedController {
      * @return List of Watersheds
      * @throws CompletionException - IOException wrapper thrown if retrieve failed
      */
-    public CompletableFuture<List<Watershed>> retrieveAllWatersheds(ApiConnectionInfo apiConnectionInfo)
-        throws CompletionException {
+    public CompletableFuture<List<Watershed>> retrieveAllWatersheds(ApiConnectionInfo apiConnectionInfo) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 HttpRequestExecutor executor = new HttpRequestBuilderImpl(apiConnectionInfo, WATERSHEDS_ENDPOINT)
@@ -64,7 +67,7 @@ public class CumulusWatershedController {
             } catch (IOException ex) {
                 throw new CompletionException(ex);
             }
-        });
+        }, executorService);
     }
 
 

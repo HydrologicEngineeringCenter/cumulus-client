@@ -25,17 +25,16 @@ final class CumulusDownloadByteChannel implements ReadableByteChannel {
             startTime = System.currentTimeMillis();
         }
         int newBytesRead = readableByteChannel.read(byteBuffer);
-        listener.elapsedDownloadTimeUpdated(System.currentTimeMillis() - startTime);
-        notifyBytesRead(newBytesRead);
+        notifyBytesRead(newBytesRead, System.currentTimeMillis() - startTime);
         return newBytesRead;
     }
 
-    private void notifyBytesRead(int newBytesRead) {
+    private void notifyBytesRead(int newBytesRead, long elapsedTimeMillis) {
         if (newBytesRead <= 0) {
             return;
         }
         bytesReadSoFar += newBytesRead;
-        listener.bytesRead(downloadData, newBytesRead, bytesReadSoFar);
+        listener.bytesRead(downloadData, newBytesRead, bytesReadSoFar, elapsedTimeMillis);
     }
 
     @Override

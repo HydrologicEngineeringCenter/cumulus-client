@@ -4,9 +4,6 @@ import mil.army.usace.hec.cumulus.client.model.Download;
 
 public interface CumulusDssFileGenerationListener {
 
-    void downloadStatusUpdated(Download downloadStatus);
+    void downloadStatusUpdated(Download downloadStatus, int queryCount, long timeMillis);
 
-    void downloadStatusQueryCountUpdated(int queryCount);
-
-    void elapsedGenerationTimeUpdated(long timeMillis);
 }

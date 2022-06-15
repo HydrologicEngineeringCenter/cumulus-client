@@ -119,7 +119,7 @@ class TestCumulusFileDownloaderUtil extends TestController{
     private CumulusDssFileDownloadListener buildDownloadListener() {
         return new CumulusDssFileDownloadListener() {
             @Override
-            public void bytesRead(Download downloadData, int currentBytesRead, int totalBytesRead) {
+            public void bytesRead(Download downloadData, int currentBytesRead, int totalBytesRead, long elapsedTime) {
                 //noop
             }
 
@@ -128,10 +128,6 @@ class TestCumulusFileDownloaderUtil extends TestController{
                 //noop
             }
 
-            @Override
-            public void elapsedDownloadTimeUpdated(long elapsedTime) {
-
-            }
         };
     }
 }

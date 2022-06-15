@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.concurrent.Executors;
 import mil.army.usace.hec.cumulus.client.model.Product;
 import mil.army.usace.hec.cumulus.client.model.ProductAvailability;
 import mil.army.usace.hec.cumulus.client.model.ProductFile;
@@ -22,7 +23,7 @@ class TestCumulusProductsController extends TestController{
         String resource = "cumulus/json/products.json";
         launchMockServerWithResource(resource);
 
-        List<Product> products = new CumulusProductsController().retrieveAllProducts(buildConnectionInfo()).join();
+        List<Product> products = new CumulusProductsController(Executors.newFixedThreadPool(10)).retrieveAllProducts(buildConnectionInfo()).join();
         assertEquals(2, products.size());
         Product product1 = products.get(0);
         Product product2 = products.get(1);
@@ -76,7 +77,7 @@ class TestCumulusProductsController extends TestController{
 
         String productId = "3fa85f64-5717-4562-b3fc-2c963f66afa6";
         ProductsEndpointInput input = new ProductsEndpointInput(productId);
-        Product product = new CumulusProductsController().retrieveProduct(buildConnectionInfo(), input).join();
+        Product product = new CumulusProductsController(Executors.newFixedThreadPool(10)).retrieveProduct(buildConnectionInfo(), input).join();
         assertEquals("3fa85f64-5717-4562-b3fc-2c963f66afa6", product.getId());
         assertEquals("testSlug", product.getSlug());
         assertEquals("product1", product.getName());
@@ -108,7 +109,7 @@ class TestCumulusProductsController extends TestController{
         Instant after = ZonedDateTime.of(2022,3, 21, 0,0,0,0, ZoneId.of("UTC")).toInstant();
         Instant before = ZonedDateTime.of(2022,3, 22, 0,0,0,0, ZoneId.of("UTC")).toInstant();
         ProductsFileEndpointInput input = new ProductsFileEndpointInput(productId, after, before);
-        List<ProductFile> productFiles = new CumulusProductsController().retrieveProductFiles(buildConnectionInfo(), input).join();
+        List<ProductFile> productFiles = new CumulusProductsController(Executors.newFixedThreadPool(10)).retrieveProductFiles(buildConnectionInfo(), input).join();
         assertNotNull(productFiles);
         assertFalse(productFiles.isEmpty());
         ProductFile productFile = productFiles.get(0);
@@ -124,7 +125,7 @@ class TestCumulusProductsController extends TestController{
 
         String productId = "3fa85f64-5717-4562-b3fc-2c963f66afa6";
         ProductsEndpointInput input = new ProductsEndpointInput(productId);
-        ProductAvailability productAvailability = new CumulusProductsController().retrieveProductAvailability(buildConnectionInfo(), input).join();
+        ProductAvailability productAvailability = new CumulusProductsController(Executors.newFixedThreadPool(10)).retrieveProductAvailability(buildConnectionInfo(), input).join();
         assertNotNull(productAvailability);
         assertEquals("3fa85f64-5717-4562-b3fc-2c963f66afa6", productAvailability.getProductId());
         assertEquals(1, productAvailability.getDateCounts().length);

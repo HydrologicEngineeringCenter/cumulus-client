@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutorService;
 import mil.army.usace.hec.cumulus.client.model.CumulusObjectMapper;
 import mil.army.usace.hec.cumulus.client.model.Product;
 import mil.army.usace.hec.cumulus.client.model.ProductAvailability;
@@ -15,21 +16,24 @@ import mil.army.usace.hec.cwms.http.client.HttpRequestBuilderImpl;
 import mil.army.usace.hec.cwms.http.client.HttpRequestResponse;
 import mil.army.usace.hec.cwms.http.client.request.HttpRequestExecutor;
 
-public class CumulusProductsController {
+public final class CumulusProductsController {
 
     private static final String PRODUCTS_ENDPOINT = "products";
     private static final String FILES_ENDPOINT = "files";
     private static final String AVAILABILITY_ENDPOINT = "availability";
+    private final ExecutorService executorService;
+
+    public CumulusProductsController(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
 
     /**
      * Retrieve All Products.
      *
      * @param apiConnectionInfo    - connection info
      * @return List of Products
-     * @throws CompletionException - IOException wrapper thrown if retrieve failed
      */
-    public CompletableFuture<List<Product>> retrieveAllProducts(ApiConnectionInfo apiConnectionInfo)
-        throws CompletionException {
+    public CompletableFuture<List<Product>> retrieveAllProducts(ApiConnectionInfo apiConnectionInfo) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 HttpRequestExecutor executor = new HttpRequestBuilderImpl(apiConnectionInfo, PRODUCTS_ENDPOINT)
@@ -42,7 +46,7 @@ public class CumulusProductsController {
             } catch (IOException ex) {
                 throw new CompletionException(ex);
             }
-        });
+        }, executorService);
     }
 
     /**
@@ -51,10 +55,8 @@ public class CumulusProductsController {
      * @param apiConnectionInfo    - connection info
      * @param productsEndpointInput - product endpoint input containing product id
      * @return Product
-     * @throws CompletionException - IOException wrapper thrown if retrieve failed
      */
-    public CompletableFuture<Product> retrieveProduct(ApiConnectionInfo apiConnectionInfo, ProductsEndpointInput productsEndpointInput)
-        throws CompletionException {
+    public CompletableFuture<Product> retrieveProduct(ApiConnectionInfo apiConnectionInfo, ProductsEndpointInput productsEndpointInput) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 HttpRequestExecutor executor =
@@ -68,7 +70,7 @@ public class CumulusProductsController {
             } catch (IOException ex) {
                 throw new CompletionException(ex);
             }
-        });
+        }, executorService);
     }
 
     /**
@@ -77,10 +79,9 @@ public class CumulusProductsController {
      * @param apiConnectionInfo    - connection info
      * @param productsFileEndpointInput - product files endpoint input containing product id and date range
      * @return List of ProductFiles
-     * @throws CompletionException - IOException wrapper thrown if retrieve failed
      */
-    public CompletableFuture<List<ProductFile>> retrieveProductFiles(ApiConnectionInfo apiConnectionInfo, ProductsFileEndpointInput productsFileEndpointInput)
-        throws CompletionException {
+    public CompletableFuture<List<ProductFile>> retrieveProductFiles(ApiConnectionInfo apiConnectionInfo,
+                                                                     ProductsFileEndpointInput productsFileEndpointInput) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 HttpRequestExecutor executor = new HttpRequestBuilderImpl(apiConnectionInfo, PRODUCTS_ENDPOINT + "/"
@@ -94,7 +95,7 @@ public class CumulusProductsController {
             } catch (IOException ex) {
                 throw new CompletionException(ex);
             }
-        });
+        }, executorService);
     }
 
     /**
@@ -103,10 +104,9 @@ public class CumulusProductsController {
      * @param apiConnectionInfo    - connection info
      * @param productsEndpointInput - product endpoint input containing product id
      * @return ProductAvailability
-     * @throws CompletionException - IOException wrapper thrown if retrieve failed
      */
-    public CompletableFuture<ProductAvailability> retrieveProductAvailability(ApiConnectionInfo apiConnectionInfo, ProductsEndpointInput productsEndpointInput)
-        throws CompletionException {
+    public CompletableFuture<ProductAvailability> retrieveProductAvailability(ApiConnectionInfo apiConnectionInfo,
+                                                                              ProductsEndpointInput productsEndpointInput) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 HttpRequestExecutor executor = new HttpRequestBuilderImpl(apiConnectionInfo, PRODUCTS_ENDPOINT + "/"
@@ -121,7 +121,7 @@ public class CumulusProductsController {
             } catch (IOException ex) {
                 throw new CompletionException(ex);
             }
-        });
+        }, executorService);
     }
 
 
