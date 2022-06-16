@@ -23,7 +23,7 @@ import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.Test;
 
 class TestAuthenticatedHttpRequestBuilder {
-    private static final String ACCEPT_HEADER_V1 = "application/json";
+    static final String ACCEPT_HEADER_V1 = "application/json";
 
     @Test
     void testHttpRequestBuilderCreateRequestInvalidUrl() {
@@ -443,7 +443,7 @@ class TestAuthenticatedHttpRequestBuilder {
         });
     }
 
-    private String readJsonFile(String jsonPath) throws IOException {
+    String readJsonFile(String jsonPath) throws IOException {
         URL resource = getClass().getClassLoader().getResource(jsonPath);
         if (resource == null) {
             throw new IOException("Resource not found: " + jsonPath);
