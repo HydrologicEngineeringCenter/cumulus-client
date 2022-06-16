@@ -1,6 +1,5 @@
 dependencies {
     implementation(project(":cumulus-model"))
-    implementation(project(":cumulus-http-client"))
     implementation(project(":cwbi-auth-http-client"))
     implementation("mil.army.usace.hec:cwms-http-client:2.2.0")
 

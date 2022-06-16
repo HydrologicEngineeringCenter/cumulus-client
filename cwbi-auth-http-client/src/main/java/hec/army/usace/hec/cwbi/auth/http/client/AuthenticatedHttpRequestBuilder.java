@@ -1,11 +1,11 @@
 package hec.army.usace.hec.cwbi.auth.http.client;
 
+import java.io.IOException;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.X509TrustManager;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
 import mil.army.usace.hec.cwms.http.client.HttpRequestBuilder;
 import mil.army.usace.hec.cwms.http.client.HttpRequestBuilderImpl;
-import mil.army.usace.hec.cwms.http.client.ServerNotFoundException;
 import okhttp3.OkHttpClient;
 
 public final class AuthenticatedHttpRequestBuilder implements CustomSslHttpRequestBuilder {
@@ -26,14 +26,14 @@ public final class AuthenticatedHttpRequestBuilder implements CustomSslHttpReque
 
     @Override
     public HttpRequestBuilder withSslSocketFactory(SSLSocketFactory sslSocketFactory, X509TrustManager x509TrustManager)
-        throws ServerNotFoundException {
+        throws IOException {
         this.sslSocketData = new SslSocketData(sslSocketFactory, x509TrustManager);
         return new CustomHttpRequestBuilderImpl(apiConnectionInfo, endpoint);
     }
 
     private class CustomHttpRequestBuilderImpl extends HttpRequestBuilderImpl {
 
-        public CustomHttpRequestBuilderImpl(ApiConnectionInfo apiConnectionInfo, String endpoint) throws ServerNotFoundException {
+        public CustomHttpRequestBuilderImpl(ApiConnectionInfo apiConnectionInfo, String endpoint) throws IOException {
             super(apiConnectionInfo, endpoint);
         }
 

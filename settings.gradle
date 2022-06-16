@@ -2,5 +2,4 @@ rootProject.name = 'cumulus-client-parent'
 
 include ":cumulus-client"
 include ":cumulus-model"
-include ":cumulus-http-client"
 include ":cwbi-auth-http-client"

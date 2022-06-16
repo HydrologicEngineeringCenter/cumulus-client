@@ -2,27 +2,34 @@ package mil.army.usace.hec.cumulus.client.controllers;
 
 import static mil.army.usace.hec.cumulus.client.controllers.CumulusEndpointConstants.ACCEPT_HEADER_V1;
 
-import hec.army.usace.hec.cumulus.http.client.CumulusHttpRequestBuilderImpl;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ExecutorService;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import mil.army.usace.hec.cumulus.client.model.CumulusObjectMapper;
 import mil.army.usace.hec.cumulus.client.model.Download;
 import mil.army.usace.hec.cumulus.client.model.DownloadRequest;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
 import mil.army.usace.hec.cwms.http.client.HttpRequestBuilderImpl;
 import mil.army.usace.hec.cwms.http.client.HttpRequestResponse;
-import mil.army.usace.hec.cwms.http.client.auth.OAuth2Token;
 import mil.army.usace.hec.cwms.http.client.request.HttpRequestExecutor;
 
-public class CumulusDssFileController {
+public final class CumulusDssFileController {
 
+    private static final Logger LOGGER = Logger.getLogger(CumulusDssFileController.class.getName());
     public static final String DOWNLOADS_ENDPOINT = "downloads";
-    private static final int MAX_ALLOWED_TIME_SECONDS = 300;
-    private static final String PROGRESS_INTERVAL_PROPERTY_KEY = "cumulus.progress.interval.millis";
+    private static final Duration MAX_ALLOWED_TIME = Duration.ofMinutes(5);
+    private static final String PROGRESS_INTERVAL_PROPERTY_KEY = "cumulus.progress.duration";
+    private final ExecutorService executorService;
 
+    public CumulusDssFileController(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
 
     /**
      * Retrieve Download (Used for obtaining download status).
@@ -51,14 +58,14 @@ public class CumulusDssFileController {
      * @throws CompletionException - thrown if IOException Occurred during monitor process
      */
     public CompletableFuture<Download> monitorDssFileGeneration(ApiConnectionInfo apiConnectionInfo, Download downloadData,
-                                                                CumulusDssFileGenerationListener listener) throws CompletionException {
+                                                                CumulusDssFileGenerationListener listener) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return monitorAndRetrieveDownloadDataWhenComplete(apiConnectionInfo, downloadData, listener);
             } catch (IOException ex) {
                 throw new CompletionException(ex);
             }
-        });
+        }, executorService);
     }
 
     /**
@@ -69,27 +76,28 @@ public class CumulusDssFileController {
      * @return Download         - object that can be queried for status updates
      */
     public CompletableFuture<Download> generateDssFile(ApiConnectionInfo apiConnectionInfo, DownloadRequest downloadRequest,
-                                                       OAuth2Token token, CumulusDssFileGenerationListener listener) throws CompletionException {
+                                                       CumulusDssFileGenerationListener listener) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 if (downloadRequest == null) {
                     throw new IOException("Missing required Download Request in order to generate DSS File");
                 }
-                Download initialDownloadData = executeInitialDownloadRequest(apiConnectionInfo, downloadRequest, token);
+                Download initialDownloadData = executeInitialDownloadRequest(apiConnectionInfo, downloadRequest);
                 if (listener != null) {
-                    listener.downloadStatusUpdated(initialDownloadData);
+                    listener.downloadStatusUpdated(initialDownloadData, 0, Duration.ZERO);
                 }
                 return initialDownloadData;
             } catch (IOException e) {
                 throw new CompletionException(e);
             }
-        });
+        }, executorService);
     }
 
-    Download executeInitialDownloadRequest(ApiConnectionInfo apiConnectionInfo, DownloadRequest downloadRequest, OAuth2Token token) throws IOException {
+    Download executeInitialDownloadRequest(ApiConnectionInfo apiConnectionInfo, DownloadRequest downloadRequest)
+        throws IOException {
         String jsonBody = CumulusObjectMapper.mapObjectToJson(downloadRequest);
         HttpRequestExecutor executor =
-            new CumulusHttpRequestBuilderImpl(apiConnectionInfo, DOWNLOADS_ENDPOINT, token)
+            new CumulusHttpRequestBuilderImpl(apiConnectionInfo, DOWNLOADS_ENDPOINT)
                 .enableHttp2()
                 .post()
                 .withBody(jsonBody)
@@ -108,67 +116,77 @@ public class CumulusDssFileController {
      * @return CompletableFuture           - Reference to async download process to be handled by caller
      */
     public CompletableFuture<Void> downloadToLocalFile(Download generatedDssFileDownloadData, Path pathToLocalFile,
-                                                       CumulusDssFileDownloadListener listener) throws CompletionException {
-        if (generatedDssFileDownloadData == null) {
-            throw new CompletionException(new IOException("Missing download Data"));
-        }
-        if (generatedDssFileDownloadData.getFile() == null) {
-            throw new CompletionException(new IOException("Missing DSS File URL for Download ID: " + generatedDssFileDownloadData.getId()));
-        }
+                                                       CumulusDssFileDownloadListener listener) {
         return CompletableFuture.runAsync(() -> {
+            if (generatedDssFileDownloadData == null) {
+                throw new IllegalArgumentException("Missing download Data");
+            }
+            if (generatedDssFileDownloadData.getFile() == null) {
+                throw new IllegalArgumentException("Missing DSS File URL for Download ID: " + generatedDssFileDownloadData.getId());
+            }
             try {
                 CumulusFileDownloaderUtil.downloadFileToLocal(generatedDssFileDownloadData, pathToLocalFile, listener);
             } catch (IOException e) {
                 throw new CompletionException(e);
             }
-        });
+        }, executorService);
 
     }
 
     private Download monitorAndRetrieveDownloadDataWhenComplete(ApiConnectionInfo apiConnectionInfo, Download initialDownloadData,
                                                                 CumulusDssFileGenerationListener listener) throws IOException {
         DownloadsEndpointInput downloadsEndpointInput = new DownloadsEndpointInput(initialDownloadData.getId());
-        String progressIntervalVal = System.getProperty(PROGRESS_INTERVAL_PROPERTY_KEY);
-        if (progressIntervalVal == null) {
-            progressIntervalVal = "500";
-        }
-        int progressInterval = Integer.parseInt(progressIntervalVal);
-        long startTime = System.currentTimeMillis();
-        long progressStartTime = startTime;
-        long elapsedTimeSinceProgressChanged = 0L;
-        long maxStallTimeInMillis = TimeUnit.SECONDS.toMillis(MAX_ALLOWED_TIME_SECONDS);
+        Duration progressInterval = getProgressInterval();
+        Instant startTime = Instant.now();
+        Instant progressStartTime = Instant.now();
+        Duration elapsedTimeSinceProgressChanged = Duration.ZERO;
         Download downloadStatus = null;
         int counter = 0;
         String file = null;
         int progress = 0;
-        while (file == null && elapsedTimeSinceProgressChanged <= maxStallTimeInMillis) {
-            counter++;
-            try {
+        try {
+            while (file == null && elapsedTimeSinceProgressChanged.compareTo(MAX_ALLOWED_TIME) < 0) {
                 downloadStatus = queryDownloadStatus(apiConnectionInfo, downloadsEndpointInput);
                 file = downloadStatus.getFile();
-                long totalElapsedTime = System.currentTimeMillis() - startTime;
+                Duration totalElapsedTime = Duration.between(Instant.now(), startTime);
                 if (listener != null) {
-                    listener.downloadStatusUpdated(downloadStatus);
-                    listener.downloadStatusQueryCountUpdated(counter);
-                    listener.elapsedGenerationTimeUpdated(totalElapsedTime);
+                    listener.downloadStatusUpdated(downloadStatus, counter, totalElapsedTime);
                 }
                 int newProgress = downloadStatus.getProgress();
                 if (newProgress > progress) { // if progress increased, set new timer to check for progress stall
-                    progressStartTime = System.currentTimeMillis();
+                    progressStartTime = Instant.now();
                     progress = newProgress;
                 }
-                elapsedTimeSinceProgressChanged = System.currentTimeMillis() - progressStartTime; //elapsed time since progress last changed
+                elapsedTimeSinceProgressChanged = Duration.between(Instant.now(), progressStartTime); //elapsed time since progress last changed
 
-                Thread.sleep(progressInterval);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new IOException("Unexpected interrupt occurred while monitoring status for Download ID: " + downloadStatus.getId(), e);
+                Thread.sleep(progressInterval.toMillis());
+                if (Thread.currentThread().isInterrupted()) {
+                    throw new InterruptedException();
+                }
             }
-        }
-        if (downloadStatus != null && downloadStatus.getProgress() < 100) {
-            throw new IOException("DSS File Generation timed out for Download ID: " + downloadStatus.getId());
+            if (downloadStatus != null && downloadStatus.getProgress() < 100) {
+                throw new IOException("DSS File Generation timed out for Download ID: " + downloadStatus.getId());
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            String errorMsg = "Unexpected interrupt occurred while monitoring status for Download ID: " + downloadStatus.getId();
+            LOGGER.log(Level.FINE, errorMsg, e);
         }
         return downloadStatus; //once completed we return download status object containing URL of file
+    }
+
+    private Duration getProgressInterval() {
+        String progressIntervalVal = System.getProperty(PROGRESS_INTERVAL_PROPERTY_KEY);
+        Duration progressInterval;
+        if (progressIntervalVal == null) {
+            progressInterval = Duration.ofMillis(500);
+            LOGGER.log(Level.CONFIG, () -> "Property " + PROGRESS_INTERVAL_PROPERTY_KEY + " is not defined. Defaulting to " + progressInterval);
+        } else {
+            progressInterval = Duration.parse(progressIntervalVal);
+            LOGGER.log(Level.CONFIG, () -> "Property " + PROGRESS_INTERVAL_PROPERTY_KEY + " is defined. Using property value of "
+                + progressInterval + " as progress interval");
+        }
+        return progressInterval;
     }
 
 }

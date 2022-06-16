@@ -1,5 +1,6 @@
 package mil.army.usace.hec.cumulus.client.controllers;
 
+import hec.army.usace.hec.cwbi.auth.http.client.JwtValidator;
 import java.io.IOException;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
 import mil.army.usace.hec.cwms.http.client.HttpRequestBuilderImpl;

@@ -34,19 +34,20 @@ public final class DirectGrantX509TokenRequestBuilder implements DirectGrantX509
         @Override
         OAuth2Token retrieveToken() throws IOException {
             OAuth2Token retVal = null;
+            String formBody = new UrlEncodedFormData()
+                .addPassword("")
+                .addGrantType("password")
+                .addScopes("openid", "profile")
+                .addClientId(getClientId())
+                .addUsername("")
+                .buildEncodedString();
             HttpRequestExecutor executor =
                 new AuthenticatedHttpRequestBuilder(new ApiConnectionInfo(getUrl()))
                     .withSslSocketFactory(sslSocketFactory, CwbiAuthTrustManager.getTrustManager())
                     .addQueryHeader("Content-Type", MEDIA_TYPE)
                     .enableHttp2()
                     .post()
-                    .withBody(new UrlEncodedFormData()
-                        .addPassword("")
-                        .addGrantType("password")
-                        .addScopes("openid", "profile")
-                        .addClientId(getClientId())
-                        .addUsername("")
-                        .buildEncodedString())
+                    .withBody(formBody)
                     .withMediaType(MEDIA_TYPE);
             try (HttpRequestResponse response = executor.execute()) {
                 String body = response.getBody();

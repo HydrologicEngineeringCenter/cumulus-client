@@ -1,16 +1,13 @@
 package mil.army.usace.hec.cumulus.client.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.net.InetAddress;
 import java.net.Socket;
-import java.security.KeyStoreException;
 import java.util.concurrent.CompletionException;
 import javax.net.ssl.SSLSocketFactory;
-import mil.army.usace.hec.cumulus.client.controllers.ssl.CacKeyManager;
 import mil.army.usace.hec.cwms.http.client.auth.OAuth2Token;
 import org.junit.jupiter.api.Test;
 
@@ -65,14 +62,4 @@ class TestCumulusTokenController {
         };
     }
 
-    @Test
-    void testLive() throws KeyStoreException {
-        OAuth2Token oAuth2Token = new CumulusTokenController().retrieveTokenWithDirectGrantX509(CacKeyManager.getKeyManager()).join();
-        String accessToken = oAuth2Token.getAccessToken();
-        assertNotNull(accessToken);
-
-        OAuth2Token oAuth2TokenFromRefresh = new CumulusTokenController().retrieveTokenWithRefreshToken(oAuth2Token.getRefreshToken()).join();
-        String accessTokenFromRefresh = oAuth2TokenFromRefresh.getAccessToken();
-        assertNotNull(accessTokenFromRefresh);
-    }
 }
