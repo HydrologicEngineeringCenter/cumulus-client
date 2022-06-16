@@ -17,9 +17,18 @@ public final class JwtValidator extends DefaultOAuth2TokenValidator {
     @Override
     public void validateToken(OAuth2Token oauth2Token) throws OAuth2TokenException {
         super.validateToken(oauth2Token);
+        validateJwtString(oauth2Token.getAccessToken());
+    }
+
+    /**
+     * Validates the JWT string is a valid JSON Web Token.
+     * @param accessToken - JWT String
+     * @throws OAuth2TokenException - thrown if not a JWT, or if JWT is expired
+     */
+    public void validateJwtString(String accessToken) throws OAuth2TokenException {
         try {
             int bufferMillis = getBuffer();
-            DecodedJWT decodedToken = JWT.decode(oauth2Token.getAccessToken());
+            DecodedJWT decodedToken = JWT.decode(accessToken);
             Date expiration = decodedToken.getExpiresAt();
             long adjustedTime = Instant.now().toEpochMilli() + bufferMillis;
             Date adjustedDate = new Date(adjustedTime);

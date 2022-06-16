@@ -2,7 +2,7 @@ package mil.army.usace.hec.cumulus.client.controllers;
 
 
 import hec.army.usace.hec.cwbi.auth.http.client.DirectGrantX509TokenRequestBuilder;
-import hec.army.usace.hec.cwbi.auth.http.client.JwtTokenValidator;
+import hec.army.usace.hec.cwbi.auth.http.client.JwtValidator;
 import hec.army.usace.hec.cwbi.auth.http.client.RefreshTokenRequestBuilder;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
@@ -46,7 +46,7 @@ public class CumulusTokenController {
     public CompletableFuture<OAuth2Token> retrieveTokenWithRefreshToken(String refreshToken) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                JwtTokenValidator.validateToken(refreshToken);
+                new JwtValidator().validateJwtString(refreshToken);
                 return retrieveOAuth2TokenWithRefreshToken(refreshToken);
             } catch (IOException e) {
                 throw new CompletionException(e);
