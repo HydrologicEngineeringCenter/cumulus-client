@@ -4,6 +4,8 @@ import hec.army.usace.hec.cwbi.auth.http.client.token.fluentbuilders.DirectGrant
 import hec.army.usace.hec.cwbi.auth.http.client.token.fluentbuilders.TokenRequestFluentBuilder;
 import hec.army.usace.hec.cwbi.auth.http.client.trustmanagers.CwbiAuthTrustManager;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLSocketFactory;
@@ -18,14 +20,13 @@ public final class DirectGrantX509TokenRequestBuilder implements DirectGrantX509
 
     @Override
     public TokenRequestFluentBuilder withKeyManager(KeyManager keyManager) throws IOException {
-        KeyManager[] keyManagers = new KeyManager[] {Objects.requireNonNull(keyManager, "Missing required KeyManager")};
+        List<KeyManager> keyManagers = Collections.singletonList(Objects.requireNonNull(keyManager, "Missing required KeyManager"));
         return withKeyManagers(keyManagers);
     }
 
     @Override
-    public TokenRequestFluentBuilder withKeyManagers(KeyManager[] keyManagers) throws IOException {
-        sslSocketFactory = SSLSocketFactoryRegistry.getRegistry()
-            .getSslSocketFactoryInstance(Objects.requireNonNull(keyManagers, "Missing required KeyManagers"));
+    public TokenRequestFluentBuilder withKeyManagers(List<KeyManager> keyManagers) throws IOException {
+        sslSocketFactory = CwbiAuthSslSocketFactory.buildSSLSocketFactory(Objects.requireNonNull(keyManagers, "Missing required KeyManagers"));
         return new TokenRequestBuilderImpl();
     }
 

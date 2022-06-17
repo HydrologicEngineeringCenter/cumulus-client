@@ -1,17 +1,21 @@
 package mil.army.usace.hec.cumulus.client.controllers;
 
+import static mil.army.usace.hec.cumulus.client.controllers.CumulusTokenController.CLIENT_ID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.net.InetAddress;
-import java.net.Socket;
+import hec.army.usace.hec.cwbi.auth.http.client.DirectGrantX509TokenRequestBuilder;
+import hec.army.usace.hec.cwbi.auth.http.client.RefreshTokenRequestBuilder;
+import java.io.IOException;
 import java.util.concurrent.CompletionException;
-import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.KeyManager;
+import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
 import mil.army.usace.hec.cwms.http.client.auth.OAuth2Token;
 import org.junit.jupiter.api.Test;
 
-class TestCumulusTokenController {
+class TestCumulusTokenController extends TestController{
 
     @Test
     void testRetrieveTokenMissingParams() {
@@ -19,47 +23,67 @@ class TestCumulusTokenController {
             OAuth2Token token = new CumulusTokenController().retrieveTokenWithDirectGrantX509(null).join();
             assertNull(token);
         });
-        assertEquals("Missing required SSLSocketFactory", ex.getCause().getMessage());
+        assertEquals("Missing required KeyManager", ex.getCause().getMessage());
+
+        NullPointerException ex2 = assertThrows(NullPointerException.class, () -> {
+            OAuth2Token token = new CumulusTokenController().retrieveOAuth2TokenWithRefreshToken(null);
+            assertNull(token);
+        });
+        assertEquals("Missing required refresh token", ex2.getMessage());
+    }
+
+    @Test
+    void testRetrieveTokenDirectGrantX509() throws IOException {
+        String resource = "cumulus/json/oauth2token.json";
+        launchMockServerWithResource(resource);
+
+        OAuth2Token token = mockRetrieveOAuth2TokenWithDirectGrantX509(getTestKeyManager());
+        assertNotNull(token);
+        assertEquals("MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3", token.getAccessToken());
+        assertEquals("Bearer", token.getTokenType());
+        assertEquals(3600, token.getExpiresIn());
+        assertEquals("create", token.getScope());
+        assertEquals("IwOGYzYTlmM2YxOTQ5MGE3YmNmMDFkNTVk", token.getRefreshToken());
 
     }
 
-    private SSLSocketFactory getTestSSLSocketFactory() {
-        return new SSLSocketFactory() {
-            @Override
-            public String[] getDefaultCipherSuites() {
-                return new String[0];
-            }
+    @Test
+    void testRetrieveTokenWithRefreshToken() throws IOException {
+        String resource = "cumulus/json/oauth2token.json";
+        String refreshToken = "IwOGYzYTlmM2YxOTQ5MGE3YmNmMDFkNTVk";
+        launchMockServerWithResource(resource);
+        OAuth2Token token = mockRetrieveOAuth2TokenWithRefreshToken(refreshToken);
+        assertNotNull(token);
+        assertEquals("MTQ0NjJkZmQ5OTM2NDE1ZTZjNGZmZjI3", token.getAccessToken());
+        assertEquals("Bearer", token.getTokenType());
+        assertEquals(3600, token.getExpiresIn());
+        assertEquals("create", token.getScope());
+        assertEquals("IwOGYzYTlmM2YxOTQ5MGE3YmNmMDFkNTVk", token.getRefreshToken());
 
-            @Override
-            public String[] getSupportedCipherSuites() {
-                return new String[0];
-            }
+    }
 
-            @Override
-            public Socket createSocket(Socket socket, String s, int i, boolean b) {
-                return null;
-            }
+   private KeyManager getTestKeyManager() {
+        return new KeyManager() {
 
-            @Override
-            public Socket createSocket(String s, int i) {
-                return null;
-            }
-
-            @Override
-            public Socket createSocket(String s, int i, InetAddress inetAddress, int i1) {
-                return null;
-            }
-
-            @Override
-            public Socket createSocket(InetAddress inetAddress, int i) {
-                return null;
-            }
-
-            @Override
-            public Socket createSocket(InetAddress inetAddress, int i, InetAddress inetAddress1, int i1) {
-                return null;
-            }
         };
+   }
+
+    private OAuth2Token mockRetrieveOAuth2TokenWithDirectGrantX509(KeyManager keyManager) throws IOException {
+        ApiConnectionInfo connectionInfo = buildConnectionInfo();
+        return new DirectGrantX509TokenRequestBuilder()
+            .withKeyManager(keyManager)
+            .withUrl(connectionInfo.getApiRoot())
+            .withClientId(CLIENT_ID)
+            .fetchToken();
+    }
+
+    OAuth2Token mockRetrieveOAuth2TokenWithRefreshToken(String refreshToken) throws IOException {
+        ApiConnectionInfo connectionInfo = buildConnectionInfo();
+        return new RefreshTokenRequestBuilder()
+            .withRefreshToken(refreshToken)
+            .withUrl(connectionInfo.getApiRoot())
+            .withClientId(CLIENT_ID)
+            .fetchToken();
     }
 
 }
