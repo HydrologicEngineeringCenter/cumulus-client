@@ -39,8 +39,9 @@ public final class AuthenticatedHttpRequestBuilder implements CustomSslHttpReque
 
         @Override
         protected OkHttpClient buildOkHttpClient() {
-            return CustomSslOkHttpClientInstanceRegistry.getRegistry()
-                .getOkHttpClientInstance(sslSocketData);
+            return super.buildOkHttpClient().newBuilder()
+                .sslSocketFactory(sslSocketData.getSslSocketFactory(), sslSocketData.getX509TrustManager())
+                .build();
         }
     }
 
