@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import javax.net.ssl.KeyManager;
 import mil.army.usace.hec.cwms.htp.client.MockHttpServer;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
 import mil.army.usace.hec.cwms.http.client.auth.OAuth2Token;
@@ -43,7 +44,7 @@ class TestCumulusHttpRequestBuilderImpl {
         oAuth2Token.setTokenType("Bearer");
         oAuth2Token.setExpiresIn(3600);
         IOException exception =
-            assertThrows(IOException.class, () -> new CumulusHttpRequestBuilderImpl(buildConnectionInfoWithToken(oAuth2Token), "endpoint"));
+            assertThrows(IOException.class, () -> new CumulusHttpRequestBuilderImpl(getTestKeyManger(), buildConnectionInfoWithToken(oAuth2Token), "endpoint"));
         assertEquals("Invalid JSON Web Token", exception.getMessage());
     }
 
@@ -58,8 +59,14 @@ class TestCumulusHttpRequestBuilderImpl {
         oAuth2Token.setAccessToken(expiredToken);
         oAuth2Token.setTokenType("Bearer");
         oAuth2Token.setExpiresIn(3600);
-        IOException exception = assertThrows(IOException.class, () -> new CumulusHttpRequestBuilderImpl(buildConnectionInfoWithToken(oAuth2Token), "endpoint"));
+        IOException exception = assertThrows(IOException.class, () -> new CumulusHttpRequestBuilderImpl(getTestKeyManger(), buildConnectionInfoWithToken(oAuth2Token), "endpoint"));
         assertEquals("Token is expired", exception.getMessage());
+    }
+
+    private KeyManager getTestKeyManger() {
+        return new KeyManager() {
+
+        };
     }
     
 }

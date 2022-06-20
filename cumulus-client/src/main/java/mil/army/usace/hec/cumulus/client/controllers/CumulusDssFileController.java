@@ -11,6 +11,7 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.net.ssl.KeyManager;
 import mil.army.usace.hec.cumulus.client.model.CumulusObjectMapper;
 import mil.army.usace.hec.cumulus.client.model.Download;
 import mil.army.usace.hec.cumulus.client.model.DownloadRequest;
@@ -76,13 +77,13 @@ public final class CumulusDssFileController {
      * @return Download         - object that can be queried for status updates
      */
     public CompletableFuture<Download> generateDssFile(ApiConnectionInfo apiConnectionInfo, DownloadRequest downloadRequest,
-                                                       CumulusDssFileGenerationListener listener) {
+                                                       CumulusDssFileGenerationListener listener, KeyManager keyManager) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 if (downloadRequest == null) {
                     throw new IOException("Missing required Download Request in order to generate DSS File");
                 }
-                Download initialDownloadData = executeInitialDownloadRequest(apiConnectionInfo, downloadRequest);
+                Download initialDownloadData = executeInitialDownloadRequest(apiConnectionInfo, downloadRequest, keyManager);
                 if (listener != null) {
                     listener.downloadStatusUpdated(initialDownloadData, 0, Duration.ZERO);
                 }
@@ -93,11 +94,11 @@ public final class CumulusDssFileController {
         }, executorService);
     }
 
-    Download executeInitialDownloadRequest(ApiConnectionInfo apiConnectionInfo, DownloadRequest downloadRequest)
+    Download executeInitialDownloadRequest(ApiConnectionInfo apiConnectionInfo, DownloadRequest downloadRequest, KeyManager keyManager)
         throws IOException {
         String jsonBody = CumulusObjectMapper.mapObjectToJson(downloadRequest);
         HttpRequestExecutor executor =
-            new CumulusHttpRequestBuilderImpl(apiConnectionInfo, DOWNLOADS_ENDPOINT)
+            new CumulusHttpRequestBuilderImpl(keyManager, apiConnectionInfo, DOWNLOADS_ENDPOINT)
                 .enableHttp2()
                 .post()
                 .withBody(jsonBody)

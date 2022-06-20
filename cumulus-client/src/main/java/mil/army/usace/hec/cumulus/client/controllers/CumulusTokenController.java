@@ -12,7 +12,7 @@ import mil.army.usace.hec.cwms.http.client.auth.OAuth2Token;
 
 public class CumulusTokenController {
 
-    private static final String TOKEN_URL = "https://auth.corps.cloud/auth/realms/water/protocol/openid-connect/token";
+    static final String TOKEN_URL = "https://auth.corps.cloud/auth/realms/water/protocol/openid-connect/token";
     static final String CLIENT_ID = "cumulus";
 
     /**

@@ -9,14 +9,16 @@ import okhttp3.Route;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-class AccessTokenAuthenticator implements Authenticator {
+public abstract class AccessTokenAuthenticator implements Authenticator {
 
     static final String AUTHORIZATION_HEADER = "Authorization";
     private final AccessTokenProvider tokenProvider;
 
-    AccessTokenAuthenticator(AccessTokenProvider provider) {
-        this.tokenProvider = provider;
+    protected AccessTokenAuthenticator() throws IOException {
+        this.tokenProvider = getAccessTokenProvider();
     }
+
+    public abstract AccessTokenProvider getAccessTokenProvider() throws IOException;
 
     @Nullable
     @Override
