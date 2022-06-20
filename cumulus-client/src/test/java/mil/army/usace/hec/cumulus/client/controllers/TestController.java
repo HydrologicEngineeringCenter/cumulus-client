@@ -29,14 +29,25 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import mil.army.usace.hec.cwms.htp.client.MockHttpServer;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
+import mil.army.usace.hec.cwms.http.client.auth.OAuth2Token;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
 abstract class TestController {
 
     static MockHttpServer mockHttpServer;
+
+    static ExecutorService executorService;
+
+    @BeforeAll
+    static void setUpExecutorService() {
+        executorService = Executors.newFixedThreadPool(1);
+    }
 
     @BeforeEach
     void setUp() throws IOException {
@@ -51,6 +62,16 @@ abstract class TestController {
     ApiConnectionInfo buildConnectionInfo() {
         String baseUrl = String.format("http://localhost:%s", mockHttpServer.getPort());
         return new ApiConnectionInfo(baseUrl);
+    }
+
+    ApiConnectionInfo buildConnectionInfoWithToken() {
+        String baseUrl = String.format("http://localhost:%s", mockHttpServer.getPort());
+        String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiVXNlciIsImlzcyI6IlNpbXBsZSBTb2x1dGlvbiIsInVzZXJuYW1lIjoiVGVzdFVzZXIifQ.jQUKIOxN0KGbIGJx8SU3WfSVPNASOnRtt3DcoMVBeThcWGzEBAnwlHHYRvbzuas-sOeWSvOwrnsvpQ5tywAfWA";
+        OAuth2Token oAuth2Token = new OAuth2Token();
+        oAuth2Token.setAccessToken(token);
+        oAuth2Token.setTokenType("Bearer");
+        oAuth2Token.setExpiresIn(3600);
+        return new ApiConnectionInfo(baseUrl, oAuth2Token);
     }
 
     protected void launchMockServerWithResource(String resource) throws IOException {

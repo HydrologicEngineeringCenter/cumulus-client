@@ -7,6 +7,12 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0")
     implementation("io.swagger:swagger-annotations:1.6.3")
     implementation("javax.validation:validation-api:2.0.1.Final")
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
+
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
+
+    swaggerCodegen('io.swagger.codegen.v3:swagger-codegen-cli:3.0.30')
 }
 
 publishing {
@@ -19,10 +25,11 @@ publishing {
 }
 
 swaggerSources {
-    cwmsRadar {
+    cumulus {
         inputFile = file("cumulus-swagger.yaml")
         code {
             language = 'spring'
+            templateDir = file('templates')
         }
     }
 }
