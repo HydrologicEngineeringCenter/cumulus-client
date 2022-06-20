@@ -51,7 +51,6 @@ public final class DirectGrantX509TokenRequestBuilder implements DirectGrantX509
             AccessTokenProviderImpl tokenProvider = new AccessTokenProviderImpl(getUrl(), getClientId(), sslSocketFactory);
             HttpRequestExecutor executor =
                 new AuthenticatedHttpRequestBuilder(new ApiConnectionInfo(getUrl()))
-                    .withAuthenticator(new AccessTokenAuthenticator(tokenProvider))
                     .withSslSocketFactory(sslSocketFactory, CwbiAuthTrustManager.getTrustManager())
                     .addQueryHeader("Content-Type", MEDIA_TYPE)
                     .enableHttp2()

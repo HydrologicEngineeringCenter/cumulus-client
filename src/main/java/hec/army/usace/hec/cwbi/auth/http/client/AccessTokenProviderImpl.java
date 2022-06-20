@@ -4,7 +4,7 @@ import java.io.IOException;
 import javax.net.ssl.SSLSocketFactory;
 import mil.army.usace.hec.cwms.http.client.auth.OAuth2Token;
 
-class AccessTokenProviderImpl implements AccessTokenProvider {
+public final class AccessTokenProviderImpl implements AccessTokenProvider {
 
     private final String url;
     private final String clientId;
@@ -18,7 +18,7 @@ class AccessTokenProviderImpl implements AccessTokenProvider {
      * @param clientId - client name
      * @param sslSocketFactory - ssl socket factory
      */
-    AccessTokenProviderImpl(String url, String clientId, SSLSocketFactory sslSocketFactory) {
+    public AccessTokenProviderImpl(String url, String clientId, SSLSocketFactory sslSocketFactory) {
         this.url = url;
         this.clientId = clientId;
         this.sslSocketFactory = sslSocketFactory;
@@ -26,12 +26,15 @@ class AccessTokenProviderImpl implements AccessTokenProvider {
 
     @Override
     public OAuth2Token getToken() throws IOException {
-        token = new DirectGrantX509TokenRequestBuilder()
+        return getDirectGrantX509Token();
+    }
+
+    private OAuth2Token getDirectGrantX509Token() throws IOException {
+        return new DirectGrantX509TokenRequestBuilder()
             .withSSlSocketFactory(sslSocketFactory)
             .withUrl(url)
             .withClientId(clientId)
             .fetchToken();
-        return token;
     }
 
     @Override
