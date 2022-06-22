@@ -1,5 +1,6 @@
 package hec.army.usace.hec.cwbi.auth.http.client;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -17,6 +18,7 @@ final class TestCwbiAuthTrustManager {
         assertNotNull(trustManager);
         X509Certificate[] acceptedIssuers = trustManager.getAcceptedIssuers();
         assertFalse(Arrays.asList(acceptedIssuers).isEmpty());
+        assertEquals("CN=ISRG Root X1, O=Internet Security Research Group, C=US", acceptedIssuers[0].getIssuerDN().toString());
     }
 
 }

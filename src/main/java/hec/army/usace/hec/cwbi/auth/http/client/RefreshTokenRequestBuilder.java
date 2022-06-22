@@ -4,7 +4,7 @@ import hec.army.usace.hec.cwbi.auth.http.client.token.fluentbuilders.RefreshToke
 import hec.army.usace.hec.cwbi.auth.http.client.token.fluentbuilders.TokenRequestFluentBuilder;
 import java.io.IOException;
 import java.util.Objects;
-import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
+import mil.army.usace.hec.cwms.http.client.ApiConnectionInfoBuilder;
 import mil.army.usace.hec.cwms.http.client.HttpRequestBuilderImpl;
 import mil.army.usace.hec.cwms.http.client.HttpRequestResponse;
 import mil.army.usace.hec.cwms.http.client.auth.OAuth2Token;
@@ -30,7 +30,7 @@ public final class RefreshTokenRequestBuilder implements RefreshTokenRequestFlue
         OAuth2Token retrieveToken() throws IOException {
             OAuth2Token retVal = null;
             HttpRequestExecutor executor =
-                new HttpRequestBuilderImpl(new ApiConnectionInfo(getUrl()))
+                new HttpRequestBuilderImpl(new ApiConnectionInfoBuilder(getUrl()).build())
                     .addQueryHeader("Content-Type", MEDIA_TYPE)
                     .enableHttp2()
                     .post()

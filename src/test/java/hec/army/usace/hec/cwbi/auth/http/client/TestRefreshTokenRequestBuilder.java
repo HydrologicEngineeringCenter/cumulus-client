@@ -5,20 +5,23 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.File;
 import java.io.IOException;
-import javax.net.ssl.KeyManager;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import mil.army.usace.hec.cwms.http.client.auth.OAuth2Token;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.Test;
 
-class TestRefreshTokenRequestBuilder extends TestAuthenticatedHttpRequestBuilder{
+class TestRefreshTokenRequestBuilder {
 
     @Test
     void testDirectGrantX509TokenRequestBuilder() throws IOException {
         MockWebServer mockWebServer = new MockWebServer();
         try {
-            String body = readJsonFile("oauth2token.json");
+            String body = readJsonFile();
             mockWebServer.enqueue(new MockResponse().setBody(body).setResponseCode(200));
             mockWebServer.start();
             String baseUrl = String.format("http://localhost:%s", mockWebServer.getPort());
@@ -40,14 +43,13 @@ class TestRefreshTokenRequestBuilder extends TestAuthenticatedHttpRequestBuilder
 
     @Test
     void testRetrieveTokenMissingParams() {
-        NullPointerException ex = assertThrows(NullPointerException.class, () -> {
+        assertThrows(NullPointerException.class, () -> {
             new RefreshTokenRequestBuilder()
                 .withRefreshToken("testToken")
                 .withUrl(null);
         });
-        assertEquals("Missing required URL", ex.getMessage());
 
-        NullPointerException ex2 = assertThrows(NullPointerException.class, () -> {
+        assertThrows(NullPointerException.class, () -> {
             OAuth2Token token = new RefreshTokenRequestBuilder()
                 .withRefreshToken("testToken")
                 .withUrl("https://test.com")
@@ -55,10 +57,9 @@ class TestRefreshTokenRequestBuilder extends TestAuthenticatedHttpRequestBuilder
                 .fetchToken();
             assertNull(token);
         });
-        assertEquals("Missing required Client ID", ex2.getMessage());
 
 
-        NullPointerException ex3 = assertThrows(NullPointerException.class, () -> {
+        assertThrows(NullPointerException.class, () -> {
             OAuth2Token token = new RefreshTokenRequestBuilder()
                 .withRefreshToken(null)
                 .withUrl("https://test.com")
@@ -66,12 +67,15 @@ class TestRefreshTokenRequestBuilder extends TestAuthenticatedHttpRequestBuilder
                 .fetchToken();
             assertNull(token);
         });
-        assertEquals("Missing required refresh token", ex3.getMessage());
     }
 
-    private KeyManager getTestKeyManager() {
-        return new KeyManager(){
-
-        };
+    String readJsonFile() throws IOException {
+        String jsonPath = "oauth2token.json";
+        URL resource = getClass().getClassLoader().getResource(jsonPath);
+        if (resource == null) {
+            throw new IOException("Resource not found: " + jsonPath);
+        }
+        Path path = new File(resource.getFile()).toPath();
+        return String.join("\n", Files.readAllLines(path));
     }
 }

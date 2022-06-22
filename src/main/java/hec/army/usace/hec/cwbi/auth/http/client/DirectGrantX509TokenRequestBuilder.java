@@ -4,35 +4,23 @@ import hec.army.usace.hec.cwbi.auth.http.client.token.fluentbuilders.DirectGrant
 import hec.army.usace.hec.cwbi.auth.http.client.token.fluentbuilders.TokenRequestFluentBuilder;
 import hec.army.usace.hec.cwbi.auth.http.client.trustmanagers.CwbiAuthTrustManager;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
-import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLSocketFactory;
-import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
+import mil.army.usace.hec.cwms.http.client.ApiConnectionInfoBuilder;
+import mil.army.usace.hec.cwms.http.client.HttpRequestBuilderImpl;
 import mil.army.usace.hec.cwms.http.client.HttpRequestResponse;
+import mil.army.usace.hec.cwms.http.client.SslSocketData;
 import mil.army.usace.hec.cwms.http.client.auth.OAuth2Token;
 import mil.army.usace.hec.cwms.http.client.request.HttpRequestExecutor;
 
 public final class DirectGrantX509TokenRequestBuilder implements DirectGrantX509TokenRequestFluentBuilder {
 
-    private SSLSocketFactory sslSocketFactory;
-
-    @Override
-    public TokenRequestFluentBuilder withKeyManager(KeyManager keyManager) throws IOException {
-        List<KeyManager> keyManagers = Collections.singletonList(Objects.requireNonNull(keyManager, "Missing required KeyManager"));
-        return withKeyManagers(keyManagers);
-    }
-
-    @Override
-    public TokenRequestFluentBuilder withKeyManagers(List<KeyManager> keyManagers) throws IOException {
-        sslSocketFactory = CwbiAuthSslSocketFactory.buildSSLSocketFactory(Objects.requireNonNull(keyManagers, "Missing required KeyManagers"));
-        return new TokenRequestBuilderImpl();
-    }
+    private SslSocketData sslSocketData;
 
     @Override
     public TokenRequestFluentBuilder withSSlSocketFactory(SSLSocketFactory sslSocketFactory) {
-        this.sslSocketFactory = sslSocketFactory;
+        this.sslSocketData = new SslSocketData(Objects.requireNonNull(sslSocketFactory, "Missing required SSLSocketFactory"),
+            CwbiAuthTrustManager.getTrustManager());
         return new TokenRequestBuilderImpl();
     }
 
@@ -48,10 +36,9 @@ public final class DirectGrantX509TokenRequestBuilder implements DirectGrantX509
                 .addClientId(getClientId())
                 .addUsername("")
                 .buildEncodedString();
-            AccessTokenProviderImpl tokenProvider = new AccessTokenProviderImpl(getUrl(), getClientId(), sslSocketFactory);
             HttpRequestExecutor executor =
-                new AuthenticatedHttpRequestBuilder(new ApiConnectionInfo(getUrl()))
-                    .withSslSocketFactory(sslSocketFactory, CwbiAuthTrustManager.getTrustManager())
+                new HttpRequestBuilderImpl(new ApiConnectionInfoBuilder(getUrl())
+                    .withSslSocketData(sslSocketData).build())
                     .addQueryHeader("Content-Type", MEDIA_TYPE)
                     .enableHttp2()
                     .post()
