@@ -8,6 +8,7 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import mil.army.usace.hec.cumulus.client.model.Download;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
+import mil.army.usace.hec.cwms.http.client.ApiConnectionInfoBuilder;
 import mil.army.usace.hec.cwms.http.client.HttpRequestBuilderImpl;
 import mil.army.usace.hec.cwms.http.client.HttpRequestResponse;
 import mil.army.usace.hec.cwms.http.client.request.HttpRequestExecutor;
@@ -25,7 +26,7 @@ final class CumulusFileDownloaderUtil {
         }
         String url = downloadContainingFile.getFile();
         if (url != null) {
-            ApiConnectionInfo connectionInfo = new ApiConnectionInfo(url);
+            ApiConnectionInfo connectionInfo = new ApiConnectionInfoBuilder(url).build();
             HttpRequestExecutor httpRequestExecutor = new HttpRequestBuilderImpl(connectionInfo, "")
                 .enableHttp2()
                 .get()

@@ -5,53 +5,47 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.File;
 import java.io.IOException;
-import javax.net.ssl.KeyManager;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import javax.net.ssl.SSLSocketFactory;
 import mil.army.usace.hec.cwms.http.client.auth.OAuth2Token;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.Test;
 
-class TestDirectGrantX509TokenRequestBuilder extends TestAuthenticatedHttpRequestBuilder{
+class TestDirectGrantX509TokenRequestBuilder {
+
     @Test
     void testRetrieveTokenMissingParams() {
-        NullPointerException ex = assertThrows(NullPointerException.class, () -> {
+
+        assertThrows(NullPointerException.class, () -> {
+            OAuth2Token token = new DirectGrantX509TokenRequestBuilder()
+                .withSSlSocketFactory(null)
+                .withUrl("https://test.com")
+                .withClientId("cumulus")
+                .fetchToken();
+            assertNull(token);
+        });
+
+        assertThrows(NullPointerException.class, () -> {
             new DirectGrantX509TokenRequestBuilder()
-                .withKeyManager(getTestKeyManager())
+                .withSSlSocketFactory(getTestSslSocketFactory())
                 .withUrl(null);
         });
-        assertEquals("Missing required URL", ex.getMessage());
 
-        NullPointerException ex2 = assertThrows(NullPointerException.class, () -> {
+        assertThrows(NullPointerException.class, () -> {
             OAuth2Token token = new DirectGrantX509TokenRequestBuilder()
-                .withKeyManager(getTestKeyManager())
+                .withSSlSocketFactory(getTestSslSocketFactory())
                 .withUrl("https://test.com")
                 .withClientId(null)
                 .fetchToken();
             assertNull(token);
         });
-        assertEquals("Missing required Client ID", ex2.getMessage());
-
-
-        NullPointerException ex3 = assertThrows(NullPointerException.class, () -> {
-            OAuth2Token token = new DirectGrantX509TokenRequestBuilder()
-                .withKeyManager(null)
-                .withUrl("https://test.com")
-                .withClientId("cumulus")
-                .fetchToken();
-            assertNull(token);
-        });
-        assertEquals("Missing required KeyManager", ex3.getMessage());
-
-        NullPointerException ex4 = assertThrows(NullPointerException.class, () -> {
-            OAuth2Token token = new DirectGrantX509TokenRequestBuilder()
-                .withKeyManagers(null)
-                .withUrl("https://test.com")
-                .withClientId("cumulus")
-                .fetchToken();
-            assertNull(token);
-        });
-        assertEquals("Missing required KeyManagers", ex4.getMessage());
 
     }
 
@@ -59,12 +53,12 @@ class TestDirectGrantX509TokenRequestBuilder extends TestAuthenticatedHttpReques
     void testDirectGrantX509TokenRequestBuilder() throws IOException {
         MockWebServer mockWebServer = new MockWebServer();
         try {
-            String body = readJsonFile("oauth2token.json");
+            String body = readJsonFile();
             mockWebServer.enqueue(new MockResponse().setBody(body).setResponseCode(200));
             mockWebServer.start();
             String baseUrl = String.format("http://localhost:%s", mockWebServer.getPort());
             OAuth2Token token = new DirectGrantX509TokenRequestBuilder()
-                .withKeyManager(getTestKeyManager())
+                .withSSlSocketFactory(getTestSslSocketFactory())
                 .withUrl(baseUrl)
                 .withClientId("cumulus")
                 .fetchToken();
@@ -79,10 +73,53 @@ class TestDirectGrantX509TokenRequestBuilder extends TestAuthenticatedHttpReques
         }
     }
 
-    private KeyManager getTestKeyManager() {
-        return new KeyManager(){
+    private SSLSocketFactory getTestSslSocketFactory() {
+        return new SSLSocketFactory() {
+            @Override
+            public String[] getDefaultCipherSuites() {
+                return new String[0];
+            }
 
+            @Override
+            public String[] getSupportedCipherSuites() {
+                return new String[0];
+            }
+
+            @Override
+            public Socket createSocket(Socket socket, String s, int i, boolean b){
+                return null;
+            }
+
+            @Override
+            public Socket createSocket(String s, int i) {
+                return null;
+            }
+
+            @Override
+            public Socket createSocket(String s, int i, InetAddress inetAddress, int i1) {
+                return null;
+            }
+
+            @Override
+            public Socket createSocket(InetAddress inetAddress, int i) {
+                return null;
+            }
+
+            @Override
+            public Socket createSocket(InetAddress inetAddress, int i, InetAddress inetAddress1, int i1) {
+                return null;
+            }
         };
+    }
+
+    String readJsonFile() throws IOException {
+        String jsonPath = "oauth2token.json";
+        URL resource = getClass().getClassLoader().getResource(jsonPath);
+        if (resource == null) {
+            throw new IOException("Resource not found: " + jsonPath);
+        }
+        Path path = new File(resource.getFile()).toPath();
+        return String.join("\n", Files.readAllLines(path));
     }
 
 }
