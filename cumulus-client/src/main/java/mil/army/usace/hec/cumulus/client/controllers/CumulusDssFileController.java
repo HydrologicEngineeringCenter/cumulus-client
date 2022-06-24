@@ -147,7 +147,7 @@ public final class CumulusDssFileController {
             while (file == null && elapsedTimeSinceProgressChanged.compareTo(MAX_ALLOWED_TIME) < 0) {
                 downloadStatus = queryDownloadStatus(apiConnectionInfo, downloadsEndpointInput);
                 file = downloadStatus.getFile();
-                Duration totalElapsedTime = Duration.between(Instant.now(), startTime);
+                Duration totalElapsedTime = Duration.between(startTime, Instant.now());
                 counter++;
                 if (listener != null) {
                     listener.downloadStatusUpdated(downloadStatus, counter, totalElapsedTime);
@@ -157,7 +157,7 @@ public final class CumulusDssFileController {
                     progressStartTime = Instant.now();
                     progress = newProgress;
                 }
-                elapsedTimeSinceProgressChanged = Duration.between(Instant.now(), progressStartTime); //elapsed time since progress last changed
+                elapsedTimeSinceProgressChanged = Duration.between(progressStartTime, Instant.now()); //elapsed time since progress last changed
 
                 Thread.sleep(progressInterval.toMillis());
                 if (Thread.currentThread().isInterrupted()) {

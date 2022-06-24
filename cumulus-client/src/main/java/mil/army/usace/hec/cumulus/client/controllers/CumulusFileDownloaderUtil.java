@@ -38,8 +38,8 @@ final class CumulusFileDownloaderUtil {
     private static void executeDownload(HttpRequestExecutor httpRequestExecutor, Path pathToLocalFile,
                                         Download downloadContainingFile, CumulusDssFileDownloadListener listener)
         throws IOException {
-        try (HttpRequestResponse response = httpRequestExecutor.execute()) {
-            InputStream inputStream = response.getStream();
+        try (HttpRequestResponse response = httpRequestExecutor.execute();
+             InputStream inputStream = response.getStream()) {
             readFileFromUrlToLocal(inputStream, pathToLocalFile, downloadContainingFile, listener);
         }
     }
