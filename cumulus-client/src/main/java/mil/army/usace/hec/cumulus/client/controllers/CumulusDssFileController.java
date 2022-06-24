@@ -148,6 +148,7 @@ public final class CumulusDssFileController {
                 downloadStatus = queryDownloadStatus(apiConnectionInfo, downloadsEndpointInput);
                 file = downloadStatus.getFile();
                 Duration totalElapsedTime = Duration.between(Instant.now(), startTime);
+                counter++;
                 if (listener != null) {
                     listener.downloadStatusUpdated(downloadStatus, counter, totalElapsedTime);
                 }
