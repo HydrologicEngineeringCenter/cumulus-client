@@ -1,13 +1,10 @@
 package hec.army.usace.hec.cwbi.auth.http.client;
 
-import hec.army.usace.hec.cwbi.auth.http.client.token.fluentbuilders.RequestClientId;
-import hec.army.usace.hec.cwbi.auth.http.client.token.fluentbuilders.TokenRequestExecutor;
-import hec.army.usace.hec.cwbi.auth.http.client.token.fluentbuilders.TokenRequestFluentBuilder;
 import java.io.IOException;
 import java.util.Objects;
 import mil.army.usace.hec.cwms.http.client.auth.OAuth2Token;
 
-abstract class TokenRequestBuilder implements TokenRequestFluentBuilder {
+public abstract class TokenRequestBuilder implements TokenRequestFluentBuilder {
 
     static final String MEDIA_TYPE = "application/x-www-form-urlencoded";
     private String url;

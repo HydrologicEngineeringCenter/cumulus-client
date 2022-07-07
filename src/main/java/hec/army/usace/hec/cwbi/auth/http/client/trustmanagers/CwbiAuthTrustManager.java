@@ -21,6 +21,7 @@ import javax.security.auth.x500.X500Principal;
 public final class CwbiAuthTrustManager implements X509TrustManager {
 
     private static final Logger LOGGER = Logger.getLogger(CwbiAuthTrustManager.class.getName());
+    public static final String TOKEN_URL = "https://auth.corps.cloud/auth/realms/water/protocol/openid-connect/token";
     private final TrustManagerFactory trustManagerFactory;
 
     private static final X509TrustManager INSTANCE = buildTrustManager();
@@ -36,7 +37,7 @@ public final class CwbiAuthTrustManager implements X509TrustManager {
      */
     private static X509TrustManager buildTrustManager() {
         X509TrustManager retVal = null;
-        try (InputStream trustedCertificateAsInputStream = CwbiAuthTrustManager.class.getResourceAsStream("cumulusServer.pem")) {
+        try (InputStream trustedCertificateAsInputStream = CwbiAuthTrustManager.class.getResourceAsStream("cwbiAuthServer.pem")) {
             KeyStore ts = KeyStore.getInstance("JKS");
             ts.load(null, null);
             Certificate trustedCertificate = CertificateFactory.getInstance("X.509").generateCertificate(trustedCertificateAsInputStream);
@@ -45,8 +46,7 @@ public final class CwbiAuthTrustManager implements X509TrustManager {
             trustManagerFactory.init(ts);
             retVal =  new CwbiAuthTrustManager(trustManagerFactory);
         } catch (CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException e) {
-            String errorMsg = "Error retrieving X509TrustManager: " + e.getMessage();
-            LOGGER.log(Level.SEVERE, errorMsg, e);
+            LOGGER.log(Level.SEVERE, "Error retrieving X509TrustManager", e);
         }
         return retVal;
     }
