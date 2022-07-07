@@ -1,7 +1,5 @@
 package hec.army.usace.hec.cwbi.auth.http.client;
 
-import hec.army.usace.hec.cwbi.auth.http.client.token.fluentbuilders.DirectGrantX509TokenRequestFluentBuilder;
-import hec.army.usace.hec.cwbi.auth.http.client.token.fluentbuilders.TokenRequestFluentBuilder;
 import hec.army.usace.hec.cwbi.auth.http.client.trustmanagers.CwbiAuthTrustManager;
 import java.io.IOException;
 import java.util.Objects;
@@ -18,7 +16,7 @@ public final class DirectGrantX509TokenRequestBuilder implements DirectGrantX509
     private SslSocketData sslSocketData;
 
     @Override
-    public TokenRequestFluentBuilder withSSlSocketFactory(SSLSocketFactory sslSocketFactory) {
+    public TokenRequestBuilder withSSlSocketFactory(SSLSocketFactory sslSocketFactory) {
         this.sslSocketData = new SslSocketData(Objects.requireNonNull(sslSocketFactory, "Missing required SSLSocketFactory"),
             CwbiAuthTrustManager.getTrustManager());
         return new TokenRequestBuilderImpl();

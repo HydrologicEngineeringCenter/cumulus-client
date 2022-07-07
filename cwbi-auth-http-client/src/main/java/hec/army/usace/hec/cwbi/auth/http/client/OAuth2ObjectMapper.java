@@ -14,7 +14,7 @@ final class OAuth2ObjectMapper {
         throw new AssertionError("Utility class");
     }
 
-    public static <T> T mapJsonToObject(String json, Class<T> classObject) throws IOException {
+    static <T> T mapJsonToObject(String json, Class<T> classObject) throws IOException {
         return OBJECT_MAPPER.readValue(json, classObject);
     }
 

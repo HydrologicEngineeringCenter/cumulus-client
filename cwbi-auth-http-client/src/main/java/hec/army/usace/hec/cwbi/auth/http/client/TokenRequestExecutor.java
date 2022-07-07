@@ -1,4 +1,4 @@
-package hec.army.usace.hec.cwbi.auth.http.client.token.fluentbuilders;
+package hec.army.usace.hec.cwbi.auth.http.client;
 
 import java.io.IOException;
 import mil.army.usace.hec.cwms.http.client.auth.OAuth2Token;

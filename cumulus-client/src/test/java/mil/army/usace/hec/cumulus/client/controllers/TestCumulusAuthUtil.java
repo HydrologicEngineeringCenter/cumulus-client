@@ -1,7 +1,7 @@
 package mil.army.usace.hec.cumulus.client.controllers;
 
+import static hec.army.usace.hec.cwbi.auth.http.client.trustmanagers.CwbiAuthTrustManager.TOKEN_URL;
 import static mil.army.usace.hec.cumulus.client.controllers.CumulusAuthUtil.CLIENT_ID;
-import static mil.army.usace.hec.cumulus.client.controllers.CumulusAuthUtil.TOKEN_URL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

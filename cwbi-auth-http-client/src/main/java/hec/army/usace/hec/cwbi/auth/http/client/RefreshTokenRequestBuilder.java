@@ -1,7 +1,5 @@
 package hec.army.usace.hec.cwbi.auth.http.client;
 
-import hec.army.usace.hec.cwbi.auth.http.client.token.fluentbuilders.RefreshTokenRequestFluentBuilder;
-import hec.army.usace.hec.cwbi.auth.http.client.token.fluentbuilders.TokenRequestFluentBuilder;
 import java.io.IOException;
 import java.util.Objects;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfoBuilder;
@@ -19,7 +17,7 @@ public final class RefreshTokenRequestBuilder implements RefreshTokenRequestFlue
      * @param refreshToken - token used to fetch new token
      * @return Builder for http request
      */
-    public TokenRequestFluentBuilder withRefreshToken(String refreshToken) {
+    public TokenRequestBuilder withRefreshToken(String refreshToken) {
         this.refreshToken = Objects.requireNonNull(refreshToken, "Missing required refresh token");
         return new RefreshTokenRequestExecutor();
     }

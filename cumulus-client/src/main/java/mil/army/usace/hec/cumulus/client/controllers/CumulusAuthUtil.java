@@ -1,5 +1,8 @@
 package mil.army.usace.hec.cumulus.client.controllers;
 
+
+import static hec.army.usace.hec.cwbi.auth.http.client.trustmanagers.CwbiAuthTrustManager.TOKEN_URL;
+
 import hec.army.usace.hec.cwbi.auth.http.client.CwbiAuthSslSocketFactory;
 import java.io.IOException;
 import java.util.Collections;
@@ -10,7 +13,6 @@ import mil.army.usace.hec.cwms.http.client.auth.OAuth2TokenProvider;
 
 public final class CumulusAuthUtil {
 
-    static final String TOKEN_URL = "https://auth.corps.cloud/auth/realms/water/protocol/openid-connect/token";
     static final String CLIENT_ID = "cumulus";
 
     private CumulusAuthUtil() {
