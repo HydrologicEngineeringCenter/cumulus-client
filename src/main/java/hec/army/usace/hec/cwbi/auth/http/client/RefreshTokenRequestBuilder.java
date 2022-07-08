@@ -17,7 +17,7 @@ public final class RefreshTokenRequestBuilder implements RefreshTokenRequestFlue
      * @param refreshToken - token used to fetch new token
      * @return Builder for http request
      */
-    public TokenRequestBuilder withRefreshToken(String refreshToken) {
+    public TokenRequestFluentBuilder withRefreshToken(String refreshToken) {
         this.refreshToken = Objects.requireNonNull(refreshToken, "Missing required refresh token");
         return new RefreshTokenRequestExecutor();
     }

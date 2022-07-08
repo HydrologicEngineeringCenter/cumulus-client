@@ -46,7 +46,7 @@ public final class CwbiAuthTrustManager implements X509TrustManager {
             trustManagerFactory.init(ts);
             retVal =  new CwbiAuthTrustManager(trustManagerFactory);
         } catch (CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException e) {
-            LOGGER.log(Level.SEVERE, "Error retrieving X509TrustManager", e);
+            LOGGER.log(Level.SEVERE, "Unable to authenticate with CWBI Auth server", e);
         }
         return retVal;
     }
