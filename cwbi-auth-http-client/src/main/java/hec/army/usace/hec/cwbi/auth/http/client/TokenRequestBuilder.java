@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Objects;
 import mil.army.usace.hec.cwms.http.client.auth.OAuth2Token;
 
-public abstract class TokenRequestBuilder implements TokenRequestFluentBuilder {
+abstract class TokenRequestBuilder implements TokenRequestFluentBuilder {
 
     static final String MEDIA_TYPE = "application/x-www-form-urlencoded";
     private String url;

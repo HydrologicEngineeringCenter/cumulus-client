@@ -16,7 +16,7 @@ public final class DirectGrantX509TokenRequestBuilder implements DirectGrantX509
     private SslSocketData sslSocketData;
 
     @Override
-    public TokenRequestBuilder withSSlSocketFactory(SSLSocketFactory sslSocketFactory) {
+    public TokenRequestFluentBuilder withSSlSocketFactory(SSLSocketFactory sslSocketFactory) {
         this.sslSocketData = new SslSocketData(Objects.requireNonNull(sslSocketFactory, "Missing required SSLSocketFactory"),
             CwbiAuthTrustManager.getTrustManager());
         return new TokenRequestBuilderImpl();
