@@ -1,7 +1,7 @@
 package mil.army.usace.hec.cumulus.client.controllers;
 
-import static mil.army.usace.hec.cumulus.client.controllers.CumulusEndpointConstants.ACCEPT_HEADER_V1;
-import static mil.army.usace.hec.cumulus.client.controllers.CumulusEndpointConstants.ACCEPT_QUERY_HEADER;
+import static mil.army.usace.hec.cumulus.client.controllers.CumulusConstants.ACCEPT_HEADER_V1;
+import static mil.army.usace.hec.cumulus.client.controllers.CumulusConstants.ACCEPT_QUERY_HEADER;
 import static mil.army.usace.hec.cumulus.client.controllers.DownloadsEndpointInput.DOWNLOAD_ID_PARAMETER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

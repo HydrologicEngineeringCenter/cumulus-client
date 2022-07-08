@@ -1,13 +1,11 @@
-package mil.army.usace.hec.cumulus.client.controllers;
+package hec.army.usace.hec.cwbi.auth.http.client;
 
-import hec.army.usace.hec.cwbi.auth.http.client.DirectGrantX509TokenRequestBuilder;
-import hec.army.usace.hec.cwbi.auth.http.client.RefreshTokenRequestBuilder;
 import java.io.IOException;
 import javax.net.ssl.SSLSocketFactory;
 import mil.army.usace.hec.cwms.http.client.auth.OAuth2Token;
 import mil.army.usace.hec.cwms.http.client.auth.OAuth2TokenProvider;
 
-public class MockCumulusTokenProvider implements OAuth2TokenProvider {
+public final class CwbiAuthTokenProvider implements OAuth2TokenProvider {
 
     private OAuth2Token oauth2Token;
     private final String url;
@@ -21,7 +19,7 @@ public class MockCumulusTokenProvider implements OAuth2TokenProvider {
      * @param clientId - client name
      * @param sslSocketFactory - ssl socket factory
      */
-    public MockCumulusTokenProvider(String url, String clientId, SSLSocketFactory sslSocketFactory) {
+    public CwbiAuthTokenProvider(String url, String clientId, SSLSocketFactory sslSocketFactory) {
         this.url = url;
         this.clientId = clientId;
         this.sslSocketFactory = sslSocketFactory;
@@ -54,10 +52,6 @@ public class MockCumulusTokenProvider implements OAuth2TokenProvider {
         return token;
     }
 
-    void setOAuth2Token(OAuth2Token token) {
-        oauth2Token = token;
-    }
-
     //package scoped for testing
     String getUrl() {
         return url;
@@ -66,9 +60,5 @@ public class MockCumulusTokenProvider implements OAuth2TokenProvider {
     //package scoped for testing
     String getClientId() {
         return clientId;
-    }
-
-    SSLSocketFactory getSslSocketFactory() {
-        return sslSocketFactory;
     }
 }

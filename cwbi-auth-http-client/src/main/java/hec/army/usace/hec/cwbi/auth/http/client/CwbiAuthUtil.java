@@ -1,9 +1,8 @@
-package mil.army.usace.hec.cumulus.client.controllers;
+package hec.army.usace.hec.cwbi.auth.http.client;
 
 
 import static hec.army.usace.hec.cwbi.auth.http.client.trustmanagers.CwbiAuthTrustManager.TOKEN_URL;
 
-import hec.army.usace.hec.cwbi.auth.http.client.CwbiAuthSslSocketFactory;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Objects;
@@ -11,11 +10,9 @@ import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLSocketFactory;
 import mil.army.usace.hec.cwms.http.client.auth.OAuth2TokenProvider;
 
-public final class CumulusAuthUtil {
+public final class CwbiAuthUtil {
 
-    static final String CLIENT_ID = "cumulus";
-
-    private CumulusAuthUtil() {
+    private CwbiAuthUtil() {
         throw new AssertionError("Utility class");
     }
 
@@ -25,10 +22,10 @@ public final class CumulusAuthUtil {
      * @return OAuth2TokenProvider - CumulusTokenProvider
      * @throws IOException - thrown if failed to build CumulusTokenProvider
      */
-    public static OAuth2TokenProvider buildCumulusTokenProvider(KeyManager keyManager) throws IOException {
+    public static OAuth2TokenProvider buildCumulusTokenProvider(String clientId, KeyManager keyManager) throws IOException {
         SSLSocketFactory sslSocketFactory = CwbiAuthSslSocketFactory.buildSSLSocketFactory(
             Collections.singletonList(Objects.requireNonNull(keyManager, "Missing required KeyManager")));
-        return new CumulusTokenProvider(TOKEN_URL, CLIENT_ID, sslSocketFactory);
+        return new CwbiAuthTokenProvider(TOKEN_URL, clientId, sslSocketFactory);
     }
 
 }
