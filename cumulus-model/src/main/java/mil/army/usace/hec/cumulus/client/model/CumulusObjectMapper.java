@@ -51,11 +51,9 @@ public final class CumulusObjectMapper {
 
     private static class CumulusDateTimeSerializer extends JsonSerializer<ZonedDateTime> {
 
-        private final DateTimeFormatter fmt = DateTimeFormatter.ISO_ZONED_DATE_TIME;
-
         @Override
         public void serialize(ZonedDateTime value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-            String format = fmt.format(value);
+            String format = value.toInstant().toString();
             gen.writeString(format);
         }
     }

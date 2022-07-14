@@ -61,7 +61,7 @@ class TestCumulusDssFileController extends TestController{
     }
 
     @Test
-    void testGenerateDssFile() throws IOException {
+    void testGenerateDssFile() throws Exception {
         String resource = "cumulus/json/created_download.json";
         launchMockServerWithResource(resource);
         Watershed watershed = new Watershed();
@@ -74,7 +74,7 @@ class TestCumulusDssFileController extends TestController{
         ZonedDateTime end = ZonedDateTime.of(2022, 4, 1, 1, 6, 1, 1, ZoneId.of("UTC"));
         DownloadRequest downloadRequest = new DownloadRequest(start, end, watershed, products);
         CumulusDssFileController controller = new CumulusDssFileController(executorService);
-        Download download = controller.generateDssFile(buildConnectionInfoWithToken(), downloadRequest, buildGenerationListener()).join();
+        Download download = controller.generateDssFile(buildConnectionInfoWithAuth(), downloadRequest, buildGenerationListener()).join();
         assertNotNull(download);
         assertEquals("597f6eca-6276-4993-bfeb-53cbbbba6f08", download.getId());
         assertEquals("853487e7-10bc-4e69-b3b2-4da33721ea3e", download.getSub());
@@ -92,7 +92,7 @@ class TestCumulusDssFileController extends TestController{
         assertEquals("fake-river", download.getWatershedSlug());
         assertEquals("Fake River", download.getWatershedName());
         AtomicReference<Throwable> exception = new AtomicReference<>();
-        controller.generateDssFile(buildConnectionInfoWithToken(), null, buildGenerationListener())
+        controller.generateDssFile(buildConnectionInfoWithAuth(), null, buildGenerationListener())
             .exceptionally(ex -> {
                 if (ex != null) {
                     exception.set(ex.getCause());

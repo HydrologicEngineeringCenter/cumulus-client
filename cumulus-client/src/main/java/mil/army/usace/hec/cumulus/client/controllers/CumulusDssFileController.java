@@ -1,6 +1,6 @@
 package mil.army.usace.hec.cumulus.client.controllers;
 
-import static mil.army.usace.hec.cumulus.client.controllers.CumulusEndpointConstants.ACCEPT_HEADER_V1;
+import static mil.army.usace.hec.cumulus.client.controllers.CumulusConstants.ACCEPT_HEADER_V1;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -97,8 +97,7 @@ public final class CumulusDssFileController {
         throws IOException {
         String jsonBody = CumulusObjectMapper.mapObjectToJson(downloadRequest);
         HttpRequestExecutor executor =
-            new CumulusHttpRequestBuilderImpl(apiConnectionInfo, DOWNLOADS_ENDPOINT)
-                .enableHttp2()
+            new HttpRequestBuilderImpl(apiConnectionInfo, DOWNLOADS_ENDPOINT)
                 .post()
                 .withBody(jsonBody)
                 .withMediaType(ACCEPT_HEADER_V1);
@@ -148,7 +147,8 @@ public final class CumulusDssFileController {
             while (file == null && elapsedTimeSinceProgressChanged.compareTo(MAX_ALLOWED_TIME) < 0) {
                 downloadStatus = queryDownloadStatus(apiConnectionInfo, downloadsEndpointInput);
                 file = downloadStatus.getFile();
-                Duration totalElapsedTime = Duration.between(Instant.now(), startTime);
+                Duration totalElapsedTime = Duration.between(startTime, Instant.now());
+                counter++;
                 if (listener != null) {
                     listener.downloadStatusUpdated(downloadStatus, counter, totalElapsedTime);
                 }
@@ -157,7 +157,7 @@ public final class CumulusDssFileController {
                     progressStartTime = Instant.now();
                     progress = newProgress;
                 }
-                elapsedTimeSinceProgressChanged = Duration.between(Instant.now(), progressStartTime); //elapsed time since progress last changed
+                elapsedTimeSinceProgressChanged = Duration.between(progressStartTime, Instant.now()); //elapsed time since progress last changed
 
                 Thread.sleep(progressInterval.toMillis());
                 if (Thread.currentThread().isInterrupted()) {

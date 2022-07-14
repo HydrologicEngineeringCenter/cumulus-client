@@ -33,7 +33,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import mil.army.usace.hec.cwms.htp.client.MockHttpServer;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
+import mil.army.usace.hec.cwms.http.client.ApiConnectionInfoBuilder;
 import mil.army.usace.hec.cwms.http.client.auth.OAuth2Token;
+import mil.army.usace.hec.cwms.http.client.auth.OAuth2TokenProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,17 +63,19 @@ abstract class TestController {
 
     ApiConnectionInfo buildConnectionInfo() {
         String baseUrl = String.format("http://localhost:%s", mockHttpServer.getPort());
-        return new ApiConnectionInfo(baseUrl);
+        return new ApiConnectionInfoBuilder(baseUrl).build();
     }
 
-    ApiConnectionInfo buildConnectionInfoWithToken() {
+    ApiConnectionInfo buildConnectionInfoWithAuth() {
         String baseUrl = String.format("http://localhost:%s", mockHttpServer.getPort());
         String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiVXNlciIsImlzcyI6IlNpbXBsZSBTb2x1dGlvbiIsInVzZXJuYW1lIjoiVGVzdFVzZXIifQ.jQUKIOxN0KGbIGJx8SU3WfSVPNASOnRtt3DcoMVBeThcWGzEBAnwlHHYRvbzuas-sOeWSvOwrnsvpQ5tywAfWA";
         OAuth2Token oAuth2Token = new OAuth2Token();
         oAuth2Token.setAccessToken(token);
         oAuth2Token.setTokenType("Bearer");
         oAuth2Token.setExpiresIn(3600);
-        return new ApiConnectionInfo(baseUrl, oAuth2Token);
+        return new ApiConnectionInfoBuilder(baseUrl)
+            .withTokenProvider(getTestTokenProvider())
+            .build();
     }
 
     protected void launchMockServerWithResource(String resource) throws IOException {
@@ -83,6 +87,26 @@ abstract class TestController {
         String collect = String.join("\n", Files.readAllLines(path));
         mockHttpServer.enqueue(collect);
         mockHttpServer.start();
+    }
+
+    private OAuth2TokenProvider getTestTokenProvider() {
+        OAuth2Token oAuth2Token = new OAuth2Token();
+        String token =
+            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJyb2xlIjoiVXNlciIsImlzcyI6IlNpbXBsZSBTb2x1dGlvbiIsInVzZXJuYW1lIjoiVGVzdFVzZXIifQ.jQUKIOxN0KGbIGJx8SU3WfSVPNASOnRtt3DcoMVBeThcWGzEBAnwlHHYRvbzuas-sOeWSvOwrnsvpQ5tywAfWA";
+        oAuth2Token.setAccessToken(token);
+        oAuth2Token.setTokenType("Bearer");
+        oAuth2Token.setExpiresIn(3600);
+        return new OAuth2TokenProvider() {
+            @Override
+            public OAuth2Token getToken() {
+                return oAuth2Token;
+            }
+
+            @Override
+            public OAuth2Token refreshToken() {
+                return oAuth2Token;
+            }
+        };
     }
 
 }

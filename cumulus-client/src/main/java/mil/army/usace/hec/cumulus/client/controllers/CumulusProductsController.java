@@ -1,6 +1,6 @@
 package mil.army.usace.hec.cumulus.client.controllers;
 
-import static mil.army.usace.hec.cumulus.client.controllers.CumulusEndpointConstants.ACCEPT_HEADER_V1;
+import static mil.army.usace.hec.cumulus.client.controllers.CumulusConstants.ACCEPT_HEADER_V1;
 
 import java.io.IOException;
 import java.util.List;
