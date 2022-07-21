@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import mil.army.usace.hec.cumulus.client.model.Download;
 import mil.army.usace.hec.cumulus.client.model.DownloadRequest;
-import mil.army.usace.hec.cumulus.client.model.Product;
-import mil.army.usace.hec.cumulus.client.model.Watershed;
 import org.junit.jupiter.api.Test;
 
 class TestCumulusDssFileController extends TestController{
@@ -64,15 +62,13 @@ class TestCumulusDssFileController extends TestController{
     void testGenerateDssFile() throws Exception {
         String resource = "cumulus/json/created_download.json";
         launchMockServerWithResource(resource);
-        Watershed watershed = new Watershed();
-        watershed.setId("95e7713a-ccd6-432d-b2f0-972422511171");
-        List<Product> products = new ArrayList<>();
-        Product product = new Product();
-        product.setId("74756f41-75e2-40ce-b91a-fda5aeb441fc");
-        products.add(product);
+        String watershedId = "95e7713a-ccd6-432d-b2f0-972422511171";
+        List<String> productIds = new ArrayList<>();
+        String productId = "74756f41-75e2-40ce-b91a-fda5aeb441fc";
+        productIds.add(productId);
         ZonedDateTime start = ZonedDateTime.of(2022, 4, 1, 1, 1, 1, 1, ZoneId.of("UTC"));
         ZonedDateTime end = ZonedDateTime.of(2022, 4, 1, 1, 6, 1, 1, ZoneId.of("UTC"));
-        DownloadRequest downloadRequest = new DownloadRequest(start, end, watershed, products);
+        DownloadRequest downloadRequest = new DownloadRequest(start, end, watershedId, productIds);
         CumulusDssFileController controller = new CumulusDssFileController(executorService);
         Download download = controller.generateDssFile(buildConnectionInfoWithAuth(), downloadRequest, buildGenerationListener()).join();
         assertNotNull(download);
