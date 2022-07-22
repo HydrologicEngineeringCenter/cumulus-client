@@ -12,14 +12,14 @@ class TestCwbiAuthUtil {
 
     @Test
     void testBuildTokenProvider() throws IOException {
-        CwbiAuthTokenProvider tokenProvider = (CwbiAuthTokenProvider) CwbiAuthUtil.buildCumulusTokenProvider("cumulus", getTestKeyManager());
+        CwbiAuthTokenProvider tokenProvider = (CwbiAuthTokenProvider) CwbiAuthUtil.buildCwbiAuthTokenProvider("cumulus", getTestKeyManager());
         assertEquals(TOKEN_URL, tokenProvider.getUrl());
         assertEquals("cumulus", tokenProvider.getClientId());
     }
 
     @Test
     void testNulls() {
-        assertThrows(NullPointerException.class, () -> CwbiAuthUtil.buildCumulusTokenProvider("cumulus", null));
+        assertThrows(NullPointerException.class, () -> CwbiAuthUtil.buildCwbiAuthTokenProvider("cumulus", null));
     }
 
     private KeyManager getTestKeyManager() {

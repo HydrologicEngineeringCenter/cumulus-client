@@ -22,7 +22,7 @@ public final class CwbiAuthUtil {
      * @return OAuth2TokenProvider - CumulusTokenProvider
      * @throws IOException - thrown if failed to build CumulusTokenProvider
      */
-    public static OAuth2TokenProvider buildCumulusTokenProvider(String clientId, KeyManager keyManager) throws IOException {
+    public static OAuth2TokenProvider buildCwbiAuthTokenProvider(String clientId, KeyManager keyManager) throws IOException {
         SSLSocketFactory sslSocketFactory = CwbiAuthSslSocketFactory.buildSSLSocketFactory(
             Collections.singletonList(Objects.requireNonNull(keyManager, "Missing required KeyManager")));
         return new CwbiAuthTokenProvider(TOKEN_URL, clientId, sslSocketFactory);
