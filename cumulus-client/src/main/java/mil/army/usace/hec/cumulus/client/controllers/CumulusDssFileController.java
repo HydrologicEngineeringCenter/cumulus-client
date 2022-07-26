@@ -179,7 +179,7 @@ public final class CumulusDssFileController {
         String progressIntervalVal = System.getProperty(PROGRESS_INTERVAL_PROPERTY_KEY);
         Duration progressInterval;
         if (progressIntervalVal == null) {
-            progressInterval = Duration.ofMillis(500);
+            progressInterval = Duration.ofSeconds(2);
             LOGGER.log(Level.CONFIG, () -> "Property " + PROGRESS_INTERVAL_PROPERTY_KEY + " is not defined. Defaulting to " + progressInterval);
         } else {
             progressInterval = Duration.parse(progressIntervalVal);
