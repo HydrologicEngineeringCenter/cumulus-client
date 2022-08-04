@@ -98,6 +98,7 @@ public final class CumulusDssFileController {
         String jsonBody = CumulusObjectMapper.mapObjectToJson(downloadRequest);
         HttpRequestExecutor executor =
             new HttpRequestBuilderImpl(apiConnectionInfo, DOWNLOADS_ENDPOINT)
+                .enableHttp2()
                 .post()
                 .withBody(jsonBody)
                 .withMediaType(ACCEPT_HEADER_V1);
