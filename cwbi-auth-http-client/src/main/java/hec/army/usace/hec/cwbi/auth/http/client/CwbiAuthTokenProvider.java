@@ -28,12 +28,13 @@ public final class CwbiAuthTokenProvider implements OAuth2TokenProvider {
     @Override
     public OAuth2Token getToken() throws IOException {
         if (oauth2Token == null) {
-            oauth2Token = getDirectGrantX509Token();
+            oauth2Token = newToken();
         }
         return oauth2Token;
     }
 
-    private OAuth2Token getDirectGrantX509Token() throws IOException {
+    @Override
+    public OAuth2Token newToken() throws IOException {
         return new DirectGrantX509TokenRequestBuilder()
             .withSSlSocketFactory(sslSocketFactory)
             .withUrl(url)
