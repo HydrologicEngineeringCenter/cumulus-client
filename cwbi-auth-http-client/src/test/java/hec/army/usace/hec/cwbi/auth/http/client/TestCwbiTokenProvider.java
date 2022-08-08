@@ -76,6 +76,11 @@ class TestCwbiTokenProvider {
             public OAuth2Token refreshToken() {
                 return oAuth2Token;
             }
+
+            @Override
+            public OAuth2Token newToken() {
+                return oAuth2Token;
+            }
         };
     }
 

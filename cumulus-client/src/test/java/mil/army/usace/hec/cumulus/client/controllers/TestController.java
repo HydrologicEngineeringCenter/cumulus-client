@@ -106,6 +106,11 @@ abstract class TestController {
             public OAuth2Token refreshToken() {
                 return oAuth2Token;
             }
+
+            @Override
+            public OAuth2Token newToken() throws IOException {
+                return null;
+            }
         };
     }
 
