@@ -28,17 +28,9 @@ public class MockCwbiAuthTokenProvider implements OAuth2TokenProvider {
     @Override
     public OAuth2Token getToken() throws IOException {
         if (oauth2Token == null) {
-            oauth2Token = getDirectGrantX509Token();
+            oauth2Token = newToken();
         }
         return oauth2Token;
-    }
-
-    private OAuth2Token getDirectGrantX509Token() throws IOException {
-        return new DirectGrantX509TokenRequestBuilder()
-            .withSSlSocketFactory(sslSocketFactory)
-            .withUrl(url)
-            .withClientId(clientId)
-            .fetchToken();
     }
 
     @Override
@@ -50,6 +42,15 @@ public class MockCwbiAuthTokenProvider implements OAuth2TokenProvider {
             .fetchToken();
         oauth2Token = token;
         return token;
+    }
+
+    @Override
+    public OAuth2Token newToken() throws IOException {
+        return new DirectGrantX509TokenRequestBuilder()
+            .withSSlSocketFactory(sslSocketFactory)
+            .withUrl(url)
+            .withClientId(clientId)
+            .fetchToken();
     }
 
     void setOAuth2Token(OAuth2Token token) {
