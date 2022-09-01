@@ -1,12 +1,14 @@
 package hec.army.usace.hec.cwbi.auth.http.client;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import hec.army.usace.hec.cwbi.auth.http.client.trustmanagers.CwbiAuthTrustManager;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.List;
 import javax.net.ssl.X509TrustManager;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +20,12 @@ final class TestCwbiAuthTrustManager {
         assertNotNull(trustManager);
         X509Certificate[] acceptedIssuers = trustManager.getAcceptedIssuers();
         assertFalse(Arrays.asList(acceptedIssuers).isEmpty());
-        assertEquals("CN=ISRG Root X1, O=Internet Security Research Group, C=US", acceptedIssuers[0].getIssuerDN().toString());
+        List<String> details = Arrays.asList(acceptedIssuers[0].getIssuerDN().toString().split(","));
+        details = details.stream().map(String::trim)
+                    .collect(toList());
+        assertTrue(details.contains("CN=ISRG Root X1"));
+        assertTrue(details.contains("O=Internet Security Research Group"));
+        assertTrue(details.contains("C=US"));
     }
 
 }
