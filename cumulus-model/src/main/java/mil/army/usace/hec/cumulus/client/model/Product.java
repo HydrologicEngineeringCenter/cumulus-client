@@ -70,6 +70,9 @@ public class Product {
     @JsonProperty("last_forecast_version")
     private String lastForecastVersion;
 
+    @JsonProperty("dss_datatype")
+    private String dssDatatype;
+
 
     /**
      * Get id
@@ -147,6 +150,19 @@ public class Product {
 
     public void setTemporalDuration(Integer temporalDuration) {
         this.temporalDuration = temporalDuration;
+    }
+
+    /**
+     * Get dssDatatype
+     * @return dssDatatype
+     **/
+
+    public String getDssDatatype() {
+        return dssDatatype;
+    }
+
+    public void setDssDatatype(String dssDatatype) {
+        this.dssDatatype = dssDatatype;
     }
 
     /**
@@ -351,6 +367,7 @@ public class Product {
         sb.append("    temporal_resolution: ").append(toIndentedString(temporalResolution)).append("\n");
         sb.append("    temporal_duration: ").append(toIndentedString(temporalDuration)).append("\n");
         sb.append("    dss_fpart: ").append(toIndentedString(dssFPart)).append("\n");
+        sb.append("    dss_datatype: ").append(toIndentedString(dssDatatype)).append("\n");
         sb.append("    parameter_id: ").append(toIndentedString(parameterId)).append("\n");
         sb.append("    parameter: ").append(toIndentedString(parameter)).append("\n");
         sb.append("    unit_id: ").append(toIndentedString(unitId)).append("\n");
