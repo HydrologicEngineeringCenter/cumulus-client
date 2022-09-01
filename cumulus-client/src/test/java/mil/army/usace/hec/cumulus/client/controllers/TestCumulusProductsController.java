@@ -34,6 +34,7 @@ class TestCumulusProductsController extends TestController{
         assertEquals(1, product1.getTemporalResolution());
         assertEquals(2, product1.getTemporalDuration());
         assertEquals("MBRFC-FORECAST", product1.getDssFPart());
+        assertEquals("PRECIP", product1.getDssDatatype());
         assertEquals("3fa85f64-5717-4562-b3fc-2c963f66afa7", product1.getParameterId());
         assertEquals("PARAM", product1.getParameter());
         assertEquals("3fa85f64-5717-4562-b3fc-2c963f66afa8", product1.getUnitId());
@@ -55,6 +56,7 @@ class TestCumulusProductsController extends TestController{
         assertEquals(2, product2.getTemporalResolution());
         assertEquals(3, product2.getTemporalDuration());
         assertEquals("MBRFC-FORECAST", product2.getDssFPart());
+        assertEquals("PRECIP", product2.getDssDatatype());
         assertEquals("4fa85f64-5717-4562-b3fc-2c963f66afa7", product2.getParameterId());
         assertEquals("PARAM", product2.getParameter());
         assertEquals("4fa85f64-5717-4562-b3fc-2c963f66afa8", product2.getUnitId());
@@ -85,6 +87,7 @@ class TestCumulusProductsController extends TestController{
         assertEquals(1, product.getTemporalResolution());
         assertEquals(2, product.getTemporalDuration());
         assertEquals("MBRFC-FORECAST", product.getDssFPart());
+        assertEquals("PRECIP", product.getDssDatatype());
         assertEquals("3fa85f64-5717-4562-b3fc-2c963f66afa7", product.getParameterId());
         assertEquals("PARAM", product.getParameter());
         assertEquals("3fa85f64-5717-4562-b3fc-2c963f66afa8", product.getUnitId());
