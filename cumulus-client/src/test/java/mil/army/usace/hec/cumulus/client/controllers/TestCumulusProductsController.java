@@ -87,9 +87,9 @@ class TestCumulusProductsController extends TestController{
         assertEquals(1, product.getTemporalResolution());
         assertEquals(2, product.getTemporalDuration());
         assertEquals("MBRFC-FORECAST", product.getDssFPart());
-        assertEquals("PRECIP", product.getDssDatatype());
+        assertEquals("PER-CUM", product.getDssDatatype());
         assertEquals("3fa85f64-5717-4562-b3fc-2c963f66afa7", product.getParameterId());
-        assertEquals("PARAM", product.getParameter());
+        assertEquals("PRECIP", product.getParameter());
         assertEquals("3fa85f64-5717-4562-b3fc-2c963f66afa8", product.getUnitId());
         assertEquals("ft", product.getUnit());
         assertEquals("for testing purposes", product.getDescription());
