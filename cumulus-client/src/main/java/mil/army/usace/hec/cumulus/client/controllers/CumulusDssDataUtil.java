@@ -1,6 +1,5 @@
 package mil.army.usace.hec.cumulus.client.controllers;
 
-import java.time.format.DateTimeFormatter;
 import java.util.StringJoiner;
 import mil.army.usace.hec.cumulus.client.model.Product;
 import mil.army.usace.hec.cumulus.client.model.Watershed;
@@ -19,13 +18,16 @@ public final class CumulusDssDataUtil {
      */
     public static String buildDssPath(Watershed watershed, Product product) {
         StringJoiner retVal = new StringJoiner("/");
+        String watershedName = watershed.getName();
+        String parameter = product.getParameter();
+        String dssFPart = product.getDssFPart();
         String partA = "SHG";
-        String partB = watershed.getName();
-        String partC = product.getParameter();
-        String partD = DateTimeFormatter.ofPattern("ddMMMyyyy:HHmm").format(product.getAfter());
-        String partE = DateTimeFormatter.ofPattern("ddMMMyyyy:HHmm").format(product.getBefore());
-        String partF = product.getDssFPart();
-        retVal.add(partA).add(partB).add(partC).add(partD).add(partE).add(partF);
+        String partB = watershedName != null ? watershedName : "";
+        String partC = parameter != null ? parameter : "";
+        String partD = "";
+        String partE = "";
+        String partF = dssFPart != null ? dssFPart : "";
+        retVal.add("/" + partA).add(partB).add(partC).add(partD).add(partE).add(partF + "/");
         return retVal.toString();
     }
 }

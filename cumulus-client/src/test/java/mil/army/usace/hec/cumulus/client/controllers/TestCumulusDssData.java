@@ -22,7 +22,11 @@ final class TestCumulusDssData {
         Watershed watershed = CumulusObjectMapper.mapJsonToObject(watershedJson, Watershed.class);
         Product product = CumulusObjectMapper.mapJsonToObject(productJson, Product.class);
         String dssPath = CumulusDssDataUtil.buildDssPath(watershed, product);
-        assertEquals("SHG/Cumberland Basin River/PRECIP/23Aug2021:0601/24Apr2022:1201/MBRFC-FORECAST", dssPath);
+        assertEquals("/SHG/Cumberland Basin River/PRECIP///MBRFC-FORECAST/", dssPath);
+        Watershed emptyWatershed = new Watershed();
+        Product emptyProduct = new Product();
+        String dssPathForEmpty = CumulusDssDataUtil.buildDssPath(emptyWatershed, emptyProduct);
+        assertEquals("/SHG//////", dssPathForEmpty);
     }
 
     private String readResourceFile(String resource) throws IOException, URISyntaxException {
