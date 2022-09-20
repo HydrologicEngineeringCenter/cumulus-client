@@ -42,9 +42,10 @@ public final class CwbiAuthTrustManager implements X509TrustManager {
             ts.load(null, null);
             Certificate trustedCertificate = CertificateFactory.getInstance("X.509").generateCertificate(trustedCertificateAsInputStream);
             ts.setCertificateEntry("cwbi-auth-server-root-certificate", trustedCertificate);
+            ((X509Certificate) trustedCertificate).checkValidity();
             TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("PKIX");
             trustManagerFactory.init(ts);
-            retVal =  new CwbiAuthTrustManager(trustManagerFactory);
+            retVal = new CwbiAuthTrustManager(trustManagerFactory);
         } catch (CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException e) {
             LOGGER.log(Level.SEVERE, "Unable to authenticate with CWBI Auth server", e);
         }
