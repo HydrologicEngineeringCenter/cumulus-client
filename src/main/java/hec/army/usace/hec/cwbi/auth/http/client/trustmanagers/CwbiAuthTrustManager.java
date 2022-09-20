@@ -7,9 +7,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
-import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateFactory;
-import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -44,9 +42,10 @@ public final class CwbiAuthTrustManager implements X509TrustManager {
             ts.load(null, null);
             Certificate trustedCertificate = CertificateFactory.getInstance("X.509").generateCertificate(trustedCertificateAsInputStream);
             ts.setCertificateEntry("cwbi-auth-server-root-certificate", trustedCertificate);
+            ((X509Certificate) trustedCertificate).checkValidity();
             TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance("PKIX");
             trustManagerFactory.init(ts);
-            retVal =  new CwbiAuthTrustManager(trustManagerFactory);
+            retVal = new CwbiAuthTrustManager(trustManagerFactory);
         } catch (CertificateException | NoSuchAlgorithmException | KeyStoreException | IOException e) {
             LOGGER.log(Level.SEVERE, "Unable to authenticate with CWBI Auth server", e);
         }
@@ -80,24 +79,14 @@ public final class CwbiAuthTrustManager implements X509TrustManager {
         for (TrustManager trustManager : trustManagerFactory.getTrustManagers()) {
             if (trustManager instanceof X509TrustManager) {
                 try {
-                    for (X509Certificate cert : x509Certificates) {
-                        cert.checkValidity();
-                    }
                     ((X509TrustManager) trustManager).checkServerTrusted(x509Certificates, s);
                 } catch (CertificateException e) {
-                    String msg;
-                    if (e instanceof CertificateExpiredException) {
-                        msg = "Certificate is Expired";
-                    } else if (e instanceof CertificateNotYetValidException) {
-                        msg = "Certificate is not yet valid";
-                    } else {
-                        msg = "Certificate chain not part of trusted certificates for this JRE: ";
-                        msg = msg + Arrays.stream(x509Certificates)
-                            .map(X509Certificate::getSubjectX500Principal)
-                            .map(X500Principal::getName)
-                            .collect(Collectors.joining(","));
-                    }
-                    throw new CertificateException(msg, e);
+                    String notTrustedMsg = "Certificate chain not part of trusted certificates for this JRE: ";
+                    notTrustedMsg = notTrustedMsg + Arrays.stream(x509Certificates)
+                        .map(X509Certificate::getSubjectX500Principal)
+                        .map(X500Principal::getName)
+                        .collect(Collectors.joining(","));
+                    throw new CertificateException(notTrustedMsg, e);
                 }
             }
         }
