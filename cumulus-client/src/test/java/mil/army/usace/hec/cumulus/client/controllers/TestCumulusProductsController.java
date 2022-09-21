@@ -85,7 +85,7 @@ class TestCumulusProductsController extends TestController{
         assertEquals(1, product.getTags().length);
         assertEquals("3fa85f64-5717-4562-b3fc-2c963f66afa6", product.getTags()[0]);
         assertEquals(1, product.getTemporalResolution());
-        assertEquals(2, product.getTemporalDuration());
+        assertEquals(3600, product.getTemporalDuration());
         assertEquals("MBRFC-FORECAST", product.getDssFPart());
         assertEquals("PER-CUM", product.getDssDatatype());
         assertEquals("3fa85f64-5717-4562-b3fc-2c963f66afa7", product.getParameterId());
@@ -96,8 +96,8 @@ class TestCumulusProductsController extends TestController{
         assertEquals("91d87306-8eed-45ac-a41e-16d9429ca14c", product.getSuiteId());
         assertEquals("Lower Mississippi River Forecast Center 06 hour QPF", product.getSuite());
         assertEquals("QPF", product.getLabel());
-        assertEquals("2021-08-23T06:01:01Z", product.getAfter().toString());
-        assertEquals("2022-04-24T12:01:01Z", product.getBefore().toString());
+        assertEquals("2021-08-23T06:00Z", product.getAfter().toString());
+        assertEquals("2022-04-24T12:00Z", product.getBefore().toString());
         assertEquals(8500, product.getProductFileCount());
         assertEquals("null", product.getLastForecastVersion());
     }

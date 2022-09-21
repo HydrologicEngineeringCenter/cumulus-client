@@ -6,7 +6,7 @@
     "3fa85f64-5717-4562-b3fc-2c963f66afa6"
   ],
   "temporal_resolution": 1,
-  "temporal_duration": 2,
+  "temporal_duration": 3600,
   "dss_fpart": "MBRFC-FORECAST",
   "dss_datatype": "PER-CUM",
   "parameter_id": "3fa85f64-5717-4562-b3fc-2c963f66afa7",
@@ -17,8 +17,8 @@
   "suite_id":"91d87306-8eed-45ac-a41e-16d9429ca14c",
   "suite":"Lower Mississippi River Forecast Center 06 hour QPF",
   "label":"QPF",
-  "after":"2021-08-23T06:01:01Z",
-  "before":"2022-04-24T12:01:01Z",
+  "after":"2021-08-23T06:00:00Z",
+  "before":"2022-04-24T12:00:00Z",
   "productfile_count":8500,
   "last_forecast_version": "null"
 }

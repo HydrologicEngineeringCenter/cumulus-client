@@ -16,13 +16,27 @@ import org.junit.jupiter.api.Test;
 final class TestCumulusDssData {
 
     @Test
-    void testSerialization() throws IOException, URISyntaxException {
+    void testHourly() throws IOException, URISyntaxException {
         String watershedJson = readResourceFile("cumulus/json/watershed.json");
         String productJson = readResourceFile("cumulus/json/product.json");
         Watershed watershed = CumulusObjectMapper.mapJsonToObject(watershedJson, Watershed.class);
         Product product = CumulusObjectMapper.mapJsonToObject(productJson, Product.class);
         String dssPath = CumulusDssDataUtil.buildDssPath(watershed, product);
-        assertEquals("/SHG/Cumberland Basin River/PRECIP///MBRFC-FORECAST/", dssPath);
+        assertEquals("/SHG/Cumberland Basin River/PRECIP/24Apr2022:1100/24Apr2022:1200/MBRFC-FORECAST/", dssPath);
+    }
+
+    @Test
+    void testInst() throws IOException, URISyntaxException {
+        String watershedJson = readResourceFile("cumulus/json/watershed.json");
+        String productJson = readResourceFile("cumulus/json/productInst.json");
+        Watershed watershed = CumulusObjectMapper.mapJsonToObject(watershedJson, Watershed.class);
+        Product product = CumulusObjectMapper.mapJsonToObject(productJson, Product.class);
+        String dssPath = CumulusDssDataUtil.buildDssPath(watershed, product);
+        assertEquals("/SHG/Cumberland Basin River/AIRTEMP/26Sep2022:1900//MARFC-NBM/", dssPath);
+    }
+
+    @Test
+    void testEmpty() {
         Watershed emptyWatershed = new Watershed();
         Product emptyProduct = new Product();
         String dssPathForEmpty = CumulusDssDataUtil.buildDssPath(emptyWatershed, emptyProduct);

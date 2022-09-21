@@ -1,0 +1,25 @@
+{
+  "id": "90a3d16b-dde2-43a8-aced-16f6aeaaf70a",
+  "slug": "marfc-nbmt-01h",
+  "tags": [
+    "2d64c718-e7af-41c0-be53-035af341c464",
+    "cc93b3f9-fbe1-4b35-8f9c-2d1515961c6a"
+  ],
+  "name": "MARFC Surface, NBM AIRTEMP 1hr",
+  "temporal_resolution": 3600,
+  "temporal_duration": 0,
+  "dss_fpart": "MARFC-NBM",
+  "dss_datatype": "INST-VAL",
+  "parameter_id": "5fab39b9-90ba-482a-8156-d863ad7c45ad",
+  "parameter": "AIRTEMP",
+  "unit_id": "8f51e5b5-08be-4ea7-9ebc-ad44b465dbc6",
+  "unit": "DEG C",
+  "description": "Middle Atlanctic River Forecast Center 01 hour National Blend of Models forecasted surface temperatures",
+  "suite_id": "cc901b66-99fd-4671-9b68-a0bb8fc4223f",
+  "suite": "Middle Atlantic River Forecast Center (MARFC)",
+  "label": "Surface, NBM",
+  "after": "2022-02-03T03:00:00Z",
+  "before": "2022-09-26T19:00:00Z",
+  "productfile_count": 256803,
+  "last_forecast_version": "2022-09-21T20:00:00Z"
+}
