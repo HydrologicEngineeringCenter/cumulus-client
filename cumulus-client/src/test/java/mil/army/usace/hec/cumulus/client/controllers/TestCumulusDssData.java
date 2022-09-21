@@ -22,7 +22,7 @@ final class TestCumulusDssData {
         Watershed watershed = CumulusObjectMapper.mapJsonToObject(watershedJson, Watershed.class);
         Product product = CumulusObjectMapper.mapJsonToObject(productJson, Product.class);
         String dssPath = CumulusDssDataUtil.buildDssPath(watershed, product);
-        assertEquals("/SHG/Cumberland Basin River/PRECIP/24Apr2022:1100/24Apr2022:1200/MBRFC-FORECAST/", dssPath);
+        assertEquals("/SHG/Cumberland Basin River/PRECIP/21Sep2022:1800/21Sep2022:1900/ABRFC-QPE/", dssPath);
     }
 
     @Test

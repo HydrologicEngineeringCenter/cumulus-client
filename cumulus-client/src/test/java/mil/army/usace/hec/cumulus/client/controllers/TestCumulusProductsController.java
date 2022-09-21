@@ -76,29 +76,29 @@ class TestCumulusProductsController extends TestController{
         String resource = "cumulus/json/product.json";
         launchMockServerWithResource(resource);
 
-        String productId = "3fa85f64-5717-4562-b3fc-2c963f66afa6";
+        String productId = "bfa3366a-49ef-4a08-99e7-2cb2e24624c9";
         ProductsEndpointInput input = new ProductsEndpointInput(productId);
         Product product = new CumulusProductsController(executorService).retrieveProduct(buildConnectionInfo(), input).join();
-        assertEquals("3fa85f64-5717-4562-b3fc-2c963f66afa6", product.getId());
-        assertEquals("testSlug", product.getSlug());
-        assertEquals("product1", product.getName());
+        assertEquals("bfa3366a-49ef-4a08-99e7-2cb2e24624c9", product.getId());
+        assertEquals("abrfc-qpe-01h", product.getSlug());
+        assertEquals("ABRFC QPE PRECIP 1hr", product.getName());
         assertEquals(1, product.getTags().length);
-        assertEquals("3fa85f64-5717-4562-b3fc-2c963f66afa6", product.getTags()[0]);
-        assertEquals(1, product.getTemporalResolution());
+        assertEquals("2d64c718-e7af-41c0-be53-035af341c464", product.getTags()[0]);
+        assertEquals(3600, product.getTemporalResolution());
         assertEquals(3600, product.getTemporalDuration());
-        assertEquals("MBRFC-FORECAST", product.getDssFPart());
+        assertEquals("ABRFC-QPE", product.getDssFPart());
         assertEquals("PER-CUM", product.getDssDatatype());
         assertEquals("3fa85f64-5717-4562-b3fc-2c963f66afa7", product.getParameterId());
         assertEquals("PRECIP", product.getParameter());
         assertEquals("3fa85f64-5717-4562-b3fc-2c963f66afa8", product.getUnitId());
-        assertEquals("ft", product.getUnit());
-        assertEquals("for testing purposes", product.getDescription());
-        assertEquals("91d87306-8eed-45ac-a41e-16d9429ca14c", product.getSuiteId());
-        assertEquals("Lower Mississippi River Forecast Center 06 hour QPF", product.getSuite());
-        assertEquals("QPF", product.getLabel());
-        assertEquals("2021-08-23T06:00Z", product.getAfter().toString());
-        assertEquals("2022-04-24T12:00Z", product.getBefore().toString());
-        assertEquals(8500, product.getProductFileCount());
+        assertEquals("MM", product.getUnit());
+        assertEquals("Arkansas-Red Basin River Forecast Center 1-Hour QPE", product.getDescription());
+        assertEquals("40d3e055-c812-47a2-a6eb-b9943a236496", product.getSuiteId());
+        assertEquals("Arkansas-Red Basin River Forecast Center (ABRFC)", product.getSuite());
+        assertEquals("QPE", product.getLabel());
+        assertEquals("2022-08-21T00:00Z", product.getAfter().toString());
+        assertEquals("2022-09-21T19:00Z", product.getBefore().toString());
+        assertEquals(754, product.getProductFileCount());
         assertEquals("null", product.getLastForecastVersion());
     }
 
