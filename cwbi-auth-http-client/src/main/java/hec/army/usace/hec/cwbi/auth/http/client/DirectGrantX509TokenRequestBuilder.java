@@ -1,15 +1,16 @@
 package hec.army.usace.hec.cwbi.auth.http.client;
 
 import hec.army.usace.hec.cwbi.auth.http.client.trustmanagers.CwbiAuthTrustManager;
-import java.io.IOException;
-import java.util.Objects;
-import javax.net.ssl.SSLSocketFactory;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfoBuilder;
 import mil.army.usace.hec.cwms.http.client.HttpRequestBuilderImpl;
 import mil.army.usace.hec.cwms.http.client.HttpRequestResponse;
 import mil.army.usace.hec.cwms.http.client.SslSocketData;
 import mil.army.usace.hec.cwms.http.client.auth.OAuth2Token;
 import mil.army.usace.hec.cwms.http.client.request.HttpRequestExecutor;
+
+import javax.net.ssl.SSLSocketFactory;
+import java.io.IOException;
+import java.util.Objects;
 
 public final class DirectGrantX509TokenRequestBuilder implements DirectGrantX509TokenRequestFluentBuilder {
 
@@ -38,7 +39,6 @@ public final class DirectGrantX509TokenRequestBuilder implements DirectGrantX509
                 new HttpRequestBuilderImpl(new ApiConnectionInfoBuilder(getUrl())
                     .withSslSocketData(sslSocketData).build())
                     .addQueryHeader("Content-Type", MEDIA_TYPE)
-                    .enableHttp2()
                     .post()
                     .withBody(formBody)
                     .withMediaType(MEDIA_TYPE);

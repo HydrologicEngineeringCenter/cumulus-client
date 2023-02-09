@@ -1,17 +1,18 @@
 package mil.army.usace.hec.cumulus.client.controllers;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
-import java.nio.file.Path;
 import mil.army.usace.hec.cumulus.client.model.Download;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfoBuilder;
 import mil.army.usace.hec.cwms.http.client.HttpRequestBuilderImpl;
 import mil.army.usace.hec.cwms.http.client.HttpRequestResponse;
 import mil.army.usace.hec.cwms.http.client.request.HttpRequestExecutor;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.file.Path;
 
 final class CumulusFileDownloaderUtil {
 
@@ -28,7 +29,6 @@ final class CumulusFileDownloaderUtil {
         if (url != null) {
             ApiConnectionInfo connectionInfo = new ApiConnectionInfoBuilder(url).build();
             HttpRequestExecutor httpRequestExecutor = new HttpRequestBuilderImpl(connectionInfo, "")
-                .enableHttp2()
                 .get()
                 .withMediaType("text/plain");
             executeDownload(httpRequestExecutor, pathToLocalFile, downloadContainingFile, listener);

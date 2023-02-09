@@ -1,12 +1,13 @@
 package hec.army.usace.hec.cwbi.auth.http.client;
 
-import java.io.IOException;
-import java.util.Objects;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfoBuilder;
 import mil.army.usace.hec.cwms.http.client.HttpRequestBuilderImpl;
 import mil.army.usace.hec.cwms.http.client.HttpRequestResponse;
 import mil.army.usace.hec.cwms.http.client.auth.OAuth2Token;
 import mil.army.usace.hec.cwms.http.client.request.HttpRequestExecutor;
+
+import java.io.IOException;
+import java.util.Objects;
 
 public final class RefreshTokenRequestBuilder implements RefreshTokenRequestFluentBuilder {
 
@@ -30,7 +31,6 @@ public final class RefreshTokenRequestBuilder implements RefreshTokenRequestFlue
             HttpRequestExecutor executor =
                 new HttpRequestBuilderImpl(new ApiConnectionInfoBuilder(getUrl()).build())
                     .addQueryHeader("Content-Type", MEDIA_TYPE)
-                    .enableHttp2()
                     .post()
                     .withBody(new UrlEncodedFormData()
                         .addRefreshToken(refreshToken)
