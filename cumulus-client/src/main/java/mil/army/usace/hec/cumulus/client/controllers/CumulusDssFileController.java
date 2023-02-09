@@ -1,6 +1,12 @@
 package mil.army.usace.hec.cumulus.client.controllers;
 
-import static mil.army.usace.hec.cumulus.client.controllers.CumulusConstants.ACCEPT_HEADER_V1;
+import mil.army.usace.hec.cumulus.client.model.CumulusObjectMapper;
+import mil.army.usace.hec.cumulus.client.model.Download;
+import mil.army.usace.hec.cumulus.client.model.DownloadRequest;
+import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
+import mil.army.usace.hec.cwms.http.client.HttpRequestBuilderImpl;
+import mil.army.usace.hec.cwms.http.client.HttpRequestResponse;
+import mil.army.usace.hec.cwms.http.client.request.HttpRequestExecutor;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -11,13 +17,8 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import mil.army.usace.hec.cumulus.client.model.CumulusObjectMapper;
-import mil.army.usace.hec.cumulus.client.model.Download;
-import mil.army.usace.hec.cumulus.client.model.DownloadRequest;
-import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
-import mil.army.usace.hec.cwms.http.client.HttpRequestBuilderImpl;
-import mil.army.usace.hec.cwms.http.client.HttpRequestResponse;
-import mil.army.usace.hec.cwms.http.client.request.HttpRequestExecutor;
+
+import static mil.army.usace.hec.cumulus.client.controllers.CumulusConstants.ACCEPT_HEADER_V1;
 
 public final class CumulusDssFileController {
 
@@ -41,7 +42,6 @@ public final class CumulusDssFileController {
     Download queryDownloadStatus(ApiConnectionInfo apiConnectionInfo, DownloadsEndpointInput downloadsEndpointInput) throws IOException {
         HttpRequestExecutor executor =
             new HttpRequestBuilderImpl(apiConnectionInfo, DOWNLOADS_ENDPOINT + "/" + downloadsEndpointInput.getDownloadId())
-                .enableHttp2()
                 .get()
                 .withMediaType(ACCEPT_HEADER_V1);
         try (HttpRequestResponse response = executor.execute()) {
@@ -98,7 +98,6 @@ public final class CumulusDssFileController {
         String jsonBody = CumulusObjectMapper.mapObjectToJson(downloadRequest);
         HttpRequestExecutor executor =
             new HttpRequestBuilderImpl(apiConnectionInfo, DOWNLOADS_ENDPOINT)
-                .enableHttp2()
                 .post()
                 .withBody(jsonBody)
                 .withMediaType(ACCEPT_HEADER_V1);
