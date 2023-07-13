@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 
@@ -13,9 +14,9 @@ class TestCumulusDownloadByteChannel {
 
     @Test
     void testReadWithNotify() {
-        final AtomicInteger currentBytesRead = new AtomicInteger();
-        final AtomicInteger totalBytesRead = new AtomicInteger();
-        final AtomicReference<Duration> elapsedTime = new AtomicReference<>();
+        AtomicInteger currentBytesRead = new AtomicInteger();
+        AtomicLong totalBytesRead = new AtomicLong();
+        AtomicReference<Duration> elapsedTime = new AtomicReference<>();
         CumulusDssFileDownloadListener listener = (downloadData, cbr, tbr, elapsed) -> {
             currentBytesRead.set(cbr);
             totalBytesRead.set(tbr);
