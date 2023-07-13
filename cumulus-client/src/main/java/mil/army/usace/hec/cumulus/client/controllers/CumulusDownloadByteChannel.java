@@ -12,7 +12,7 @@ final class CumulusDownloadByteChannel implements ReadableByteChannel {
     private final ReadableByteChannel readableByteChannel;
     private final CumulusDssFileDownloadListener listener;
     private final Download downloadData;
-    private int bytesReadSoFar;
+    private long bytesReadSoFar;
     private Instant startTime;
 
     CumulusDownloadByteChannel(ReadableByteChannel readableByteChannel, Download downloadData, CumulusDssFileDownloadListener listener) {
