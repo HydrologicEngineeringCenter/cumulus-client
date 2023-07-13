@@ -6,6 +6,8 @@
 
 - Copyright 2022 Resource Management Associates
 -                     Bryson Spilman (bryson@rmanet.com)
+- Copyright 2023 Resource Management Associates
+-                     Adam Korynta (adam@rmanet.com)
 
 - _Add the copyright date, your name, and email address here. (PLEASE KEEP THIS LINE)_
 
