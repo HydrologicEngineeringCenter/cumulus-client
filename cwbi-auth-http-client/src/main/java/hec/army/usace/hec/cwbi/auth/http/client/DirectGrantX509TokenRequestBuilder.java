@@ -38,7 +38,6 @@ public final class DirectGrantX509TokenRequestBuilder implements DirectGrantX509
             HttpRequestExecutor executor =
                 new HttpRequestBuilderImpl(new ApiConnectionInfoBuilder(getUrl())
                     .withSslSocketData(sslSocketData).build())
-                    .addQueryHeader("Content-Type", MEDIA_TYPE)
                     .post()
                     .withBody(formBody)
                     .withMediaType(MEDIA_TYPE);
