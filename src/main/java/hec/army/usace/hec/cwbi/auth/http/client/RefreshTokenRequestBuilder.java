@@ -30,7 +30,6 @@ public final class RefreshTokenRequestBuilder implements RefreshTokenRequestFlue
             OAuth2Token retVal = null;
             HttpRequestExecutor executor =
                 new HttpRequestBuilderImpl(new ApiConnectionInfoBuilder(getUrl()).build())
-                    .addQueryHeader("Content-Type", MEDIA_TYPE)
                     .post()
                     .withBody(new UrlEncodedFormData()
                         .addRefreshToken(refreshToken)
