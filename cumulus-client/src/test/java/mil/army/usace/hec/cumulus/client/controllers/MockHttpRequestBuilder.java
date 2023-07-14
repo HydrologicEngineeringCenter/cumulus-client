@@ -3,6 +3,7 @@ package mil.army.usace.hec.cumulus.client.controllers;
 import mil.army.usace.hec.cwms.http.client.EndpointInput;
 import mil.army.usace.hec.cwms.http.client.HttpRequestBuilder;
 import mil.army.usace.hec.cwms.http.client.request.HttpPostRequest;
+import mil.army.usace.hec.cwms.http.client.request.HttpPutRequest;
 import mil.army.usace.hec.cwms.http.client.request.HttpRequestMediaType;
 
 import java.util.HashMap;
@@ -37,6 +38,21 @@ public class MockHttpRequestBuilder implements HttpRequestBuilder {
 
     @Override
     public HttpPostRequest post() {
+        return null;
+    }
+
+    @Override
+    public HttpPutRequest put() {
+        return null;
+    }
+
+    @Override
+    public HttpPostRequest patch() {
+        return null;
+    }
+
+    @Override
+    public HttpRequestMediaType delete() {
         return null;
     }
 
