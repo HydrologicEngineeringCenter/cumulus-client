@@ -3,16 +3,15 @@ plugins {
 }
 
 dependencies {
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.0")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0")
-    implementation("io.swagger:swagger-annotations:1.6.3")
-    implementation("javax.validation:validation-api:2.0.1.Final")
+    implementation(libs.jackson.databind)
+    implementation(libs.jackson.jsr310)
+    compileOnly(libs.swagger.annotations)
+    implementation(libs.validation.api)
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
+    testImplementation(libs.junit.api)
+    testRuntimeOnly(libs.junit.engine)
 
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
-
-    swaggerCodegen('io.swagger.codegen.v3:swagger-codegen-cli:3.0.30')
+    swaggerCodegen(libs.swagger.codegen)
 }
 
 publishing {
