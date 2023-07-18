@@ -1,15 +1,13 @@
 dependencies {
-    implementation("mil.army.usace.hec:cwms-http-client:6.4.1")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.0")
+    implementation(libs.cwms.http.client)
+    implementation(libs.jackson.databind)
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
-    testImplementation('mil.army.usace.hec:cwms-http-client:6.4.1:test-fixtures@jar')
-    testImplementation(platform("com.squareup.okhttp3:okhttp-bom:4.9.2"))
-    testImplementation('com.squareup.okhttp3:okhttp:4.9.2')
-    testImplementation('com.squareup.okhttp3:mockwebserver:4.9.2')
-
-    testRuntimeOnly('com.squareup.okhttp3:mockwebserver:4.9.3')
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
+    testImplementation(libs.junit.api)
+    testImplementation(variantOf(libs.cwms.http.client) { classifier('test-fixtures') })
+    testImplementation(platform(libs.okhttp.bom))
+    testImplementation(libs.okhttp)
+    testImplementation(libs.okhttp.mockwebserver)
+    testRuntimeOnly(libs.junit.engine)
 
 }
 
