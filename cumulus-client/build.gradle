@@ -1,6 +1,5 @@
 dependencies {
     implementation(project(":cumulus-model"))
-    implementation(project(":cwbi-auth-http-client"))
     implementation(libs.cwms.http.client)
 
     testImplementation(libs.junit.api)
