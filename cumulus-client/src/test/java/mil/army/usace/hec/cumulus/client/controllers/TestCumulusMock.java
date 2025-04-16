@@ -40,7 +40,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
-abstract class TestController {
+public abstract class TestCumulusMock {
 
     static MockHttpServer mockHttpServer;
 
@@ -61,7 +61,7 @@ abstract class TestController {
         mockHttpServer.shutdown();
     }
 
-    ApiConnectionInfo buildConnectionInfo() {
+    protected ApiConnectionInfo buildConnectionInfo() {
         String baseUrl = String.format("http://localhost:%s", mockHttpServer.getPort());
         return new ApiConnectionInfoBuilder(baseUrl).build();
     }
@@ -97,6 +97,11 @@ abstract class TestController {
         oAuth2Token.setTokenType("Bearer");
         oAuth2Token.setExpiresIn(3600);
         return new OAuth2TokenProvider() {
+            @Override
+            public void clear() {
+                // No-op
+            }
+
             @Override
             public OAuth2Token getToken() {
                 return oAuth2Token;

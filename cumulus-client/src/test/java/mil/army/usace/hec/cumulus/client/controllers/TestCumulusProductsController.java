@@ -14,7 +14,7 @@ import mil.army.usace.hec.cumulus.client.model.ProductAvailability;
 import mil.army.usace.hec.cumulus.client.model.ProductFile;
 import org.junit.jupiter.api.Test;
 
-class TestCumulusProductsController extends TestController{
+class TestCumulusProductsController extends TestCumulusMock {
 
 
     @Test

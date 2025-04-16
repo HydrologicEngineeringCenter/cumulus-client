@@ -1,6 +1,7 @@
 dependencies {
     implementation(project(":cumulus-model"))
     implementation(libs.cwms.http.client)
+    implementation(libs.cwbi.auth.http.client)
 
     testImplementation(libs.junit.api)
     testImplementation(variantOf(libs.cwms.http.client) { classifier('test-fixtures') })
