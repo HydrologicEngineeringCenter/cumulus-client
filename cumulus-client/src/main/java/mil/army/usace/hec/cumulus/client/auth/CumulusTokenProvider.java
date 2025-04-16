@@ -32,6 +32,7 @@ import java.util.Objects;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLSocketFactory;
 import mil.army.usace.hec.cumulus.client.controllers.CumulusConstants;
+import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfoBuilder;
 import mil.army.usace.hec.cwms.http.client.SslSocketData;
 import mil.army.usace.hec.cwms.http.client.auth.OAuth2TokenProvider;
@@ -45,7 +46,8 @@ public final class CumulusTokenProvider {
         SSLSocketFactory sslSocketFactory = CwbiAuthSslSocketFactory.buildSSLSocketFactory(Collections.singletonList(Objects.requireNonNull(keyManager, "Missing required KeyManager")));
         SslSocketData sslSocketData = new SslSocketData(Objects.requireNonNull(sslSocketFactory, "Missing required SSLSocketFactory"),
                 CwbiAuthTrustManager.getTrustManager());
-        CumulusTokenUrlDiscoveryService tokenUrlDiscoveryService = new CumulusTokenUrlDiscoveryService(new ApiConnectionInfoBuilder(url).build(), sslSocketData);
+        ApiConnectionInfo apiConnectionInfo = new ApiConnectionInfoBuilder(Objects.requireNonNull(url, "Missing required url")).build();
+        CumulusTokenUrlDiscoveryService tokenUrlDiscoveryService = new CumulusTokenUrlDiscoveryService(apiConnectionInfo, sslSocketData);
         return new DiscoveredCwbiAuthTokenProvider(CumulusConstants.CLIENT_ID, tokenUrlDiscoveryService);
     }
 }
