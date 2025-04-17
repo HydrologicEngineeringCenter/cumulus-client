@@ -54,9 +54,7 @@ public final class CumulusIdentityProviderController {
                 .get()
                 .withMediaType(ACCEPT_HEADER_V1);
         try (HttpRequestResponse response = executor.execute()) {
-            String tokenEndpoint = CumulusObjectMapper
-                    .getValueForKey(response.getBody(), TOKEN_ENDPOINT_KEY)
-                    .orElseThrow(() -> new IOException("Token endpoint not found in response"));
+            String tokenEndpoint = CumulusObjectMapper.getValueForKey(response.getBody(), TOKEN_ENDPOINT_KEY);
             return new ApiConnectionInfoBuilder(tokenEndpoint)
                     .withSslSocketData(sslSocketData)
                     .build();

@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 
 public final class CumulusObjectMapper {
 
@@ -41,14 +40,13 @@ public final class CumulusObjectMapper {
         return OBJECT_MAPPER.writeValueAsString(object);
     }
 
-    public static Optional<String> getValueForKey(String json, String key) throws IOException {
-        Optional<String> retVal = Optional.empty();
+    public static String getValueForKey(String json, String key) throws IOException {
         JsonNode node = OBJECT_MAPPER.readTree(json).get(key);
-        if(node != null)
+        if(node == null)
         {
-            retVal = Optional.of(node.asText());
+            throw new IOException("Key not found in JSON: " + key);
         }
-        return retVal;
+        return node.asText();
     }
 
     private static class CumulusDateTimeDeSerializer extends JsonDeserializer<ZonedDateTime> {
