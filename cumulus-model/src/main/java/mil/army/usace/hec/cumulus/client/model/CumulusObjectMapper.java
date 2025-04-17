@@ -39,6 +39,10 @@ public final class CumulusObjectMapper {
         return OBJECT_MAPPER.writeValueAsString(object);
     }
 
+    public static String getValueForKey(String json, String key) throws IOException {
+        return OBJECT_MAPPER.readTree(json).get(key).asText();
+    }
+
     private static class CumulusDateTimeDeSerializer extends JsonDeserializer<ZonedDateTime> {
 
         private final DateTimeFormatter fmt = DateTimeFormatter.ISO_ZONED_DATE_TIME;

@@ -24,7 +24,6 @@
 package mil.army.usace.hec.cumulus.client.controllers;
 
 import java.io.IOException;
-import java.util.concurrent.CompletionException;
 import static mil.army.usace.hec.cumulus.client.controllers.CumulusConstants.ACCEPT_HEADER_V1;
 import mil.army.usace.hec.cumulus.client.model.CumulusObjectMapper;
 import mil.army.usace.hec.cumulus.client.model.IdentityProviderConfiguration;
@@ -39,6 +38,7 @@ public final class CumulusIdentityProviderController {
 
     private static final String IDENTITY_PROVIDER_ENDPOINT = "identity-provider";
     private static final String CONFIG_ENDPOINT = "configuration";
+    private static final String TOKEN_ENDPOINT_KEY = "token_endpoint";
 
     /**
      * Retrieve token URL.
@@ -47,11 +47,18 @@ public final class CumulusIdentityProviderController {
      * @param sslSocketData - SSL socket data
      * @return token URL
      */
-    public ApiConnectionInfo retrieveTokenUrl(ApiConnectionInfo apiConnectionInfo, SslSocketData sslSocketData) {
+    public ApiConnectionInfo retrieveTokenUrl(ApiConnectionInfo apiConnectionInfo, SslSocketData sslSocketData) throws IOException {
         IdentityProviderConfiguration configuration = retrieveConfiguration(apiConnectionInfo);
-        return new ApiConnectionInfoBuilder(configuration.getTokenEndpoint())
-                .withSslSocketData(sslSocketData)
-                .build();
+        String wellKnownEndpoint = configuration.getWellKnownEndpoint();
+        HttpRequestExecutor executor = new HttpRequestBuilderImpl(apiConnectionInfo, wellKnownEndpoint)
+                .get()
+                .withMediaType(ACCEPT_HEADER_V1);
+        try (HttpRequestResponse response = executor.execute()) {
+            String tokenEndpoint = CumulusObjectMapper.getValueForKey(response.getBody(), TOKEN_ENDPOINT_KEY);
+            return new ApiConnectionInfoBuilder(tokenEndpoint)
+                    .withSslSocketData(sslSocketData)
+                    .build();
+        }
     }
 
     /**
@@ -60,16 +67,12 @@ public final class CumulusIdentityProviderController {
      * @param apiConnectionInfo - connection info
      * @return Identity Provider configuration
      */
-    public IdentityProviderConfiguration retrieveConfiguration(ApiConnectionInfo apiConnectionInfo) {
-        try {
-            HttpRequestExecutor executor = new HttpRequestBuilderImpl(apiConnectionInfo, IDENTITY_PROVIDER_ENDPOINT + "/" + CONFIG_ENDPOINT)
-                    .get()
-                    .withMediaType(ACCEPT_HEADER_V1);
-            try (HttpRequestResponse response = executor.execute()) {
-                return CumulusObjectMapper.mapJsonToObject(response.getBody(), IdentityProviderConfiguration.class);
-            }
-        } catch (IOException ex) {
-            throw new CompletionException(ex);
+    private IdentityProviderConfiguration retrieveConfiguration(ApiConnectionInfo apiConnectionInfo) throws IOException {
+        HttpRequestExecutor executor = new HttpRequestBuilderImpl(apiConnectionInfo, IDENTITY_PROVIDER_ENDPOINT + "/" + CONFIG_ENDPOINT)
+                .get()
+                .withMediaType(ACCEPT_HEADER_V1);
+        try (HttpRequestResponse response = executor.execute()) {
+            return CumulusObjectMapper.mapJsonToObject(response.getBody(), IdentityProviderConfiguration.class);
         }
     }
 }

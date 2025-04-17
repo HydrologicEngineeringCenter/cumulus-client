@@ -37,8 +37,8 @@ import mil.army.usace.hec.cwms.http.client.ApiConnectionInfoBuilder;
 import mil.army.usace.hec.cwms.http.client.SslSocketData;
 import mil.army.usace.hec.cwms.http.client.auth.OAuth2TokenProvider;
 
-public final class CumulusTokenProvider {
-    private CumulusTokenProvider() {
+public final class CumulusTokenProviderFactory {
+    private CumulusTokenProviderFactory() {
         throw new AssertionError("This class should not be instantiated");
     }
 

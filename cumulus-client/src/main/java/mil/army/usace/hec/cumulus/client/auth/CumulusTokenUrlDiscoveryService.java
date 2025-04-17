@@ -24,6 +24,7 @@
 package mil.army.usace.hec.cumulus.client.auth;
 
 import hec.army.usace.hec.cwbi.auth.http.client.TokenUrlDiscoveryService;
+import java.io.IOException;
 import java.util.Objects;
 import mil.army.usace.hec.cumulus.client.controllers.CumulusIdentityProviderController;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
@@ -40,7 +41,7 @@ final class CumulusTokenUrlDiscoveryService implements TokenUrlDiscoveryService 
     }
 
     @Override
-    public ApiConnectionInfo discoverTokenUrl() {
+    public ApiConnectionInfo discoverTokenUrl() throws IOException {
         return new CumulusIdentityProviderController()
                 .retrieveTokenUrl(webServiceUrl, sslSocketData);
     }

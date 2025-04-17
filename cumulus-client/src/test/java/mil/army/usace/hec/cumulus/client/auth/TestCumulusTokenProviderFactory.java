@@ -32,20 +32,20 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
-final class TestCumulusTokenProvider extends TestCumulusMock {
+final class TestCumulusTokenProviderFactory extends TestCumulusMock {
 
     @Test
     void testNotNull() throws IOException {
         String resource = "cumulus/json/idPConfig.json";
         launchMockServerWithResource(resource);
         ApiConnectionInfo webServiceUrl = buildConnectionInfo();
-        OAuth2TokenProvider tokenProvider = CumulusTokenProvider.createTokenProvider(webServiceUrl.getApiRoot(), new KeyManager() {});
+        OAuth2TokenProvider tokenProvider = CumulusTokenProviderFactory.createTokenProvider(webServiceUrl.getApiRoot(), new KeyManager() {});
         assertNotNull(tokenProvider);
     }
 
     @Test
     void testNulls() {
-        assertThrows(NullPointerException.class, () -> CumulusTokenProvider.createTokenProvider("test", null));
-        assertThrows(NullPointerException.class, () -> CumulusTokenProvider.createTokenProvider(null, new KeyManager() {}));
+        assertThrows(NullPointerException.class, () -> CumulusTokenProviderFactory.createTokenProvider("test", null));
+        assertThrows(NullPointerException.class, () -> CumulusTokenProviderFactory.createTokenProvider(null, new KeyManager() {}));
     }
 }

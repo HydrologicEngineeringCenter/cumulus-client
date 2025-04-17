@@ -79,13 +79,19 @@ public abstract class TestCumulusMock {
     }
 
     protected void launchMockServerWithResource(String resource) throws IOException {
-        URL resourceUrl = getClass().getClassLoader().getResource(resource);
-        if (resourceUrl == null) {
-            throw new IOException("Failed to get resource: " + resource);
+        launchMockServerWithResources(resource);
+    }
+
+    protected void launchMockServerWithResources(String... resources) throws IOException {
+        for (String resource : resources) {
+            URL resourceUrl = getClass().getClassLoader().getResource(resource);
+            if (resourceUrl == null) {
+                throw new IOException("Failed to get resource: " + resource);
+            }
+            Path path = new File(resourceUrl.getFile()).toPath();
+            String body = String.join("\n", Files.readAllLines(path));
+            mockHttpServer.enqueue(body);
         }
-        Path path = new File(resourceUrl.getFile()).toPath();
-        String collect = String.join("\n", Files.readAllLines(path));
-        mockHttpServer.enqueue(collect);
         mockHttpServer.start();
     }
 

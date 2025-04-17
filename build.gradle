@@ -19,13 +19,6 @@ subprojects {
     version = versionLabel(versionDetails())
     group = "mil.army.usace.hec"
 
-
-    java {
-        toolchain {
-            languageVersion = JavaLanguageVersion.of(17)
-        }
-    }
-
     repositories {
         mavenCentral()
         maven {
@@ -38,6 +31,8 @@ subprojects {
 
     tasks.withType(JavaCompile) {
         options.encoding = "UTF-8"
+        sourceCompatibility = '11'
+        targetCompatibility = '11'
     }
 
     test {

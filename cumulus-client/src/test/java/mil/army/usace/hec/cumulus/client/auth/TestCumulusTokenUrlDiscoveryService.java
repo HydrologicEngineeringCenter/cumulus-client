@@ -25,8 +25,6 @@ package mil.army.usace.hec.cumulus.client.auth;
 
 import hec.army.usace.hec.cwbi.auth.http.client.trustmanagers.CwbiAuthTrustManager;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
 import javax.net.ssl.SSLSocketFactory;
 import mil.army.usace.hec.cumulus.client.controllers.TestCumulusMock;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
@@ -34,63 +32,28 @@ import mil.army.usace.hec.cwms.http.client.SslSocketData;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 final class TestCumulusTokenUrlDiscoveryService extends TestCumulusMock {
 
     @Test
     void testCumulusTokenUrlDiscoveryService() throws IOException {
+        SSLSocketFactory mockSslSocketFactory = Mockito.mock(SSLSocketFactory.class);
         String resource = "cumulus/json/idPConfig.json";
-        launchMockServerWithResource(resource);
-        SslSocketData sslSocketData = new SslSocketData(getTestSslSocketFactory(), CwbiAuthTrustManager.getTrustManager());
+        String openIdConfig = "cumulus/json/openIdConfig.json";
+        launchMockServerWithResources(resource, openIdConfig);
+        SslSocketData sslSocketData = new SslSocketData(mockSslSocketFactory, CwbiAuthTrustManager.getTrustManager());
         ApiConnectionInfo webServiceUrl = buildConnectionInfo();
         CumulusTokenUrlDiscoveryService discoveryService = new CumulusTokenUrlDiscoveryService(webServiceUrl, sslSocketData);
-        assertEquals("https://api.example.com/oauth2/token", discoveryService.discoverTokenUrl().getApiRoot());
+        assertEquals("https://api.example.com/auth/realms/cwbi/protocol/openid-connect/token", discoveryService.discoverTokenUrl().getApiRoot());
     }
 
     @Test
     void testNulls() {
-        SslSocketData sslSocketData = new SslSocketData(getTestSslSocketFactory(), CwbiAuthTrustManager.getTrustManager());
+        SSLSocketFactory mockSslSocketFactory = Mockito.mock(SSLSocketFactory.class);
+        SslSocketData sslSocketData = new SslSocketData(mockSslSocketFactory, CwbiAuthTrustManager.getTrustManager());
         ApiConnectionInfo webServiceUrl = buildConnectionInfo();
         assertThrows(NullPointerException.class, () -> new CumulusTokenUrlDiscoveryService(null, sslSocketData));
         assertThrows(NullPointerException.class, () -> new CumulusTokenUrlDiscoveryService(webServiceUrl, null));
-    }
-
-    private SSLSocketFactory getTestSslSocketFactory() {
-        return new SSLSocketFactory() {
-            @Override
-            public String[] getDefaultCipherSuites() {
-                return new String[0];
-            }
-
-            @Override
-            public String[] getSupportedCipherSuites() {
-                return new String[0];
-            }
-
-            @Override
-            public Socket createSocket(Socket socket, String s, int i, boolean b) {
-                return null;
-            }
-
-            @Override
-            public Socket createSocket(String s, int i) {
-                return null;
-            }
-
-            @Override
-            public Socket createSocket(String s, int i, InetAddress inetAddress, int i1) {
-                return null;
-            }
-
-            @Override
-            public Socket createSocket(InetAddress inetAddress, int i) {
-                return null;
-            }
-
-            @Override
-            public Socket createSocket(InetAddress inetAddress, int i, InetAddress inetAddress1, int i1) {
-                return null;
-            }
-        };
     }
 }

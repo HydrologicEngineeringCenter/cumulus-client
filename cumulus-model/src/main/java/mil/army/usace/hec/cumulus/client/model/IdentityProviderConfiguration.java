@@ -37,15 +37,8 @@ public final class IdentityProviderConfiguration {
         return tokenEndpoint;
     }
 
-    public void setTokenEndpoint(String tokenEndpoint) {
-        this.tokenEndpoint = tokenEndpoint;
-    }
-
     public String getWellKnownEndpoint() {
         return wellKnownEndpoint;
     }
 
-    public void setWellKnownEndpoint(String wellKnownEndpoint) {
-        this.wellKnownEndpoint = wellKnownEndpoint;
-    }
 }
