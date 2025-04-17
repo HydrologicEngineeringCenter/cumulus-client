@@ -4,8 +4,11 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import mil.army.usace.hec.cumulus.client.model.CumulusObjectMapper;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 final class TestCumulusObjectMapper {
@@ -14,8 +17,12 @@ final class TestCumulusObjectMapper {
     void testGetValueForKey() throws IOException, URISyntaxException {
         String json = readResourceFile("cumulus/json/downloadRequest.json");
         String expectedValue = "95e7713a-ccd6-432d-b2f0-972422511171";
-        String actualValue = CumulusObjectMapper.getValueForKey(json, "watershed_id");
+        Optional<String> actualValueOpt = CumulusObjectMapper.getValueForKey(json, "watershed_id");
+        assertTrue(actualValueOpt.isPresent());
+        String actualValue = actualValueOpt.get();
         assertEquals(expectedValue, actualValue);
+
+        assertFalse(CumulusObjectMapper.getValueForKey(json, "non_existent_key").isPresent());
     }
 
     private String readResourceFile(String resource) throws IOException, URISyntaxException {
