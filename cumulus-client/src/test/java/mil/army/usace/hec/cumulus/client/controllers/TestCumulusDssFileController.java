@@ -14,7 +14,7 @@ import mil.army.usace.hec.cumulus.client.model.Download;
 import mil.army.usace.hec.cumulus.client.model.DownloadRequest;
 import org.junit.jupiter.api.Test;
 
-class TestCumulusDssFileController extends TestController{
+class TestCumulusDssFileController extends TestCumulusMock {
 
     @Test
     void testQueryDownloadStatus() throws IOException {

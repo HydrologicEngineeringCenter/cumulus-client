@@ -1,0 +1,4 @@
+{
+  "token_endpoint": "https://api.example.com/oauth2/token",
+  "well_known_endpoint": "https://api.example.com/.well-known/openid-configuration"
+}

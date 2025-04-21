@@ -8,7 +8,7 @@ import java.util.List;
 import mil.army.usace.hec.cumulus.client.model.Watershed;
 import org.junit.jupiter.api.Test;
 
-class TestCumulusWatershedController extends TestController {
+class TestCumulusWatershedController extends TestCumulusMock {
 
     @Test
     void testRetrieveWatershed() throws IOException {

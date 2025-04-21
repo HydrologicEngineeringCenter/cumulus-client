@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -37,6 +38,15 @@ public final class CumulusObjectMapper {
 
     public static String mapObjectToJson(Object object) throws IOException {
         return OBJECT_MAPPER.writeValueAsString(object);
+    }
+
+    public static String getValueForKey(String json, String key) throws IOException {
+        JsonNode node = OBJECT_MAPPER.readTree(json).get(key);
+        if(node == null)
+        {
+            throw new IOException("Key not found in JSON: " + key);
+        }
+        return node.asText();
     }
 
     private static class CumulusDateTimeDeSerializer extends JsonDeserializer<ZonedDateTime> {

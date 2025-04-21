@@ -40,7 +40,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 
-abstract class TestController {
+public abstract class TestCumulusMock {
 
     static MockHttpServer mockHttpServer;
 
@@ -61,7 +61,7 @@ abstract class TestController {
         mockHttpServer.shutdown();
     }
 
-    ApiConnectionInfo buildConnectionInfo() {
+    protected ApiConnectionInfo buildConnectionInfo() {
         String baseUrl = String.format("http://localhost:%s", mockHttpServer.getPort());
         return new ApiConnectionInfoBuilder(baseUrl).build();
     }
@@ -79,13 +79,19 @@ abstract class TestController {
     }
 
     protected void launchMockServerWithResource(String resource) throws IOException {
-        URL resourceUrl = getClass().getClassLoader().getResource(resource);
-        if (resourceUrl == null) {
-            throw new IOException("Failed to get resource: " + resource);
+        launchMockServerWithResources(resource);
+    }
+
+    protected void launchMockServerWithResources(String... resources) throws IOException {
+        for (String resource : resources) {
+            URL resourceUrl = getClass().getClassLoader().getResource(resource);
+            if (resourceUrl == null) {
+                throw new IOException("Failed to get resource: " + resource);
+            }
+            Path path = new File(resourceUrl.getFile()).toPath();
+            String body = String.join("\n", Files.readAllLines(path));
+            mockHttpServer.enqueue(body);
         }
-        Path path = new File(resourceUrl.getFile()).toPath();
-        String collect = String.join("\n", Files.readAllLines(path));
-        mockHttpServer.enqueue(collect);
         mockHttpServer.start();
     }
 
@@ -97,6 +103,11 @@ abstract class TestController {
         oAuth2Token.setTokenType("Bearer");
         oAuth2Token.setExpiresIn(3600);
         return new OAuth2TokenProvider() {
+            @Override
+            public void clear() {
+                // No-op
+            }
+
             @Override
             public OAuth2Token getToken() {
                 return oAuth2Token;
