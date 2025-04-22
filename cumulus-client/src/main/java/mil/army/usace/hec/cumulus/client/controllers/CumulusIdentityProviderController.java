@@ -50,7 +50,7 @@ public final class CumulusIdentityProviderController {
     public ApiConnectionInfo retrieveTokenUrl(ApiConnectionInfo apiConnectionInfo, SslSocketData sslSocketData) throws IOException {
         IdentityProviderConfiguration configuration = retrieveConfiguration(apiConnectionInfo);
         String wellKnownEndpoint = configuration.getWellKnownEndpoint();
-        HttpRequestExecutor executor = new HttpRequestBuilderImpl(apiConnectionInfo, wellKnownEndpoint)
+        HttpRequestExecutor executor = new HttpRequestBuilderImpl(new ApiConnectionInfoBuilder(wellKnownEndpoint).build())
                 .get()
                 .withMediaType(ACCEPT_HEADER_V1);
         try (HttpRequestResponse response = executor.execute()) {
