@@ -78,21 +78,29 @@ public abstract class TestCumulusMock {
             .build();
     }
 
+    protected static void enqueueMockServer(String body) {
+        mockHttpServer.enqueue(body);
+    }
+
     protected void launchMockServerWithResource(String resource) throws IOException {
         launchMockServerWithResources(resource);
     }
 
     protected void launchMockServerWithResources(String... resources) throws IOException {
         for (String resource : resources) {
-            URL resourceUrl = getClass().getClassLoader().getResource(resource);
-            if (resourceUrl == null) {
-                throw new IOException("Failed to get resource: " + resource);
-            }
-            Path path = new File(resourceUrl.getFile()).toPath();
-            String body = String.join("\n", Files.readAllLines(path));
+            String body = readResourceAsString(resource);
             mockHttpServer.enqueue(body);
         }
         mockHttpServer.start();
+    }
+
+    protected String readResourceAsString(String resource) throws IOException {
+        URL resourceUrl = getClass().getClassLoader().getResource(resource);
+        if (resourceUrl == null) {
+            throw new IOException("Failed to get resource: " + resource);
+        }
+        Path path = new File(resourceUrl.getFile()).toPath();
+        return String.join("\n", Files.readAllLines(path));
     }
 
     private OAuth2TokenProvider getTestTokenProvider() {
