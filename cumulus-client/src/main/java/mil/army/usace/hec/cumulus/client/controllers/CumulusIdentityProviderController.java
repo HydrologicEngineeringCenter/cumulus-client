@@ -23,45 +23,25 @@
  */
 package mil.army.usace.hec.cumulus.client.controllers;
 
+import hec.army.usace.hec.cwbi.auth.http.client.OpenIdTokenController;
 import java.io.IOException;
 import static mil.army.usace.hec.cumulus.client.controllers.CumulusConstants.ACCEPT_HEADER_V1;
 import mil.army.usace.hec.cumulus.client.model.CumulusObjectMapper;
 import mil.army.usace.hec.cumulus.client.model.IdentityProviderConfiguration;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
-import mil.army.usace.hec.cwms.http.client.ApiConnectionInfoBuilder;
 import mil.army.usace.hec.cwms.http.client.HttpRequestBuilderImpl;
 import mil.army.usace.hec.cwms.http.client.HttpRequestResponse;
-import mil.army.usace.hec.cwms.http.client.SslSocketData;
 import mil.army.usace.hec.cwms.http.client.request.HttpRequestExecutor;
 
-public final class CumulusIdentityProviderController {
+public final class CumulusIdentityProviderController extends OpenIdTokenController {
 
     private static final String IDENTITY_PROVIDER_ENDPOINT = "identity-provider";
     private static final String CONFIG_ENDPOINT = "configuration";
-    private static final String TOKEN_ENDPOINT_KEY = "token_endpoint";
 
-    /**
-     * Retrieve token URL.
-     *
-     * @param apiConnectionInfo - connection info
-     * @param sslSocketData - SSL socket data
-     * @return token URL
-     */
-    public ApiConnectionInfo retrieveTokenUrl(ApiConnectionInfo apiConnectionInfo, SslSocketData sslSocketData) throws IOException {
+    @Override
+    protected String retrieveWellKnownEndpoint(ApiConnectionInfo apiConnectionInfo) throws IOException {
         IdentityProviderConfiguration configuration = retrieveConfiguration(apiConnectionInfo);
-        String wellKnownEndpoint = configuration.getWellKnownEndpoint();
-        ApiConnectionInfo wellKnownApiConnectionInfo = new ApiConnectionInfoBuilder(wellKnownEndpoint)
-                .withSslSocketData(sslSocketData)
-                .build();
-        HttpRequestExecutor executor = new HttpRequestBuilderImpl(wellKnownApiConnectionInfo)
-                .get()
-                .withMediaType(ACCEPT_HEADER_V1);
-        try (HttpRequestResponse response = executor.execute()) {
-            String tokenEndpoint = CumulusObjectMapper.getValueForKey(response.getBody(), TOKEN_ENDPOINT_KEY);
-            return new ApiConnectionInfoBuilder(tokenEndpoint)
-                    .withSslSocketData(sslSocketData)
-                    .build();
-        }
+        return configuration.getWellKnownEndpoint();
     }
 
     /**
