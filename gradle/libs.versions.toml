@@ -1,7 +1,7 @@
 [versions]
 
 #HEC Dependencies
-cwms-http-client = "9.2.0-RC06"
+cwms-http-client = "9.2.0"
 
 #Third Party Dependencies
 jackson = "2.13.0"
