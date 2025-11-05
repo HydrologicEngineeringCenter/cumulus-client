@@ -31,6 +31,9 @@ import java.util.Objects;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLSocketFactory;
 import mil.army.usace.hec.cumulus.client.controllers.CumulusConstants;
+import mil.army.usace.hec.cumulus.client.controllers.CumulusIdentityProviderController;
+import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
+import mil.army.usace.hec.cwms.http.client.ApiConnectionInfoBuilder;
 import mil.army.usace.hec.cwms.http.client.auth.OAuth2TokenProvider;
 
 public final class CumulusTokenProviderFactory {
@@ -40,8 +43,9 @@ public final class CumulusTokenProviderFactory {
 
     public static OAuth2TokenProvider createTokenProvider(String url, KeyManager keyManager) throws IOException {
         SSLSocketFactory sslSocketFactory = CwbiAuthSslSocketFactory.buildSSLSocketFactory(Collections.singletonList(Objects.requireNonNull(keyManager, "Missing required KeyManager")));
-
-        return new CwbiAuthTokenProvider(Objects.requireNonNull(url, "Missing required url"),
+        ApiConnectionInfo configInfo = new ApiConnectionInfoBuilder(Objects.requireNonNull(url, "Missing required url")).build();
+        final String wellKnownUrl = new CumulusIdentityProviderController().retrieveWellKnownEndpoint(configInfo);
+        return new CwbiAuthTokenProvider(wellKnownUrl,
                                          CumulusConstants.CLIENT_ID,
                                          Objects.requireNonNull(sslSocketFactory, "Missing required SSLSocketFactory"));
     }
