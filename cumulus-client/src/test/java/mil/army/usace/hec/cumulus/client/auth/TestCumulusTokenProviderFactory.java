@@ -36,9 +36,11 @@ final class TestCumulusTokenProviderFactory extends TestCumulusMock {
 
     @Test
     void testNotNull() throws IOException {
-        String resource = "cumulus/json/idPConfig.json";
+        String resource = "cumulus/json/openIdConfig.json";
         launchMockServerWithResource(resource);
+        enqueueAdditionalResource(resource); // The discovery isn't particularly efficient thus we need to enqueue twice.
         ApiConnectionInfo webServiceUrl = buildConnectionInfo();
+        System.out.println("URL: " + webServiceUrl.getApiRoot());
         OAuth2TokenProvider tokenProvider = CumulusTokenProviderFactory.createTokenProvider(webServiceUrl.getApiRoot(), new KeyManager() {});
         assertNotNull(tokenProvider);
     }

@@ -39,7 +39,7 @@ public final class CumulusIdentityProviderController extends OpenIdTokenControll
     private static final String CONFIG_ENDPOINT = "configuration";
 
     @Override
-    protected String retrieveWellKnownEndpoint(ApiConnectionInfo apiConnectionInfo) throws IOException {
+    public String retrieveWellKnownEndpoint(ApiConnectionInfo apiConnectionInfo) throws IOException {
         IdentityProviderConfiguration configuration = retrieveConfiguration(apiConnectionInfo);
         return configuration.getWellKnownEndpoint();
     }
