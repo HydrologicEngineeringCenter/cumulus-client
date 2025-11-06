@@ -23,25 +23,100 @@
  */
 package mil.army.usace.hec.cumulus.client.auth;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import javax.net.ssl.KeyManager;
-import mil.army.usace.hec.cumulus.client.controllers.TestCumulusMock;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
+import mil.army.usace.hec.cwms.http.client.ApiConnectionInfoBuilder;
+import mil.army.usace.hec.cwms.http.client.MockHttpServer;
 import mil.army.usace.hec.cwms.http.client.auth.OAuth2TokenProvider;
+import okhttp3.HttpUrl;
+import okhttp3.mockwebserver.Dispatcher;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.RecordedRequest;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-final class TestCumulusTokenProviderFactory extends TestCumulusMock {
+final class TestCumulusTokenProviderFactory {
+
+    static MockHttpServer mockCumulusServer;
+    static MockHttpServer mockAuthServer;
+
+    @BeforeAll
+    static void setUp() throws IOException {
+        mockCumulusServer = MockHttpServer.create();
+        mockAuthServer = MockHttpServer.create();
+        mockCumulusServer.start();
+        mockAuthServer.start();
+
+        mockCumulusServer.getMockServer().setDispatcher(new Dispatcher() {
+
+            @Override
+            public MockResponse dispatch(RecordedRequest request) throws InterruptedException {
+                final HttpUrl url = request.getRequestUrl();
+                final String path = url.encodedPath();
+                System.out.println(path);
+                try {
+                    if (path.endsWith("configuration")) {
+                        return new MockResponse().setBody(getResource("cumulus/json/idPConfig.json")
+                                                .replace("PORT", ""+mockAuthServer.getPort()));
+                    }
+                } catch (IOException ex) {
+                    fail("Couldn't process mocked request", ex);
+                }
+                return new MockResponse().setResponseCode(404).setBody("Request not mocked.");
+            }
+        });
+
+        mockAuthServer.getMockServer().setDispatcher(new Dispatcher() {
+            @Override
+            public MockResponse dispatch(RecordedRequest request) throws InterruptedException {
+                final HttpUrl url = request.getRequestUrl();
+                final String path = url.encodedPath();
+                System.out.println("Got request for url: " + url);
+                System.out.println("path: " + path);
+                try {
+                    if (path.endsWith("openid-configuration")) {
+                        return new MockResponse().setBody(getResource("cumulus/json/openIdConfig.json")
+                                                .replace("PORT", ""+mockAuthServer.getPort()));
+                    }
+                } catch (IOException ex) {
+                    fail("Couldn't process mocked request", ex);
+                }
+                return new MockResponse().setResponseCode(404).setBody("Request not mocked.");
+            }
+        });
+    }
+
+    @AfterAll
+    static void tearDown() throws IOException {
+        mockCumulusServer.shutdown();
+        mockAuthServer.shutdown();
+    }
+
+    ApiConnectionInfo buildCumulusInfo() {
+        String baseUrl = String.format("http://localhost:%s", mockCumulusServer.getPort());
+        return new ApiConnectionInfoBuilder(baseUrl).build();
+    }
+
+    ApiConnectionInfo buildAuthInfo() {
+        String baseUrl = String.format("http://localhost:%s", mockAuthServer.getPort());
+        return new ApiConnectionInfoBuilder(baseUrl).build();
+    }
 
     @Test
     void testNotNull() throws IOException {
-        final String idpConfig = "cumulus/json/idPConfig.json";
-        final String openIdConfig = "cumulus/json/openIdConfig.json";
-        launchMockServerWithResource(idpConfig);
-        enqueueAdditionalResource(openIdConfig);
-        enqueueAdditionalResource(openIdConfig); // The discovery isn't particularly efficient thus we need to enqueue twice.
-        ApiConnectionInfo webServiceUrl = buildConnectionInfo();
+        ApiConnectionInfo webServiceUrl = buildCumulusInfo();
         System.out.println("URL: " + webServiceUrl.getApiRoot());
         OAuth2TokenProvider tokenProvider = CumulusTokenProviderFactory.createTokenProvider(webServiceUrl.getApiRoot(), new KeyManager() {});
         assertNotNull(tokenProvider);
@@ -51,5 +126,14 @@ final class TestCumulusTokenProviderFactory extends TestCumulusMock {
     void testNulls() {
         assertThrows(NullPointerException.class, () -> CumulusTokenProviderFactory.createTokenProvider("test", null));
         assertThrows(NullPointerException.class, () -> CumulusTokenProviderFactory.createTokenProvider(null, new KeyManager() {}));
+    }
+
+    protected static String getResource(String resource) throws IOException {
+        URL resourceUrl = TestCumulusTokenProviderFactory.class.getClassLoader().getResource(resource);
+        if (resourceUrl == null) {
+            throw new IOException("Failed to get resource: " + resource);
+        }
+        Path path = new File(resourceUrl.getFile()).toPath();
+        return String.join("\n", Files.readAllLines(path));
     }
 }
