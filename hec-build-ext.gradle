@@ -1,0 +1,13 @@
+/*
+ * Copyright (c) 2024
+ * United States Army Corps of Engineers - Hydrologic Engineering Center (USACE/HEC)
+ * All Rights Reserved.  USACE PROPRIETARY/CONFIDENTIAL.
+ * Source may not be released without written approval from HEC
+ */
+
+includeBuild("$gradle.ext.externalLibDir") {
+    dependencySubstitution {
+        substitute(module("mil.army.usace.hec:cumulus-client")).using(project(":cumulus-client"))
+        substitute(module("mil.army.usace.hec:cumulus-model")).using(project(":cumulus-model"))
+    }
+}

@@ -79,7 +79,11 @@ public abstract class TestCumulusMock {
     }
 
     protected static void enqueueMockServer(String body) {
-        mockHttpServer.enqueue(body);
+        mockHttpServer.enqueue((String)body);
+    }
+
+    protected void enqueueAdditionalResource(String resource) throws IOException {
+        mockHttpServer.enqueue(readResourceAsString(resource));
     }
 
     protected void launchMockServerWithResource(String resource) throws IOException {
@@ -128,6 +132,16 @@ public abstract class TestCumulusMock {
 
             @Override
             public OAuth2Token newToken() throws IOException {
+                return null;
+            }
+
+            @Override
+            public ApiConnectionInfo getAuthUrl() {
+                return null;
+            }
+
+            @Override
+            public ApiConnectionInfo getTokenUrl() {
                 return null;
             }
         };
