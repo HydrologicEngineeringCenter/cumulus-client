@@ -35,9 +35,7 @@ public final class CumulusWatershedController {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 HttpRequestExecutor executor =
-                    new HttpRequestBuilderImpl(apiConnectionInfo, WATERSHEDS_ENDPOINT + "/" + watershedEndpointInput.getWatershedId())
-                            .get()
-                        .withMediaType(ACCEPT_HEADER_V1);
+                    new HttpRequestBuilderImpl(apiConnectionInfo, WATERSHEDS_ENDPOINT + "/" + watershedEndpointInput.getWatershedId()).get();
                 try (HttpRequestResponse response = executor.execute()) {
                     return CumulusObjectMapper.mapJsonToObject(response.getBody(), Watershed.class);
                 }
@@ -57,9 +55,7 @@ public final class CumulusWatershedController {
     public CompletableFuture<List<Watershed>> retrieveAllWatersheds(ApiConnectionInfo apiConnectionInfo) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                HttpRequestExecutor executor = new HttpRequestBuilderImpl(apiConnectionInfo, WATERSHEDS_ENDPOINT)
-                    .get()
-                    .withMediaType(ACCEPT_HEADER_V1);
+                HttpRequestExecutor executor = new HttpRequestBuilderImpl(apiConnectionInfo, WATERSHEDS_ENDPOINT).get();
                 try (HttpRequestResponse response = executor.execute()) {
                     return CumulusObjectMapper.mapJsonToListOfObjects(response.getBody(), Watershed.class);
                 }

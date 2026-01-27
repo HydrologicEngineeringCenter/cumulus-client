@@ -42,8 +42,7 @@ public final class CumulusDssFileController {
     Download queryDownloadStatus(ApiConnectionInfo apiConnectionInfo, DownloadsEndpointInput downloadsEndpointInput) throws IOException {
         HttpRequestExecutor executor =
             new HttpRequestBuilderImpl(apiConnectionInfo, DOWNLOADS_ENDPOINT + "/" + downloadsEndpointInput.getDownloadId())
-                .get()
-                .withMediaType(ACCEPT_HEADER_V1);
+                .get();
         try (HttpRequestResponse response = executor.execute()) {
             return CumulusObjectMapper.mapJsonToObject(response.getBody(), Download.class);
         }
