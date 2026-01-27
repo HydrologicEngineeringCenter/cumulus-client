@@ -38,8 +38,7 @@ public final class CumulusProductsController {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 HttpRequestExecutor executor = new HttpRequestBuilderImpl(apiConnectionInfo, PRODUCTS_ENDPOINT)
-                    .get()
-                    .withMediaType(ACCEPT_HEADER_V1);
+                    .get();
                 try (HttpRequestResponse response = executor.execute()) {
                     return CumulusObjectMapper.mapJsonToListOfObjects(response.getBody(), Product.class);
                 }
@@ -61,8 +60,7 @@ public final class CumulusProductsController {
             try {
                 HttpRequestExecutor executor =
                     new HttpRequestBuilderImpl(apiConnectionInfo, PRODUCTS_ENDPOINT + "/" + productsEndpointInput.getProductId())
-                        .get()
-                        .withMediaType(ACCEPT_HEADER_V1);
+                        .get();
                 try (HttpRequestResponse response = executor.execute()) {
                     return CumulusObjectMapper.mapJsonToObject(response.getBody(), Product.class);
                 }
@@ -85,8 +83,7 @@ public final class CumulusProductsController {
             try {
                 HttpRequestExecutor executor = new HttpRequestBuilderImpl(apiConnectionInfo, PRODUCTS_ENDPOINT + "/"
                     + productsFileEndpointInput.getFileId() + "/" + FILES_ENDPOINT)
-                    .get()
-                    .withMediaType(ACCEPT_HEADER_V1);
+                    .get();
                 try (HttpRequestResponse response = executor.execute()) {
                     return CumulusObjectMapper.mapJsonToListOfObjects(response.getBody(), ProductFile.class);
                 }
@@ -110,8 +107,7 @@ public final class CumulusProductsController {
                 HttpRequestExecutor executor = new HttpRequestBuilderImpl(apiConnectionInfo, PRODUCTS_ENDPOINT + "/"
                     + productsEndpointInput.getProductId() + "/"
                     + AVAILABILITY_ENDPOINT)
-                    .get()
-                    .withMediaType(ACCEPT_HEADER_V1);
+                    .get();
                 try (HttpRequestResponse response = executor.execute()) {
                     return CumulusObjectMapper.mapJsonToObject(response.getBody(), ProductAvailability.class);
                 }

@@ -52,8 +52,7 @@ public final class CumulusIdentityProviderController extends OpenIdTokenControll
      */
     private IdentityProviderConfiguration retrieveConfiguration(ApiConnectionInfo apiConnectionInfo) throws IOException {
         HttpRequestExecutor executor = new HttpRequestBuilderImpl(apiConnectionInfo, IDENTITY_PROVIDER_ENDPOINT + "/" + CONFIG_ENDPOINT)
-                .get()
-                .withMediaType(ACCEPT_HEADER_V1);
+                .get();
         try (HttpRequestResponse response = executor.execute()) {
             return CumulusObjectMapper.mapJsonToObject(response.getBody(), IdentityProviderConfiguration.class);
         }
