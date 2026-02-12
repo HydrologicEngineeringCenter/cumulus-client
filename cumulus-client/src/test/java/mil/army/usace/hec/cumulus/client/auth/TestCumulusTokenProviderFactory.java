@@ -28,11 +28,22 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 import javax.net.ssl.KeyManager;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+
+import hec.army.usace.hec.cwbi.auth.http.client.trustmanagers.CwbiAuthTrustManager;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfoBuilder;
 import mil.army.usace.hec.cwms.http.client.MockHttpServer;
+import mil.army.usace.hec.cwms.http.client.SslSocketData;
 import mil.army.usace.hec.cwms.http.client.auth.OAuth2TokenProvider;
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.Dispatcher;
@@ -118,14 +129,20 @@ final class TestCumulusTokenProviderFactory {
     void testNotNull() throws IOException {
         ApiConnectionInfo webServiceUrl = buildCumulusInfo();
         System.out.println("URL: " + webServiceUrl.getApiRoot());
-        OAuth2TokenProvider tokenProvider = CumulusTokenProviderFactory.createTokenProvider(webServiceUrl.getApiRoot(), new KeyManager() {});
+        SSLSocketFactory sslSocketFactory = buildSSLSocketFactory(Collections.singletonList(new KeyManager() {}));
+        SslSocketData sslSocketData = new SslSocketData(Objects.requireNonNull(sslSocketFactory, "Missing required SSLSocketFactory"),
+                CwbiAuthTrustManager.getTrustManager());
+        OAuth2TokenProvider tokenProvider = CumulusTokenProviderFactory.createTokenProvider(webServiceUrl.getApiRoot(), sslSocketData);
         assertNotNull(tokenProvider);
     }
 
     @Test
-    void testNulls() {
+    void testNulls() throws Exception {
+        SSLSocketFactory sslSocketFactory = buildSSLSocketFactory(Collections.singletonList(new KeyManager() {}));
+        SslSocketData sslSocketData = new SslSocketData(Objects.requireNonNull(sslSocketFactory, "Missing required SSLSocketFactory"),
+                CwbiAuthTrustManager.getTrustManager());
         assertThrows(NullPointerException.class, () -> CumulusTokenProviderFactory.createTokenProvider("test", null));
-        assertThrows(NullPointerException.class, () -> CumulusTokenProviderFactory.createTokenProvider(null, new KeyManager() {}));
+        assertThrows(NullPointerException.class, () -> CumulusTokenProviderFactory.createTokenProvider(null, sslSocketData));
     }
 
     protected static String getResource(String resource) throws IOException {
@@ -135,5 +152,18 @@ final class TestCumulusTokenProviderFactory {
         }
         Path path = new File(resourceUrl.getFile()).toPath();
         return String.join("\n", Files.readAllLines(path));
+    }
+
+
+
+    private static SSLSocketFactory buildSSLSocketFactory(List<KeyManager> keyManagers) throws IOException {
+        try {
+            SSLContext sc = SSLContext.getInstance("TLS");
+            sc.init(keyManagers.toArray(new KeyManager[]{}),
+                    new TrustManager[] {CwbiAuthTrustManager.getTrustManager()}, null);
+            return sc.getSocketFactory();
+        } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            throw new IOException(e);
+        }
     }
 }

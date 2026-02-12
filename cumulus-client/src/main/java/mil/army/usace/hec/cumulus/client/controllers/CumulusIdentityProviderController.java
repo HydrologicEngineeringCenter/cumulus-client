@@ -23,23 +23,28 @@
  */
 package mil.army.usace.hec.cumulus.client.controllers;
 
-import hec.army.usace.hec.cwbi.auth.http.client.OpenIdTokenController;
 import java.io.IOException;
-import static mil.army.usace.hec.cumulus.client.controllers.CumulusConstants.ACCEPT_HEADER_V1;
+
+import hec.army.usace.hec.cwbi.auth.http.client.SSLOidcDiscoveryController;
 import mil.army.usace.hec.cumulus.client.model.CumulusObjectMapper;
 import mil.army.usace.hec.cumulus.client.model.IdentityProviderConfiguration;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
 import mil.army.usace.hec.cwms.http.client.HttpRequestBuilderImpl;
 import mil.army.usace.hec.cwms.http.client.HttpRequestResponse;
+import mil.army.usace.hec.cwms.http.client.SslSocketData;
 import mil.army.usace.hec.cwms.http.client.request.HttpRequestExecutor;
 
-public final class CumulusIdentityProviderController extends OpenIdTokenController {
+public final class CumulusIdentityProviderController extends SSLOidcDiscoveryController {
 
     private static final String IDENTITY_PROVIDER_ENDPOINT = "identity-provider";
     private static final String CONFIG_ENDPOINT = "configuration";
 
+    public CumulusIdentityProviderController(SslSocketData sslSocketData) {
+        super(sslSocketData);
+    }
+
     @Override
-    public String retrieveWellKnownEndpoint(ApiConnectionInfo apiConnectionInfo) throws IOException {
+    protected String retrieveWellKnownEndpointUrl(ApiConnectionInfo apiConnectionInfo) throws IOException {
         IdentityProviderConfiguration configuration = retrieveConfiguration(apiConnectionInfo);
         return configuration.getWellKnownEndpoint();
     }
