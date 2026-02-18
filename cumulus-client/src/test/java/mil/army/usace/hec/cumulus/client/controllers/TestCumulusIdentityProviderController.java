@@ -26,7 +26,7 @@ final class TestCumulusIdentityProviderController extends TestCumulusMock {
         enqueueMockServer(updatedIdpConfig);
         enqueueMockServer(readResourceAsString(openIdConfig));
         SslSocketData sslSocketData = new SslSocketData(mockSslSocketFactory, CwbiAuthTrustManager.getTrustManager());
-        ApiConnectionInfo tokenUrl = new CumulusIdentityProviderController().retrieveTokenUrl(buildConnectionInfo(), sslSocketData);
+        ApiConnectionInfo tokenUrl = new CumulusIdentityProviderController(sslSocketData).retrieveTokenUrl(buildConnectionInfo());
         assertEquals("http://localhost:PORT/auth/realms/cwbi/protocol/openid-connect/token", tokenUrl.getApiRoot());
     }
 }

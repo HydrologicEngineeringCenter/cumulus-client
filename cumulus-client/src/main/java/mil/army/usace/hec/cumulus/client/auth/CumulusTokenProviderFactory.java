@@ -23,17 +23,15 @@
  */
 package mil.army.usace.hec.cumulus.client.auth;
 
-import hec.army.usace.hec.cwbi.auth.http.client.CwbiAuthSslSocketFactory;
 import hec.army.usace.hec.cwbi.auth.http.client.CwbiAuthTokenProvider;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Objects;
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.SSLSocketFactory;
+
 import mil.army.usace.hec.cumulus.client.controllers.CumulusConstants;
 import mil.army.usace.hec.cumulus.client.controllers.CumulusIdentityProviderController;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfo;
 import mil.army.usace.hec.cwms.http.client.ApiConnectionInfoBuilder;
+import mil.army.usace.hec.cwms.http.client.SslSocketData;
 import mil.army.usace.hec.cwms.http.client.auth.OAuth2TokenProvider;
 
 public final class CumulusTokenProviderFactory {
@@ -41,12 +39,13 @@ public final class CumulusTokenProviderFactory {
         throw new AssertionError("This class should not be instantiated");
     }
 
-    public static OAuth2TokenProvider createTokenProvider(String url, KeyManager keyManager) throws IOException {
-        SSLSocketFactory sslSocketFactory = CwbiAuthSslSocketFactory.buildSSLSocketFactory(Collections.singletonList(Objects.requireNonNull(keyManager, "Missing required KeyManager")));
-        ApiConnectionInfo configInfo = new ApiConnectionInfoBuilder(Objects.requireNonNull(url, "Missing required url")).build();
-        final String wellKnownUrl = new CumulusIdentityProviderController().retrieveWellKnownEndpoint(configInfo);
+    public static OAuth2TokenProvider createTokenProvider(String url, SslSocketData sslSocketData) throws IOException {
+        ApiConnectionInfo configInfo = new ApiConnectionInfoBuilder(Objects.requireNonNull(url, "Missing required url"))
+                .build();
+        ApiConnectionInfo wellKnownUrl = new CumulusIdentityProviderController(Objects.requireNonNull(sslSocketData, "Missing required sslSocketData"))
+                .retrieveWellKnownEndpoint(configInfo);
         return new CwbiAuthTokenProvider(wellKnownUrl,
                                          CumulusConstants.CLIENT_ID,
-                                         Objects.requireNonNull(sslSocketFactory, "Missing required SSLSocketFactory"));
+                                         Objects.requireNonNull(sslSocketData.getSslSocketFactory(), "Missing required SSLSocketFactory"));
     }
 }
